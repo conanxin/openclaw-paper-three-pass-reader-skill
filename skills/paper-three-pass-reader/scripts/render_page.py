@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-render_page.py — paper-three-pass-reader (v0.1.0-alpha)
+render_page.py — paper-three-pass-reader (v0.2.9-alpha)
 
 Render the interactive offline HTML reading page from a paper_reading JSON.
 
@@ -96,6 +96,7 @@ def normalize_claim(c):
         }
     # Required keys with safe defaults.
     out.setdefault("claim_id", None)
+    out["claim_id"] = out.get("claim_id") or out.get("id")
     out.setdefault("claim_text", "(missing)")
     out.setdefault("evidence_label", "[Uncertain]")
     out.setdefault("evidence_location", "")
@@ -168,6 +169,115 @@ def normalize_checklist_item(c):
     return out
 
 
+def _flatten_five_cs_item(item, default_label=""):
+    """v0.2.9: a Five Cs entry may be a dict {label, value, evidence_label, note}
+    OR a plain string. Normalize to a dict with all four keys so the template
+    can render them individually without printing the raw dict repr."""
+    if isinstance(item, dict):
+        out = dict(item)
+    elif isinstance(item, str):
+        out = {"value": item, "label": default_label, "evidence_label": "", "note": ""}
+    else:
+        out = {"value": str(item), "label": default_label, "evidence_label": "", "note": ""}
+    out.setdefault("label", default_label)
+    out.setdefault("value", "")
+    out.setdefault("evidence_label", "")
+    out.setdefault("note", "")
+    return out
+
+
+def normalize_five_cs(five_cs):
+    """v0.2.9: each Five Cs key (category, context, correctness, contributions,
+    clarity) can be a dict, a list of items, or a plain string. Flatten to:
+      category / context / correctness / clarity  -> single dict
+      contributions                                -> list of dicts
+    Also auto-derive a `label` (e.g. '类别' / '背景' / '正确性' / '贡献' / '清晰度')
+    so the zh-CN UI map stays consistent."""
+    if not isinstance(five_cs, dict):
+        return {
+            "category": _flatten_five_cs_item("", "类别"),
+            "context": _flatten_five_cs_item("", "背景"),
+            "correctness": _flatten_five_cs_item("", "正确性"),
+            "contributions": [],
+            "clarity": _flatten_five_cs_item("", "清晰度"),
+        }
+    out = {}
+    out["category"] = _flatten_five_cs_item(five_cs.get("category", ""), "类别")
+    out["context"] = _flatten_five_cs_item(five_cs.get("context", ""), "背景")
+    out["correctness"] = _flatten_five_cs_item(five_cs.get("correctness", ""), "正确性")
+    out["clarity"] = _flatten_five_cs_item(five_cs.get("clarity", ""), "清晰度")
+    contribs = five_cs.get("contributions", []) or []
+    if isinstance(contribs, str):
+        contribs = [c.strip() for c in contribs.split("\n") if c.strip()] or [contribs]
+    norm_contribs = []
+    for i, c in enumerate(contribs, 1):
+        if isinstance(c, dict):
+            item = _flatten_five_cs_item(c, f"贡献 {i}")
+        elif isinstance(c, str):
+            item = {"value": c, "label": f"贡献 {i}", "evidence_label": "", "note": ""}
+        else:
+            item = {"value": str(c), "label": f"贡献 {i}", "evidence_label": "", "note": ""}
+        norm_contribs.append(item)
+    out["contributions"] = norm_contribs
+    return out
+
+
+def is_essay_talk(data):
+    """v0.2.9: True if the reading is an essay / talk / methodology lecture.
+    These get essay-aware UI branches (conceptual notes, 实践计划)."""
+    pm = data.get("paper_metadata") or {}
+    cat = (pm.get("category") or "").lower()
+    cats = [str(c).lower() for c in (pm.get("categories") or [])]
+    hay = {cat, *cats}
+    return bool(hay & ESSAY_TALK_CATEGORIES)
+
+
+def normalize_related_work(rw):
+    """v0.2.9: Related Work can be a list of dicts OR a list of strings OR
+    a string OR missing. Return a list of {title, authors, year, why} dicts."""
+    if not rw:
+        return []
+    if isinstance(rw, str):
+        rw = [s.strip() for s in rw.split("\n") if s.strip()]
+    out = []
+    for item in rw:
+        if isinstance(item, dict):
+            entry = {
+                "title": item.get("title") or item.get("ref") or item.get("name") or "(unnamed)",
+                "authors": item.get("authors") or [],
+                "year": item.get("year") or "",
+                "why": item.get("why") or item.get("note") or item.get("evidence_label") or "",
+                "kind": item.get("kind") or "reference",
+            }
+        else:
+            entry = {"title": str(item), "authors": [], "year": "", "why": "", "kind": "reference"}
+        out.append(entry)
+    return out
+
+
+def normalize_reproduction_plan(rp):
+    """v0.2.9: make the reproduction-plan shape consistent and essay-friendly.
+    Older `actionable_steps` is auto-promoted into `steps`."""
+    if not isinstance(rp, dict):
+        rp = {}
+    out = dict(rp)
+    src_steps = out.get("steps")
+    if not src_steps and out.get("actionable_steps"):
+        src_steps = list(out["actionable_steps"])
+    if not src_steps and isinstance(src_steps, str):
+        src_steps = [s for s in src_steps.split("\n") if s.strip()]
+    out["steps"] = list(src_steps) if src_steps else []
+    out.setdefault("plan_7_day", [])
+    out.setdefault("plan_30_day", [])
+    out.setdefault("plan_90_day", [])
+    out.setdefault("success_criteria", [])
+    out.setdefault("risks", [])
+    out.setdefault("rationale", "")
+    out.setdefault("applicable", True)
+    out.setdefault("kind", "experiment")
+    return out
+
+
 def normalize_reading(data):
     """Top-level normalization. Mutates and returns data."""
     if not isinstance(data, dict):
@@ -176,6 +286,13 @@ def normalize_reading(data):
     data["figures_tables"]      = [normalize_figure_table(f, i) for i, f in enumerate(data.get("figures_tables") or [])]
     data["glossary"]            = [normalize_glossary(g) for g in (data.get("glossary") or [])]
     data["final_checklist"]     = [normalize_checklist_item(c) for c in (data.get("final_checklist") or [])]
+    # v0.2.9: Five Cs flatten, Related Work, Reproduction Plan normalize.
+    data["five_cs"]             = normalize_five_cs(data.get("five_cs") or {})
+    data["related_work"]        = normalize_related_work(data.get("related_work") or [])
+    data["reproduction_plan"]   = normalize_reproduction_plan(data.get("reproduction_plan") or {})
+    # v0.2.9: essay/talk flag + generator version are exposed to the template.
+    data["_is_essay_talk"]      = is_essay_talk(data)
+    data["generator_version"]   = GENERATOR_VERSION
     # Defensive on pass1.decision
     if isinstance(data.get("pass1"), dict):
         data["pass1"]["decision"] = _safe_decision(data["pass1"].get("decision", "CONTINUE_FULL"))
@@ -229,7 +346,21 @@ def _apply_filters(value, filters, ctx):
 
 
 _VAR_RE = re.compile(r"\{\{\s*([^\}]+?)\s*\}\}")
-_TAG_RE = re.compile(r"\{\%\s*(for|if|endfor|endif|set)\b([^%]*?)\%\}", re.DOTALL)
+# v0.2.9: recognise `else` so the engine can render {% if … %}{% else %}{% endif %}
+# without leaking the literal `{% else %}` into the output.
+_TAG_RE = re.compile(r"\{\%\s*(for|if|else|endfor|endif|set)\b([^%]*?)\%\}", re.DOTALL)
+
+GENERATOR_VERSION = "v0.2.9-alpha"
+
+ESSAY_TALK_CATEGORIES = {
+    "essay",
+    "talk",
+    "talk_essay",
+    "research_advice",
+    "methodology_lecture",
+    "methodology",
+    "scientific_career",
+}
 
 
 def render(template: str, ctx: dict) -> str:
@@ -262,7 +393,7 @@ def render(template: str, ctx: dict) -> str:
         pos = m.end()
 
     # Parse into a tree: nodes = list of either ('text', s), ('var', expr),
-    # ('if', expr, body), ('for', var, iter_expr, body).
+    # ('if', expr, body, else_body_or_none), ('for', var, iter_expr, body).
     def parse(seq, end_kinds):
         out = []
         i = 0
@@ -277,9 +408,16 @@ def render(template: str, ctx: dict) -> str:
                     return out, i  # stop at end
                 if kind == "if":
                     expr = t[2]
-                    # An if's body ends at endif OR at endfor (when the if is nested in a for).
-                    body, consumed = parse(seq[i + 1:], end_kinds={"endif"} | end_kinds)
-                    out.append(("if", expr, body))
+                    # An if's body ends at endif OR at endfor (when the if is nested in a for),
+                    # OR at the optional `else` clause.
+                    body, consumed = parse(seq[i + 1:], end_kinds={"endif", "else"} | end_kinds)
+                    else_body = None
+                    if consumed < len(seq[i + 1:]) and seq[i + 1 + consumed][0] == "tag" and seq[i + 1 + consumed][1] == "else":
+                        # Skip the `else` token, parse the else-body, expect endif.
+                        eb, ec = parse(seq[i + 2 + consumed:], end_kinds={"endif"} | end_kinds)
+                        else_body = eb
+                        consumed = 1 + consumed + ec
+                    out.append(("if", expr, body, else_body))
                     i += 1 + consumed
                 elif kind == "set":
                     # {% set var = expr %}
@@ -333,6 +471,8 @@ def render(template: str, ctx: dict) -> str:
                     out.append(str(val))
             elif n[0] == "if":
                 expr = n[1].strip()
+                body = n[2]
+                else_body = n[3] if len(n) > 3 else None
                 # Support simple 'not <path>' negation.
                 negated = False
                 if expr.startswith("not "):
@@ -343,7 +483,9 @@ def render(template: str, ctx: dict) -> str:
                 if negated:
                     truthy = not truthy
                 if truthy:
-                    out.append(emit(n[2], scope))
+                    out.append(emit(body, scope))
+                elif else_body is not None:
+                    out.append(emit(else_body, scope))
             elif n[0] == "for":
                 var, it, body = n[1], n[2], n[3]
                 seq = _get(it, scope)
@@ -604,16 +746,30 @@ def write_reports(out: Path, data: dict):
 **{p1.get('decision', 'CONTINUE_FULL')}** — {p1.get('decision_rationale', '')}
 """)
     five_cs = data.get("five_cs", {})
+    # v0.2.9: each Five Cs entry may be a string OR a dict (post-normalize).
+    def _fc_str(x, default=""):
+        if isinstance(x, dict):
+            return x.get("value", "") or default
+        return str(x) if x is not None else default
+    def _fc_list(items):
+        out = []
+        for x in (items or []):
+            if isinstance(x, dict):
+                v = x.get("value") or ""
+                if v: out.append(v)
+            elif x is not None:
+                out.append(str(x))
+        return out
     write_text(r / "pass1_five_cs.md",
         f"""# Pass 1 — Five Cs
 
-| C | Answer |
-|---|---|
-| **Category** | {five_cs.get('category', '')} |
-| **Context** | {five_cs.get('context', '')} |
-| **Correctness** | {five_cs.get('correctness', '')} |
-| **Contributions** | {chr(10).join('- ' + c for c in five_cs.get('contributions', []) or [])} |
-| **Clarity** | {five_cs.get('clarity', '')} |
+|| C | Answer |
+||---|---|
+|| **Category** | {_fc_str(five_cs.get('category'))} |
+|| **Context** | {_fc_str(five_cs.get('context'))} |
+|| **Correctness** | {_fc_str(five_cs.get('correctness'))} |
+|| **Contributions** | {chr(10).join('- ' + c for c in _fc_list(five_cs.get('contributions')))} |
+|| **Clarity** | {_fc_str(five_cs.get('clarity'))} |
 """)
     write_text(r / "pass1_reading_decision.md",
         f"""# Pass 1 — Reading Decision
@@ -671,6 +827,11 @@ def write_reports(out: Path, data: dict):
     one = sums.get("one_sentence", "")
     three = sums.get("three_sentence", [])
     contribs = five_cs.get("contributions", []) or []
+    contrib_strs = [
+        c.get("value") if isinstance(c, dict) else str(c)
+        for c in contribs
+        if (c.get("value") if isinstance(c, dict) else c) is not None
+    ]
     limitations = data.get("limitations", []) or []
     open_q = data.get("open_questions", []) or []
     write_text(r / "final_reading_report.md",
@@ -686,7 +847,7 @@ def write_reports(out: Path, data: dict):
 
 ## 3. Main contributions
 
-""" + "\n".join(f"- {c}" for c in contribs) + f"""
+""" + "\n".join(f"- {c}" for c in contrib_strs) + f"""
 
 ## 4. Where is the evidence strongest / weakest?
 
@@ -726,7 +887,7 @@ def write_readme(out: Path, data: dict):
 - `data/` — all the JSON behind the page.
 - `reports/` — Markdown reports per stage.
 
-Generated by **paper-three-pass-reader v0.1.0-alpha** · MIT.
+Generated by **paper-three-pass-reader {GENERATOR_VERSION}** · MIT.
 """)
 
 

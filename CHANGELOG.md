@@ -3,6 +3,35 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.9-alpha] — 2026-06-15
+
+### Added
+
+- **Generator version in rendered pages** — `templates/index.html` footer now reads `paper-three-pass-reader v0.2.9-alpha` (the value is exposed by the renderer as `data["generator_version"]`).
+- **Essay / talk detection** — renderer classifies inputs as `essay / talk` when the paper category is one of `essay / talk / keynote / lecture / opinion / blog-distillation` and exposes `data["_is_essay_talk"]` to the template.
+- **Essay-mode practical-plan block** — `Reproduction Plan` heading switches to `实践计划` for essay inputs; the body renders 7/30/90-day plans, success criteria, and risks derived from the source.
+- **Essay-mode figures & tables** — empty state now reads `原文无传统图表` followed by conceptual notes (e.g. Hamming's 5 most-quoted frameworks) for essay-mode inputs.
+- **Essay-mode related-work fallback** — `Related Work` is renamed `相关脉络` and shows a clean fallback note for essay-mode inputs that have no formal related-work section.
+- **Glossary definition display** — glossary chips now show term + Chinese term + Chinese definition in an explicit body block.
+
+### Fixed
+
+- **Renderer raw-dict leak** — the Five Cs cards previously rendered `{'label': ...}` dict reprs. Each Five-C item is now normalised into `{label, value, evidence_label, note}` before rendering.
+- **Renderer template-tag leak** — the mini-template engine now understands `{% if … %} … {% else %} … {% endif %}` and no longer leaks `{% else %}` (or any other unclosed `{% %}` / `{{ }}`) into the rendered HTML.
+- **Claim ID display** — the Claims-Evidence table now shows real `C01` / `C02` / `…` IDs (the renderer derives `claim_id` from `id` when only the latter is present).
+- **Stale footer version** — the page footer no longer says `v0.1.0-alpha`.
+- **Validation step 5 brittle assertion** — the `class="accordion"` legacy CSS-class assertion is replaced with a robust `details / accordion` regex check that accepts the v0.2.9 template's native `<details>` markup.
+
+### Re-published
+
+- Chinese *You and Your Research* page → <https://conanxin.github.io/paper-reading-pages/you-and-your-research-cn/>.
+
+### Notes
+
+- v0.2.8-alpha stays immutable; this release lands as v0.2.9-alpha.
+- Validation: 220/0 PASS (210 v0.2.8 baseline + 10 new step-16 essay / talk checks).
+- `quality_gate_zh_cn` reports a single `long_en_blobs` warning on `claims_evidence_map[0].comment` (Hamming's intentional direct English quote) — preserved by design.
+
 ## [v0.2.8-alpha] — 2026-06-15
 
 ### Added

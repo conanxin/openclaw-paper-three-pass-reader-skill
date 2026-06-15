@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,7 +18,7 @@
         </div>
         <div class="badges">
           <span class="badge badge-mode" title="阅读模式">full_text</span>
-          <span class="badge badge-confidence badge-confidence-high">high confidence</span>
+          <span class="badge badge-confidence badge-confidence-high">high 置信度</span>
           <span class="badge badge-input">paper_url</span>
         </div>
       </div>
@@ -31,18 +31,19 @@
       <ol>
         <li><a href="#metadata">论文信息</a></li>
         <li><a href="#intake">输入解析状态</a></li>
-        <li><a href="#summary">摘要 (1 / 3 / 10)</a></li>
+        <li><a href="#resolver-trail">解析路径</a></li>
+        <li><a href="#summary">摘要（1 / 3 / 10 句）</a></li>
         <li><a href="#paper-map">论文地图</a></li>
-        <li><a href="#five-cs">Five Cs</a></li>
-        <li><a href="#passes">第一遍 / 第二遍 / 第三遍阅读</a></li>
+        <li><a href="#five-cs">Five Cs 面板</a></li>
+        <li><a href="#passes">三遍阅读</a></li>
         <li><a href="#claims">主张—证据地图</a></li>
-        <li><a href="#figures">Figures &amp; Tables</a></li>
-        <li><a href="#glossary">术语表</a></li>
+        <li><a href="#figures">图表 / 结构说明</a></li>
+        <li><a href="#glossary">关键术语</a></li>
         <li><a href="#reconstruction">方法重建</a></li>
-        <li><a href="#limitations">正确性 &amp; 局限</a></li>
-        <li><a href="#related">相关工作</a></li>
+        <li><a href="#limitations">正确性与局限</a></li>
+        <li><a href="#related">相关脉络</a></li>
         <li><a href="#implications">实践启发</a></li>
-        <li><a href="#reproduction">复现计划</a></li>
+        <li><a href="#reproduction">实践计划</a></li>
         <li><a href="#open">开放问题</a></li>
         <li><a href="#checklist">最终理解检查表</a></li>
       </ol>
@@ -57,7 +58,7 @@
         <dt>标题</dt><dd>You and Your Research</dd>
         <dt>作者</dt><dd>Richard W. Hamming</dd>
         <dt>年份</dt><dd>1986</dd>
-        <dt>发表 venue</dt><dd>Bell Communications Research Colloquium Seminar</dd>
+        <dt>场合</dt><dd>Bell Communications Research Colloquium Seminar</dd>
         
         
         <dt>URL</dt><dd><a href="https://www.cs.virginia.edu/~robins/YouAndYourResearch.html">https://www.cs.virginia.edu/~robins/YouAndYourResearch.html</a></dd>
@@ -102,8 +103,10 @@
         <li><span class="label">解析步骤</span> <span class="value">url -> html_fetch -> text_extraction -> full_text</span></li>
         <li><span class="label">候选数量</span> <span class="value">0</span></li>
       </ul>
-      <span class="muted"> — confidence: </span></li></ul>
+      </li></ul>
       </details>
+      
+      <p class="muted">无候选论文；当前匹配来自用户提供 URL。</p>
       
       
     </section>
@@ -195,19 +198,46 @@
 
     <!-- 5. Five Cs -->
     <section id="five-cs" class="card">
-      <h2>Five Cs Dashboard</h2>
+      <h2>Five Cs 面板</h2>
       <div class="five-cs-grid">
-        <article class="ccard"><h3>类别</h3><p>{'label': '分类', 'value': '研究方法 / 科研生涯 talk (research advice talk / essay / methodology lecture)，不是实验论文。', 'evidence_label': '[Author claim]', 'note': '作者本人在开篇明言：本文不是关于管理研究，而是关于“how you individually do your research”。属于反思性 / 处方式文本 (prescriptive essay)。'}</p></article>
-        <article class="ccard"><h3>背景</h3><p>{'label': '语境', 'value': '1986 年 Bell Communications Research 内部 Colloquium，演讲者为 1968 年图灵奖得主、曾任 Bell Labs 30 年的 Richard W. Hamming。听众 200 人左右，多为 Bellcore 研究人员。', 'evidence_label': '[Paper evidence]', 'note': '上下文由 Chynoweth 的引言和 Hamming 自述（Los Alamos、Bell Labs）提供。冷战结束前后美国工业研究的黄金时代背景对 Hamming 的建议有重要影响。'}</p></article>
-        <article class="ccard"><h3>正确性</h3><p>{'label': '正确性', 'value': '文中的经验性主张（运气不可独占、勇气 / 野心 / 问题选择 / 销售是必要条件）大多为作者自述与他人的轶事支持，缺少对照实验与统计；但每条都附有具体人名（Shannon、Feynman、Pfann、Clogston、Bode）作锚点，且与 Newton / Pasteur / Durocher 等格言互证。', 'evidence_label': '[Agent inference]', 'note': '正确性判断不应套用实验论文的标准：这是一份基于 40 年观察的反思式处方。论据可识别、可追问，但缺少统计意义上的因果。'}</p></article>
-        <article class="ccard"><h3>贡献</h3><ul></ul></article>
-        <article class="ccard"><h3>清晰度</h3><p>{'label': '表达清晰度', 'value': 'Hamming 文风口语化、锋利、有幽默感；引言由 Chynoweth 介绍，主讲由 Hamming 一人完成；包含 Q&A 与转写者注释。全文有大量短句与反问，没有图表，但概念分类清晰、案例可识别。', 'evidence_label': '[Figure/Table evidence]', 'note': '原文无传统论文图表；如有结构，可视为 Hamming 演讲中自然形成的分类：运气 / 脑力 / 年龄 / 野心 / 勇气 / 退出 / 重要问题 / 投入 / 销售 / 风格 / 计算机 / 信息 / 第一流工作 / 创意 / 总结。'}</p></article>
+        <article class="ccard">
+          <h3>分类</h3>
+          <p class="ccard-value">研究方法 / 科研生涯 talk (research advice talk / essay / methodology lecture)，不是实验论文。</p>
+          <p class="evidence-line">[Author claim]</p>
+          <p class="ccard-note">作者本人在开篇明言：本文不是关于管理研究，而是关于“how you individually do your research”。属于反思性 / 处方式文本 (prescriptive essay)。</p>
+        </article>
+        <article class="ccard">
+          <h3>语境</h3>
+          <p class="ccard-value">1986 年 Bell Communications Research 内部 Colloquium，演讲者为 1968 年图灵奖得主、曾任 Bell Labs 30 年的 Richard W. Hamming。听众 200 人左右，多为 Bellcore 研究人员。</p>
+          <p class="evidence-line">[Paper evidence]</p>
+          <p class="ccard-note">上下文由 Chynoweth 的引言和 Hamming 自述（Los Alamos、Bell Labs）提供。冷战结束前后美国工业研究的黄金时代背景对 Hamming 的建议有重要影响。</p>
+        </article>
+        <article class="ccard">
+          <h3>正确性</h3>
+          <p class="ccard-value">文中的经验性主张（运气不可独占、勇气 / 野心 / 问题选择 / 销售是必要条件）大多为作者自述与他人的轶事支持，缺少对照实验与统计；但每条都附有具体人名（Shannon、Feynman、Pfann、Clogston、Bode）作锚点，且与 Newton / Pasteur / Durocher 等格言互证。</p>
+          <p class="evidence-line">[Agent inference]</p>
+          <p class="ccard-note">正确性判断不应套用实验论文的标准：这是一份基于 40 年观察的反思式处方。论据可识别、可追问，但缺少统计意义上的因果。</p>
+        </article>
+        <article class="ccard">
+          <h3>表达清晰度</h3>
+          <p class="ccard-value">Hamming 文风口语化、锋利、有幽默感；引言由 Chynoweth 介绍，主讲由 Hamming 一人完成；包含 Q&A 与转写者注释。全文有大量短句与反问，没有图表，但概念分类清晰、案例可识别。</p>
+          <p class="evidence-line">[Figure/Table evidence]</p>
+          <p class="ccard-note">原文无传统论文图表；如有结构，可视为 Hamming 演讲中自然形成的分类：运气 / 脑力 / 年龄 / 野心 / 勇气 / 退出 / 重要问题 / 投入 / 销售 / 风格 / 计算机 / 信息 / 第一流工作 / 创意 / 总结。</p>
+        </article>
+        <article class="ccard ccard-wide">
+          <h3>贡献</h3>
+          
+          <ul><li><p class="ccard-value">label</p><li><p class="ccard-value">value</p><li><p class="ccard-value">evidence_label</p><li><p class="ccard-value">note</p></li></ul>
+          
+          <p class="ccard-empty">（暂无明确贡献条目）</p>
+          
+        </article>
       </div>
     </section>
 
     <!-- 6. 第一遍阅读 / 第二遍阅读 / 第三遍阅读 标签页 -->
     <section id="passes" class="card">
-      <h2>Reading Passes</h2>
+      <h2>三遍阅读</h2>
       <div class="timeline">
         <span class="dot done" title="第一遍阅读">1</span>
         <span class="dot done" title="第二遍阅读">2</span>
@@ -222,10 +252,10 @@
 
         <div class="tab-panel active" data-panel="p1">
           <h3>第一遍 — 鸟瞰视图</h3>
-          <p class="evidence-line">[Author claim] / [Paper evidence] depending on source.</p>
+          <p class="evidence-line">依赖来源标记为 [Author claim] / [Paper evidence] 等。</p>
           <p>第一遍阅读（5 分钟级）确认：这是 1986 年 Bell Labs 内部讲座的转写稿，作者 Richard W. Hamming，1968 年图灵奖得主。核心问题是“为什么少数科学家做出重大贡献而多数被遗忘”，答案是“个人可以练习的习惯”——勇气、野心、问题选择、投入度、风格、销售。文末有 Q&A 与作者简历。Hamming 强调这不是管理研究，而是个体研究的方法论。</p>
           <div class="callout">
-            <strong>决策:</strong> <code>CONTINUE_FULL</code>
+            <strong>决策：</strong> <code>CONTINUE_FULL</code>
             <p>HTML 全文已抓取并提取为 14,454 词的纯文本，包含正文、Q&A 与作者简历。可完整阅读。</p>
           </div>
         </div>
@@ -245,7 +275,7 @@
           <h4>方法重建</h4>
           <ol><li>Hamming 的方法论可以重述为五个可执行步骤：1) 承认野心——对自己说“我想做重要的事”；2) 选一个“有合理攻击路径”的大问题，放弃无攻击路径的著名问题；3) 把时间分配做到 50/50：50% 解决、50% 销售；4) 每 7–10 年系统性地换一次领域；5) 用第一流同行包围自己，定期离开“sound absorber”。</li></ol>
           
-          <h4>批判性审视 highlights</h4>
+          <h4>批判性审视要点</h4>
           <ul></ul>
           
         </div>
@@ -256,7 +286,7 @@
     <section id="claims" class="card">
       <h2>主张—证据地图</h2>
       <div class="filters">
-        <label>Filter confidence:
+        <label>筛选置信度：
           <select id="filter-confidence">
             <option value="">all</option>
             <option value="high">high</option>
@@ -264,7 +294,7 @@
             <option value="low">low</option>
           </select>
         </label>
-        <label>Filter label:
+        <label>筛选证据标签：
           <select id="filter-label">
             <option value="">all</option>
             <option>[Paper evidence]</option>
@@ -275,16 +305,16 @@
             <option>[Needs verification]</option>
           </select>
         </label>
-        <label><input type="checkbox" id="filter-needs" checked /> only needs-verification</label>
+        <label><input type="checkbox" id="filter-needs" checked /> 只看需验证项</label>
       </div>
       <table class="claims-table">
         <thead>
-          <tr><th>ID</th><th>Claim</th><th>Evidence</th><th>Location</th><th>Conf.</th></tr>
+          <tr><th>ID</th><th>主张</th><th>证据标签</th><th>位置</th><th>置信度</th></tr>
         </thead>
         <tbody>
           
           <tr data-confidence="medium" data-label="[Author claim]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C01</code></td>
             <td>运气只决定哪次成功，不决定是否成功；伟大科学家的多次命中说明“会做”是品格与准备。</td>
             <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
             <td></td>
@@ -292,7 +322,7 @@
           </tr>
           
           <tr data-confidence="medium" data-label="[Paper evidence]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C02</code></td>
             <td>拥有高智商或大量脑力并不等于能做出伟大工作；勇气、投入与方向比天赋更关键。</td>
             <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
             <td></td>
@@ -300,7 +330,7 @@
           </tr>
           
           <tr data-confidence="low" data-label="[Author claim]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C03</code></td>
             <td>年龄是领域相关的：数学 / 理论物理领域成名多在年轻时期，音乐 / 文学 / 政治的代表作往往在晚期。</td>
             <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
             <td></td>
@@ -308,7 +338,7 @@
           </tr>
           
           <tr data-confidence="medium" data-label="[Agent inference]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C04</code></td>
             <td>勇气是伟大科学家的关键特质之一；Shannon 敢于问“随机编码的平均性能”即为范例。</td>
             <td><span class="ev-label ev-agent-inference">[Agent inference]</span></td>
             <td></td>
@@ -316,7 +346,7 @@
           </tr>
           
           <tr data-confidence="high" data-label="[Author claim]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C05</code></td>
             <td>重要问题的定义是“有合理攻击路径”，不是“结果更宏大”。</td>
             <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
             <td></td>
@@ -324,7 +354,7 @@
           </tr>
           
           <tr data-confidence="medium" data-label="[Paper evidence]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C06</code></td>
             <td>应当放弃无前途的研究方向，并每 7–10 年系统性地换一次领域。</td>
             <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
             <td></td>
@@ -332,7 +362,7 @@
           </tr>
           
           <tr data-confidence="high" data-label="[Paper evidence]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C07</code></td>
             <td>写作、正式演讲、非正式讨论是研究者的“销售”三件套，缺一不可。</td>
             <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
             <td></td>
@@ -340,7 +370,7 @@
           </tr>
           
           <tr data-confidence="low" data-label="[Author claim]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C08</code></td>
             <td>至少 50% 的研究时间应当花在 presentation（写作 + 演讲 + 讨论）上。</td>
             <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
             <td></td>
@@ -348,7 +378,7 @@
           </tr>
           
           <tr data-confidence="medium" data-label="[Paper evidence]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C09</code></td>
             <td>研究者应当被给予尽可能小的计算机以保留思考时间；这一决策被认为是 UNIX 诞生的间接原因。</td>
             <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
             <td></td>
@@ -356,7 +386,7 @@
           </tr>
           
           <tr data-confidence="high" data-label="[Paper evidence]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C10</code></td>
             <td>环境（同行质量）显著影响个人产出。</td>
             <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
             <td></td>
@@ -364,7 +394,7 @@
           </tr>
           
           <tr data-confidence="medium" data-label="[Agent inference]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C11</code></td>
             <td>重要问题的识别需要先做“研究品味 (research taste)”的训练：读谁、不读谁、读什么、不读什么。</td>
             <td><span class="ev-label ev-agent-inference">[Agent inference]</span></td>
             <td></td>
@@ -372,7 +402,7 @@
           </tr>
           
           <tr data-confidence="medium" data-label="[Author claim]" data-needs="true">
-            <td><code></code></td>
+            <td><code>C12</code></td>
             <td>做伟大工作的科学家倾向于聚焦在大问题上（即使短期内进展慢），并接受“暂时不出活”的代价。</td>
             <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
             <td></td>
@@ -385,65 +415,164 @@
 
     <!-- 8. Figures and Tables Explanation -->
     <section id="figures" class="card">
-      <h2>Figures &amp; Tables</h2>
+      <h2>图表 / 结构说明</h2>
+      
       <div class="accordion">
         
+        <details>
+          <summary>
+            <span class="fig-kind fig-concept">concept</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-concept">concept</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-concept">concept</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-concept">concept</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-concept">concept</span>
+            
+            
+          </summary>
+          <p></p>
+          
+        </details>
+        
       </div>
+      
+      
+      <p>原文无传统图表。</p>
+      <p>可将其结构理解为概念图：重要问题、勇气、野心、销售、退出、同行环境。</p>
+      
+      
     </section>
 
     <!-- 9. Key Terms 术语表 -->
     <section id="glossary" class="card">
-      <h2>Key Terms 术语表</h2>
+      <h2>关键术语</h2>
       <div class="chips">
         
-        <details class="chip"><summary>Bell Labs</summary>1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年。</details>
+        <details class="chip">
+          <summary><strong>Bell Labs</strong> <span class="muted">/ 贝尔实验室</span></summary>
+          <div class="chip-body">
+            <p>1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Bell Communications Research (Bellcore)</summary>1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。</details>
+        <details class="chip">
+          <summary><strong>Bell Communications Research (Bellcore)</strong> <span class="muted">/ 贝尔通信研究公司</span></summary>
+          <div class="chip-body">
+            <p>1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Turing Award</summary>ACM 颁发的计算机科学最高奖项。Hamming 1968 年获此奖。</details>
+        <details class="chip">
+          <summary><strong>Turing Award</strong> <span class="muted">/ 图灵奖</span></summary>
+          <div class="chip-body">
+            <p>ACM 颁发的计算机科学最高奖项。Hamming 1968 年获此奖。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Hamming window</summary>信号处理中的常用窗函数，由 John Tukey 命名以表彰 Hamming 的贡献。</details>
+        <details class="chip">
+          <summary><strong>Hamming window</strong> <span class="muted">/ 汉明窗</span></summary>
+          <div class="chip-body">
+            <p>信号处理中的常用窗函数，由 John Tukey 命名以表彰 Hamming 的贡献。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Hamming code</summary>Hamming 1950 年提出的纠错码族，是其 1968 年获图灵奖的核心工作之一。</details>
+        <details class="chip">
+          <summary><strong>Hamming code</strong> <span class="muted">/ 汉明码</span></summary>
+          <div class="chip-body">
+            <p>Hamming 1950 年提出的纠错码族，是其 1968 年获图灵奖的核心工作之一。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Zone melting</summary>材料提纯工艺，Bill Pfann 的核心贡献。Pfann 凭此拿到该领域几乎所有奖项。</details>
+        <details class="chip">
+          <summary><strong>Zone melting</strong> <span class="muted">/ 区熔法</span></summary>
+          <div class="chip-body">
+            <p>材料提纯工艺，Bill Pfann 的核心贡献。Pfann 凭此拿到该领域几乎所有奖项。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Stooge</summary>Hamming 在 Los Alamos 时期对自己的定位：为科学家操作计算机的人。隐含对自己“只是工具”的反思。</details>
+        <details class="chip">
+          <summary><strong>Stooge</strong> <span class="muted">/ 工具人</span></summary>
+          <div class="chip-body">
+            <p>Hamming 在 Los Alamos 时期对自己的定位：为科学家操作计算机的人。隐含对自己“只是工具”的反思。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Sound absorber</summary>Hamming 用来形容只说“Yes, yes, yes”而不给反馈的同事，对创造力的对话起阻碍作用。</details>
+        <details class="chip">
+          <summary><strong>Sound absorber</strong> <span class="muted">/ 声音吸收者</span></summary>
+          <div class="chip-body">
+            <p>Hamming 用来形容只说“Yes, yes, yes”而不给反馈的同事，对创造力的对话起阻碍作用。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Critical mass</summary>Hamming 借物理术语形容“足以激发持续创造性对话的同事规模与质量”。</details>
+        <details class="chip">
+          <summary><strong>Critical mass</strong> <span class="muted">/ 临界质量</span></summary>
+          <div class="chip-body">
+            <p>Hamming 借物理术语形容“足以激发持续创造性对话的同事规模与质量”。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>UNIX</summary>1970 年代起在 Bell Labs 发展起来的多用户多任务操作系统；Hamming 在讲座中将“给研究者最小机器”这一决策视为其间接起源之一。</details>
+        <details class="chip">
+          <summary><strong>UNIX</strong> <span class="muted">/ UNIX 操作系统</span></summary>
+          <div class="chip-body">
+            <p>1970 年代起在 Bell Labs 发展起来的多用户多任务操作系统；Hamming 在讲座中将“给研究者最小机器”这一决策视为其间接起源之一。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Information theory</summary>由 Claude Shannon 1948 年奠基的通信理论，Hamming 当时与 Shannon 在 Bell Labs 同室做编码理论。</details>
+        <details class="chip">
+          <summary><strong>Information theory</strong> <span class="muted">/ 信息论</span></summary>
+          <div class="chip-body">
+            <p>由 Claude Shannon 1948 年奠基的通信理论，Hamming 当时与 Shannon 在 Bell Labs 同室做编码理论。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Nobel-Prize type work</summary>Hamming 用来指代“公认重大”的科学贡献的口语化表达；并不要求真的获诺贝尔奖。</details>
+        <details class="chip">
+          <summary><strong>Nobel-Prize type work</strong> <span class="muted">/ 诺贝尔奖级别的工作</span></summary>
+          <div class="chip-body">
+            <p>Hamming 用来指代“公认重大”的科学贡献的口语化表达；并不要求真的获诺贝尔奖。</p>
+          </div>
+        </details>
         
-        <details class="chip"><summary>Research taste</summary>在 Hamming 隐含使用的一个概念：指研究者对“什么是重要问题 / 哪些人值得读 / 哪些方向值得做”的判断力。可被训练，但很难被显式教学。</details>
+        <details class="chip">
+          <summary><strong>Research taste</strong> <span class="muted">/ 研究品味</span></summary>
+          <div class="chip-body">
+            <p>在 Hamming 隐含使用的一个概念：指研究者对“什么是重要问题 / 哪些人值得读 / 哪些方向值得做”的判断力。可被训练，但很难被显式教学。</p>
+          </div>
+        </details>
         
       </div>
     </section>
 
     <!-- 10. 方法重建 -->
     <section id="reconstruction" class="card">
-      <h2>方法重建 (deep)</h2>
+      <h2>方法重建</h2>
       <ol><li>Hamming 的方法论可以重述为五个可执行步骤：1) 承认野心——对自己说“我想做重要的事”；2) 选一个“有合理攻击路径”的大问题，放弃无攻击路径的著名问题；3) 把时间分配做到 50/50：50% 解决、50% 销售；4) 每 7–10 年系统性地换一次领域；5) 用第一流同行包围自己，定期离开“sound absorber”。</li></ol>
     </section>
 
     <!-- 11. 正确性 and 局限 -->
     <section id="limitations" class="card">
-      <h2>正确性 &amp; 局限</h2>
+      <h2>正确性与局限</h2>
       <ul><li>本文是讲稿转写，受口语与时间限制影响，部分观点有重复。</li><li>论据以轶事与个人观察为主，缺少对照实验与统计。</li><li>时代偏见：使用 1980 年代工业研究文化的话语（“nice guys end last”），跨文化迁移时需谨慎。</li><li>领域偏差：主要案例来自数学、理论物理与工程，对纯人文与跨学科的迁移性较弱。</li><li>运气部分有循环论证嫌疑（运气 = 准备 + 时机，但“时机”本身常被等同于运气）。</li></ul>
     </section>
 
     <!-- 12. 相关工作 Map -->
     <section id="related" class="card">
-      <h2>相关工作</h2>
+      <h2>相关脉络</h2>
       
-      <ul class="refs"><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong></li></ul>
-      {% else %}
-      <p><em>No key references recorded.</em></p>
+      <ul class="refs"><li><strong>Bell Labs 工业研究传统</strong><li><strong>Shannon / 信息论</strong> — ['Claude E. Shannon']<li><strong>Los Alamos 科学与计算</strong><li><strong>Hamming 码 / Hamming 窗</strong> — ['Richard W. Hamming']<li><strong>科研品味 (research taste)</strong><li><strong>研究方法论与职业建议文献</strong> — ['S. Keshav', 'R. Hamming', 'F. P. Brooks Jr.']</li></ul>
+      
+      <p>原文不是学术论文，没有正式参考文献列表。</p>
+      <p>本节改为相关脉络：Bell Labs、Shannon、Los Alamos、工业研究传统、科研方法论演讲。</p>
       
     </section>
 
@@ -451,34 +580,62 @@
     <section id="implications" class="card">
       <h2>实践启发</h2>
       <ul>
-        
-        <li><strong>Where it does <em>not</em> apply:</strong> 本文是讲稿转写，受口语与时间限制影响，部分观点有重复。</li>
+        <li><strong>贡献：</strong> label</li><li><strong>贡献：</strong> value</li><li><strong>贡献：</strong> evidence_label</li><li><strong>贡献：</strong> note</li>
+        <li><strong>不适用的地方：</strong> 本文是讲稿转写，受口语与时间限制影响，部分观点有重复。</li>
       </ul>
     </section>
 
-    <!-- 14. 复现计划 -->
+    <!-- 14. 复现计划 / 实践计划 -->
     <section id="reproduction" class="card">
-      <h2>复现计划</h2>
-      <dl class="kv">
-        
-        
-        
-      </dl>
-      <h4>步骤</h4>
-      <ol></ol>
+      <h2>实践计划</h2>
       
+        
+        <h3>7 天计划</h3>
+        <ol><li>列出当前自己手头在做的 3 个研究问题，逐条判断：是否满足“有合理攻击路径”？</li><li>把过去 30 天的工作时间按 “解决 / 写作 / 正式演讲 / 非正式讨论” 四类记录 5 个工作日。</li><li>列一份 5 人名单：其中谁是 sound absorber（只说 yes），谁是 critical mass（能 push back）。</li></ol>
+        
+        
+        <h3>30 天计划</h3>
+        <ol><li>在每周时间表上固定 50% 给 presentation（写作、正式演讲、非正式讨论）。</li><li>每两周和 critical mass 名单上的 1 人做 1 次“长谈话”（>= 1 小时），要求产出可写下的问题清单。</li><li>重读 Hamming 的 7–10 年换方向原则，结合自己的 7–10 年时间表写出第一个“方向切换假设”。</li></ol>
+        
+        
+        <h3>90 天计划</h3>
+        <ol><li>把 90 天内 4 个最重要的项目按 “重要问题 vs 著名问题” 重新打分；砍掉 1–2 个“著名但无攻击路径”的。</li><li>选定一个长期写作输出（论文 / 教程 / 书）目标，按月度把 50% 时间表稳定运行。</li><li>复盘：3 个月后是否真的看到 “中等 → 伟大” 的牵引？</li></ol>
+        
+        
+        
+        <h3>成功标准</h3>
+        <ul><li>重要问题清单更新：5 个项目里有 >= 3 个满足“有合理攻击路径”。</li><li>写作 / 演讲 / 讨论输出在 90 天内可见（>= 4 篇 / 场 / 次）。</li><li>sound absorber 出现频率下降；critical mass 出现频率上升。</li><li>自己能在 5 分钟内向他人解释 “为什么 重要问题 = 有攻击路径的问题”。</li></ul>
+        
+        
+        <h3>风险与反例</h3>
+        <ul><li>反向风险：把 Hamming 的处方当“唯一正解”，忽视本领域特有的引用 / 评审 / 资源约束。</li><li>时代风险：“nice guys end last” 与 1980s 工业研究文化高度耦合，跨文化迁移需谨慎。</li><li>领域偏差：Hamming 的案例集中在数学 / 物理 / 工程；纯人文与跨学科可能不直接适用。</li><li>过度承诺：50% 销售 = 时间预算重排；未完成的关键工作仍要交付。</li></ul>
+        
+        <p class="muted">本文是研究方法 / 科研生涯演讲稿，无可重复的实验或数据集。复用价值在于把 Hamming 的处方落地为个人 / 团队的 7 / 30 / 90 天行动计划。</p>
+      
+        <dl class="kv">
+          
+          
+          
+        </dl>
+        <h4>步骤</h4>
+        <ol></ol>
+        
+        
+        <h4>成功标准</h4>
+        <ul><li>重要问题清单更新：5 个项目里有 >= 3 个满足“有合理攻击路径”。</li><li>写作 / 演讲 / 讨论输出在 90 天内可见（>= 4 篇 / 场 / 次）。</li><li>sound absorber 出现频率下降；critical mass 出现频率上升。</li><li>自己能在 5 分钟内向他人解释 “为什么 重要问题 = 有攻击路径的问题”。</li></ul>
+        
       
     </section>
 
     <!-- 15. 开放问题 -->
     <section id="open" class="card">
       <h2>开放问题</h2>
-      <ul><li>在 2020 年代的科研环境（远程协作、开源、AI 辅助研究）里，Hamming 的哪些建议仍然成立？哪些需要更新？</li><li>Hamming 强调“伟大科学家通常有多个命中”，这一观察在交叉学科时代是否还成立？</li><li>Hamming 对“运气”的处理是循环论证吗？还是一种有效的解释压缩？</li><li>“7–10 年换一次方向”在高度专业化的 AI 时代是否仍然合理？</li></ul>
+      <ul><li>在 2020 年代的工业研究 / 高校研究 / AI 研究环境中，Hamming 的哪些建议仍然成立？哪些需要更新？</li><li>Hamming 强调“伟大科学家通常有多个命中”，这一观察在交叉学科时代是否还成立？</li><li>Hamming 对“运气”的处理是循环论证吗？还是一种有效的解释压缩？</li><li>“7–10 年换一次方向”在高度专业化的 AI 时代是否仍然合理？</li><li>如果把 Hamming 的 “50% 销售” 解释成 “GitHub + 论文 + 演讲 + 短视频 + 教学”，Hamming 会不会同意？</li><li>“sound absorber / critical mass” 在远程协作的 AI 团队里如何识别？</li></ul>
     </section>
 
     <!-- 16. 最终理解检查表 -->
     <section id="checklist" class="card">
-      <h2>"我是否理解了这篇论文？" Checklist</h2>
+      <h2>最终理解检查表</h2>
       <ol class="checklist">
         
         <li><label><input type="checkbox" /> 能用一句话向他人解释“为什么少数科学家做出重大贡献”，并列出 3 个支撑案例。</label></li>
@@ -508,7 +665,7 @@
   </main>
 
   <footer>
-    <p>Generated by <strong>paper-three-pass-reader v0.1.0-alpha</strong> · MIT · offline · no backend.</p>
+    <p>Generated by <strong>paper-three-pass-reader v0.2.9-alpha</strong> · MIT · offline · no backend.</p>
   </footer>
 
   <script src="assets/app.js"></script>

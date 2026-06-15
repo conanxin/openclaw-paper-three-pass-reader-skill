@@ -156,3 +156,13 @@ When the CLI's quality gate is the failure, the printed `P3PR_NEXT_ACTION` is th
 
 - Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
 - Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.
+
+---
+
+## v0.2.9-alpha: essay / talk 模式的合理 warning
+
+`quality_gate_zh_cn` 在 essay / talk 模式下可能报告 1 条 `long_en_blobs` warning,指向 `claims_evidence_map[*].comment` 这种包含论文原文英文短引用的字段。这不是错误,属于合理保留:
+
+- 示例:*You and Your Research* 页面里 `claims_evidence_map[0].comment` 保留了 Hamming 关于"If you do not work on an important problem, it's unlikely you'll do important work"的直接英文引用。
+- 规则:任何包含「原文短引用 / 术语原文 / 作者署名原话」的字段允许通过 `--warn-only` 跳过翻译。
+- 如果 warning 数量持续 > 1,说明正文仍残留英文 draft,需要回到 `paper_reading.json` 做翻译补全。

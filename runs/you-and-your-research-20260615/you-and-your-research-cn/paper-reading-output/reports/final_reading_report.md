@@ -223,7 +223,9 @@ See `pass3_reproduction_plan.md`.
 
 ## 7. What remains open?
 
-- 在 2020 年代的科研环境（远程协作、开源、AI 辅助研究）里，Hamming 的哪些建议仍然成立？哪些需要更新？
+- 在 2020 年代的工业研究 / 高校研究 / AI 研究环境中，Hamming 的哪些建议仍然成立？哪些需要更新？
 - Hamming 强调“伟大科学家通常有多个命中”，这一观察在交叉学科时代是否还成立？
 - Hamming 对“运气”的处理是循环论证吗？还是一种有效的解释压缩？
 - “7–10 年换一次方向”在高度专业化的 AI 时代是否仍然合理？
+- 如果把 Hamming 的 “50% 销售” 解释成 “GitHub + 论文 + 演讲 + 短视频 + 教学”，Hamming 会不会同意？
+- “sound absorber / critical mass” 在远程协作的 AI 团队里如何识别？

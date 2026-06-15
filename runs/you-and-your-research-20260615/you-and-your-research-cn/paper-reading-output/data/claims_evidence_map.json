@@ -14,7 +14,7 @@
       "科研方法"
     ],
     "notes": "【运气与准备】原文有 Newton 名言：“If others would think as hard as I did, then they would get similar results.”，与 Pasteur 名言：“Luck favors the prepared mind.” 两句互证。Hamming 用这两句格言支撑“运气只决定哪一次，不决定是否成功”的主张。",
-    "claim_id": null,
+    "claim_id": "C01",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "needs_verification": true
@@ -33,7 +33,7 @@
       "勇气",
       "case_study"
     ],
-    "claim_id": null,
+    "claim_id": "C02",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -52,7 +52,7 @@
       "年龄",
       "领域相关"
     ],
-    "claim_id": null,
+    "claim_id": "C03",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -71,7 +71,7 @@
       "勇气",
       "personality"
     ],
-    "claim_id": null,
+    "claim_id": "C04",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -90,7 +90,7 @@
       "问题选择",
       "taste"
     ],
-    "claim_id": null,
+    "claim_id": "C05",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -109,7 +109,7 @@
       "退出",
       "renewal"
     ],
-    "claim_id": null,
+    "claim_id": "C06",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -128,7 +128,7 @@
       "销售",
       "沟通"
     ],
-    "claim_id": null,
+    "claim_id": "C07",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -147,7 +147,7 @@
       "销售",
       "时间分配"
     ],
-    "claim_id": null,
+    "claim_id": "C08",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -166,7 +166,7 @@
       "计算机",
       "环境"
     ],
-    "claim_id": null,
+    "claim_id": "C09",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -185,7 +185,7 @@
       "环境",
       "同行质量"
     ],
-    "claim_id": null,
+    "claim_id": "C10",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -205,7 +205,7 @@
       "信息吸收",
       "taste"
     ],
-    "claim_id": null,
+    "claim_id": "C11",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",
@@ -225,7 +225,7 @@
       "耐心",
       "long-term"
     ],
-    "claim_id": null,
+    "claim_id": "C12",
     "evidence_location": "",
     "evidence_kind": "paper_text",
     "notes": "",

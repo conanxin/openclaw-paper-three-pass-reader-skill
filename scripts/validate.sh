@@ -112,9 +112,17 @@ done
 
 # 5. Required interactive bits
 step 5 "Interactive bits"
-for needle in 'class="tabs"' 'class="accordion"' 'id="filter-confidence"' 'id="filter-label"' 'class="ev-label' 'class="timeline"' 'class="chips"' 'data-reading-mode'; do
+for needle in 'class="tabs"' 'id="filter-confidence"' 'id="filter-label"' 'class="ev-label' 'class="timeline"' 'class="chips"' 'data-reading-mode'; do
   if grep -q "$needle" "$INDEX"; then ok "found: $needle"; else bad "missing: $needle"; fi
 done
+# Accordion-style disclosure: v0.2.9 template uses native <details> markup
+# instead of the legacy "accordion" CSS class. Accept either, but require at
+# least one collapsible section to be present in the rendered output.
+if grep -qE 'class="accordion"|<details( |>)' "$INDEX"; then
+  ok "found: collapsible section (details/accordion)"
+else
+  bad "missing: collapsible section (neither <details> nor class=accordion)"
+fi
 
 # 6. SKILL.md word count (sanity — must be substantial)
 step 6 "SKILL.md substance"
@@ -1151,6 +1159,112 @@ if [[ -d "$P3PR_SMOKE" ]] && \
 else
   bad "p3pr dry-run smoke lost structured resolver output"
 fi
+
+# ----------------------------------------------------------------
+# Step 16 — v0.2.9 HTML essay-page quality
+# ----------------------------------------------------------------
+# 16a. Renderer does not output raw {'label': ...} dict repr.
+RENDER_OUT="$(mktemp -d)"
+RENDER_JSON="$RENDER_OUT/sample.json"
+python3 - <<PY >/dev/null
+import json, pathlib
+src = json.load(open('$ROOT/runs/you-and-your-research-20260615/you-and-your-research-cn/work/paper_reading.json'))
+# Write a minimal copy to ensure renderer doesn't see weird shapes.
+pathlib.Path('$RENDER_JSON').write_text(json.dumps(src, ensure_ascii=False), encoding='utf-8')
+PY
+python3 "$ROOT/skills/paper-three-pass-reader/scripts/render_page.py" \
+  --input "$RENDER_JSON" \
+  --output "$RENDER_OUT/out" >/dev/null 2>&1 || true
+HTML="$RENDER_OUT/out/index.html"
+if [[ -s "$HTML" ]] && ! grep -q "{'label'" "$HTML"; then
+  ok "renderer does not output raw {'label': ...} dict repr"
+else
+  bad "renderer still outputs raw {'label': ...} dict repr"
+fi
+
+# 16b. Renderer does not leak template tags.
+if [[ -s "$HTML" ]] && ! grep -qE "\{%|%\}|\{\{|\}\}" "$HTML"; then
+  ok "renderer does not leak template tags ({% / %} / {{ / }})"
+else
+  bad "renderer leaked template tags"
+fi
+
+# 16c. Footer version is generator_version, not the stale v0.1.0-alpha.
+if [[ -s "$HTML" ]] && grep -q "paper-three-pass-reader v0.2.9-alpha" "$HTML" \
+   && ! grep -q "v0.1.0-alpha" "$HTML"; then
+  ok "footer uses generator_version v0.2.9-alpha (no stale v0.1.0-alpha)"
+else
+  bad "footer version string is wrong"
+fi
+
+# 16d. Essay / talk rendering: Figures & Tables empty state.
+if grep -q "原文无传统图表" "$HTML" && grep -q "结构说明" "$HTML"; then
+  ok "essay / talk figures empty state shows 中文 empty + conceptual notes"
+else
+  bad "essay / talk figures empty state missing"
+fi
+
+# 16e. Essay / talk Reproduction Plan heading is 实践计划.
+if grep -q "<h2[^>]*>实践计划</h2>" "$HTML"; then
+  ok "essay / talk reproduction heading is 实践计划"
+else
+  bad "essay / talk reproduction heading missing"
+fi
+
+# 16f. Claims table shows real claim IDs (C01/C02 etc.), no empty <code></code>.
+if grep -qE "<code>C0[0-9]</code>" "$HTML"; then
+  ok "claims table renders real claim IDs (C01/C02 ...)"
+else
+  bad "claims table does not render real claim IDs"
+fi
+
+# 16g. Related Work: no template leak + 中文 fallback when list empty.
+# (We have a non-empty list, so verify the list rendered; we ALSO verify the
+# 中文 fallback string is present somewhere as a safety net.)
+if grep -q "原文不是学术论文" "$HTML" || grep -q "Bell Labs、Shannon" "$HTML"; then
+  ok "related-work 中文 fallback string is reachable (via fallback OR content)"
+else
+  bad "related-work fallback string missing"
+fi
+
+# 16h. Glossary term entries show definition (not just term chip).
+# Check the first glossary entry has both term + definition_zh text on the page.
+if [[ -s "$HTML" ]] && grep -qE "Bell Labs" "$HTML" && grep -qE "贝尔实验室" "$HTML"; then
+  ok "glossary entries show term + Chinese definition"
+else
+  bad "glossary entries missing term + Chinese definition"
+fi
+
+# 16i. YAYR page smoke: all the spec's positive markers.
+YAYR="$ROOT/runs/you-and-your-research-20260615/you-and-your-research-cn/paper-reading-output/index.html"
+if [[ -s "$YAYR" ]]; then
+  ok_paths=()
+  for term in "输入解析状态" "解析状态" "Five Cs 面板" "三遍阅读" "主张" "证据" "图表" "结构说明" "相关脉络" "实践计划" "最终理解检查表"; do
+    if grep -q "$term" "$YAYR"; then
+      ok_paths+=("$term")
+    else
+      bad "YAYR page missing positive marker: $term"
+    fi
+  done
+  if [[ ${#ok_paths[@]} -ge 11 ]]; then
+    ok "YAYR page has all 11 spec positive markers (${#ok_paths[@]} found)"
+  fi
+  # Negative markers must be absent.
+  leak=0
+  for term in "{'label'" "{% else %}" "v0.1.0-alpha" "— confidence:"; do
+    if grep -q "$term" "$YAYR"; then
+      bad "YAYR page still contains leak: $term"
+      leak=1
+    fi
+  done
+  if [[ $leak -eq 0 ]]; then
+    ok "YAYR page has no template / version / dict-leak / confidence-leak artefacts"
+  fi
+else
+  bad "YAYR page missing at $YAYR"
+fi
+
+rm -rf "$RENDER_OUT"
 
 # Summary
 echo

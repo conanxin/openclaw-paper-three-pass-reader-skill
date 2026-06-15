@@ -34,7 +34,10 @@
       "methodology_lecture"
     ],
     "language": "en",
-    "word_count": 14454
+    "word_count": 14454,
+    "schema_version": "0.1.0",
+    "target_language": "zh-CN",
+    "ui_language": "zh-CN"
   },
   "intake_quality": {
     "input_kind": "paper_url",
@@ -357,7 +360,48 @@
       ]
     }
   ],
-  "figures_tables": [],
+  "figures_tables": [
+    {
+      "id": "FT-CONCEPT-1",
+      "kind": "concept",
+      "number": "",
+      "title": "重要问题判断框架",
+      "explanation": "把 Hamming 的 “重要问题 = 有合理攻击路径的问题” 画成一张判断图：横轴是问题被提出的时间（是否仍在研究），纵轴是攻击路径（是否能在 5 年内被攻击）。右上角是 “重要 + 著名” 的领域。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "id": "FT-CONCEPT-2",
+      "kind": "concept",
+      "number": "",
+      "title": "伟大研究者的习惯模型",
+      "explanation": "勇气 + 野心 + 问题选择 + 投入度 + 风格 + 销售 = Hamming 眼中的 “伟大工作概率”。每一项可被训练。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "id": "FT-CONCEPT-3",
+      "kind": "concept",
+      "number": "",
+      "title": "50% 解决 / 50% 销售 时间分配",
+      "explanation": "在 Hamming 的 1980s 处方里，研究者的时间被切成两块：解决 + 销售。50% 是一个可调的起点。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "id": "FT-CONCEPT-4",
+      "kind": "concept",
+      "number": "",
+      "title": "7–10 年换方向",
+      "explanation": "创造力是有限资源。下坡领域耗尽原创性；定期切方向可以“重新开始当新人”。",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "id": "FT-CONCEPT-5",
+      "kind": "concept",
+      "number": "",
+      "title": "sound absorber vs critical mass",
+      "explanation": "Hamming 借物理术语形容同行质量：sound absorber 吸走能量，critical mass 激发新想法。",
+      "evidence_label": "[Author claim]"
+    }
+  ],
   "glossary": [
     {
       "term": "Bell Labs",
@@ -446,23 +490,45 @@
     "运气部分有循环论证嫌疑（运气 = 准备 + 时机，但“时机”本身常被等同于运气）。"
   ],
   "reproduction_plan": {
-    "applicable": false,
-    "rationale": "本文是研究方法 / 科研生涯 talk，无可重复的实验或数据集。",
-    "actionable_steps": [
-      "在 Hamming 的 5 个 C + 三类问题上重写评估：选一个你领域的代表论文，按 talk 框架填出 Category / Context / Correctness / Contributions / Clarity。",
-      "在个人时间表上应用 50/50 原则：50% 解决问题，50% 做销售（写作、正式演讲、非正式讨论）。",
-      "列出当前工作环境中的 sound absorber 名单，6 个月内加入与第一流同行讨论的固定时间。"
+    "applicable": true,
+    "kind": "essay",
+    "rationale": "本文是研究方法 / 科研生涯演讲稿，无可重复的实验或数据集。复用价值在于把 Hamming 的处方落地为个人 / 团队的 7 / 30 / 90 天行动计划。",
+    "plan_7_day": [
+      "列出当前自己手头在做的 3 个研究问题，逐条判断：是否满足“有合理攻击路径”？",
+      "把过去 30 天的工作时间按 “解决 / 写作 / 正式演讲 / 非正式讨论” 四类记录 5 个工作日。",
+      "列一份 5 人名单：其中谁是 sound absorber（只说 yes），谁是 critical mass（能 push back）。"
     ],
-    "dataset": null,
-    "command": null,
-    "expected_runtime": null,
-    "notes": "本文为讲稿转写，复用价值在于'反思式复现'而非执行式复现。"
+    "plan_30_day": [
+      "在每周时间表上固定 50% 给 presentation（写作、正式演讲、非正式讨论）。",
+      "每两周和 critical mass 名单上的 1 人做 1 次“长谈话”（>= 1 小时），要求产出可写下的问题清单。",
+      "重读 Hamming 的 7–10 年换方向原则，结合自己的 7–10 年时间表写出第一个“方向切换假设”。"
+    ],
+    "plan_90_day": [
+      "把 90 天内 4 个最重要的项目按 “重要问题 vs 著名问题” 重新打分；砍掉 1–2 个“著名但无攻击路径”的。",
+      "选定一个长期写作输出（论文 / 教程 / 书）目标，按月度把 50% 时间表稳定运行。",
+      "复盘：3 个月后是否真的看到 “中等 → 伟大” 的牵引？"
+    ],
+    "success_criteria": [
+      "重要问题清单更新：5 个项目里有 >= 3 个满足“有合理攻击路径”。",
+      "写作 / 演讲 / 讨论输出在 90 天内可见（>= 4 篇 / 场 / 次）。",
+      "sound absorber 出现频率下降；critical mass 出现频率上升。",
+      "自己能在 5 分钟内向他人解释 “为什么 重要问题 = 有攻击路径的问题”。"
+    ],
+    "risks": [
+      "反向风险：把 Hamming 的处方当“唯一正解”，忽视本领域特有的引用 / 评审 / 资源约束。",
+      "时代风险：“nice guys end last” 与 1980s 工业研究文化高度耦合，跨文化迁移需谨慎。",
+      "领域偏差：Hamming 的案例集中在数学 / 物理 / 工程；纯人文与跨学科可能不直接适用。",
+      "过度承诺：50% 销售 = 时间预算重排；未完成的关键工作仍要交付。"
+    ],
+    "notes": "本计划为“反思式复现”——把 Hamming 的处方落到可观察的行为与时间表上，3 个月后可作下一轮迭代的输入。"
   },
   "open_questions": [
-    "在 2020 年代的科研环境（远程协作、开源、AI 辅助研究）里，Hamming 的哪些建议仍然成立？哪些需要更新？",
+    "在 2020 年代的工业研究 / 高校研究 / AI 研究环境中，Hamming 的哪些建议仍然成立？哪些需要更新？",
     "Hamming 强调“伟大科学家通常有多个命中”，这一观察在交叉学科时代是否还成立？",
     "Hamming 对“运气”的处理是循环论证吗？还是一种有效的解释压缩？",
-    "“7–10 年换一次方向”在高度专业化的 AI 时代是否仍然合理？"
+    "“7–10 年换一次方向”在高度专业化的 AI 时代是否仍然合理？",
+    "如果把 Hamming 的 “50% 销售” 解释成 “GitHub + 论文 + 演讲 + 短视频 + 教学”，Hamming 会不会同意？",
+    "“sound absorber / critical mass” 在远程协作的 AI 团队里如何识别？"
   ],
   "final_checklist": [
     {
@@ -667,20 +733,66 @@
   "agent_profile": "researcher",
   "related_work": [
     {
-      "ref": "Darwin, C. 《The Descent of Man, and Selection in Relation to Sex》— Hamming 引用“the sole cause of the difference between man and the lower animals”为“ambition”。",
-      "evidence_label": "[Author claim]"
+      "ref": "Bell Labs industrial research tradition",
+      "title": "Bell Labs 工业研究传统",
+      "authors": [],
+      "year": "1925-1996",
+      "why": "Hamming 工作的 30 年背景；同伴包括 Shannon、Bode、Pierce。",
+      "kind": "narrative",
+      "evidence_label": "[Paper evidence]"
     },
     {
-      "ref": "Galbraith, J. K. — Hamming 引用其对“知识分子‘因热忱而失算’”的观察。",
-      "evidence_label": "[Author claim]"
+      "ref": "Shannon / information theory",
+      "title": "Shannon / 信息论",
+      "authors": [
+        "Claude E. Shannon"
+      ],
+      "year": 1948,
+      "why": "Hamming 在 Bell Labs 同期同室做编码理论；信息论是 Hamming “勇气” 处方的核心案例。",
+      "kind": "narrative",
+      "evidence_label": "[Paper evidence]"
     },
     {
-      "ref": "Aristotle / 牛顿 — 关于“认识你自己”的引用。",
-      "evidence_label": "[Author claim]"
+      "ref": "Los Alamos scientific computing",
+      "title": "Los Alamos 科学与计算",
+      "authors": [],
+      "year": "1945-1946",
+      "why": "Hamming 在 Los Alamos 接触 Feynman / Fermi / Oppenheimer / Bethe，是“少数做出贡献”这一问题的最早观察来源。",
+      "kind": "narrative",
+      "evidence_label": "[Paper evidence]"
     },
     {
-      "ref": "S. Keshav,《How to Read a Paper》— 本 skill 的方法论基础。",
-      "evidence_label": "[Author claim]"
+      "ref": "Hamming code / Hamming window",
+      "title": "Hamming 码 / Hamming 窗",
+      "authors": [
+        "Richard W. Hamming"
+      ],
+      "year": 1950,
+      "why": "Hamming 1968 年图灵奖的核心工作，例证“研究品味 / 长期投入”。",
+      "kind": "narrative",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "ref": "scientific taste / research taste",
+      "title": "科研品味 (research taste)",
+      "authors": [],
+      "year": "",
+      "why": "Hamming 隐含使用的一个核心概念：在 Hamming 的处方中，品味决定一个人选什么问题。",
+      "kind": "narrative",
+      "evidence_label": "[Agent inference]"
+    },
+    {
+      "ref": "research career advice literature",
+      "title": "研究方法论与职业建议文献",
+      "authors": [
+        "S. Keshav",
+        "R. Hamming",
+        "F. P. Brooks Jr."
+      ],
+      "year": "",
+      "why": "本文是 1980s 工业研究文化的代表作品；与 Keshav《How to Read a Paper》同属“研究方法论演讲稿”传统。",
+      "kind": "narrative",
+      "evidence_label": "[Agent inference]"
     }
   ]
 }

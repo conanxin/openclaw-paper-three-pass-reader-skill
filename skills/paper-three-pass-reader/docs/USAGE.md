@@ -368,3 +368,32 @@ Every run ends with a fixed-format `P3PR_*` summary. See [`ONE_LINE_CLI.md`](ONE
 
 - Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
 - Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.
+
+---
+
+## v0.2.9-alpha: HTML essay / talk page rendering
+
+As of v0.2.9, the renderer classifies inputs as `essay / talk` when the paper category is one of `essay / talk / keynote / lecture / opinion / blog-distillation` and switches the page layout accordingly.
+
+### What changes for essay / talk inputs
+
+- `Reproduction Plan` is renamed `实践计划 / Practical Plan` and renders 7/30/90-day plans, success criteria, and risks derived from the source's own practical advice.
+- `Figures & Tables` shows `原文无传统图表` followed by conceptual notes (e.g. Hamming's 5 most-quoted frameworks) instead of an empty table.
+- `Related Work` is renamed `相关脉络` and shows a clean fallback note for inputs that have no formal related-work section.
+- The page footer reads `paper-three-pass-reader v0.2.9-alpha` (no stale `v0.1.0-alpha` carryover).
+
+### Re-publish the Chinese *You and Your Research* page
+
+```bash
+./skills/paper-three-pass-reader/scripts/publish_output_to_github.sh \
+  --output runs/you-and-your-research-20260615/you-and-your-research-cn/paper-reading-output \
+  --repo conanxin/paper-reading-pages \
+  --branch gh-pages \
+  --site-path you-and-your-research-cn \
+  --page-title "You and Your Research：如何选择重要问题并做好研究" \
+  --message "Polish You and Your Research Chinese reading page"
+```
+
+### Validation is now 220/0 PASS
+
+`scripts/validate.sh` step 5 no longer asserts a literal `class="accordion"` — the new template uses native `<details>` markup (13 instances in the bundled sample render). The check now accepts either form via a `details / accordion` regex.

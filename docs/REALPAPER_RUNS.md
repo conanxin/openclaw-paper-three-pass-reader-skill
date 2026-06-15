@@ -153,3 +153,20 @@ Project-wide `scripts/validate.sh` returned **210/0 PASS**. The page was publish
 into the `you-and-your-research-cn/` site-path of `conanxin/paper-reading-pages` on `gh-pages`;
 `curl -I -L` against the page URL, the site root, and `published_pages.json` all return HTTP/2 200.
 No new project tag / release was created.
+
+---
+
+## v0.2.9-alpha re-publish: *You and Your Research* (zh-CN)
+
+Same run as the v0.2.8 section above (`runs/you-and-your-research-20260615/`). v0.2.9 polished the rendered HTML:
+
+- Five Cs cards no longer leak raw `{'label': ...}` dicts; each card now shows `value` + `evidence_label` + `note`.
+- `{% else %}` template tag no longer leaks; the mini-template engine has a real `else` branch.
+- Footer now reads `paper-three-pass-reader v0.2.9-alpha` (no stale `v0.1.0-alpha`).
+- Claims-Evidence table now shows real `C01` / `C02` / `…` IDs.
+- Glossary chips now show term + Chinese term + Chinese definition in an explicit body block.
+- The `Reproduction Plan` section is renamed `实践计划 / Practical Plan` and exposes 7/30/90-day plans, success criteria, and risks.
+- The `Figures & Tables` section now shows `原文无传统图表` plus 5 conceptual notes (Hamming's 5 most-quoted frameworks).
+- The `Related Work` section is renamed `相关脉络` and shows a clean fallback for essay-mode inputs.
+
+Project-wide `scripts/validate.sh` returns **220/0 PASS** (210 v0.2.8 baseline + 10 new step-16 essay / talk checks). Audit returns **PASS** (claims=12, glossary=13, checklist=11, no DRAFT placeholders). The zh-CN quality gate still returns **WARN** for the embedded Newton / Pasteur direct quote, by design. The page was re-published in multi-page mode into the same `you-and-your-research-cn/` site-path; all three live URLs (`/`, `/you-and-your-research-cn/`, `/published_pages.json`) return HTTP/2 200. The v0.2.9-alpha tag and GitHub Release are created on the upstream skill repo.

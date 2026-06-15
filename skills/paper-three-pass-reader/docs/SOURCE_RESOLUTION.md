@@ -211,3 +211,14 @@ prompt for the agent / user.
   (not failed) unless `reading_mode` is `screenshot_only` /
   `abstract_only`, where the warning is suppressed because no resolver
   ever runs in those modes anyway.
+
+---
+
+## v0.2.9-alpha renderer 消费方更新
+
+`render_page.py` 通过 `source_resolution_utils.get_source_resolution` 读取结构化 block,完全沿用 v0.2.8 的消费约定。v0.2.9 主要是把渲染质量打磨:
+
+- 渲染页面的 footer 不再错误显示 v0.1.0-alpha,改为 `{{ generator_version }}` → `paper-three-pass-reader v0.2.9-alpha`。
+- essay / talk 模式识别后会切换到 `实践计划 / 结构说明 / 相关脉络` 等中文标题,而不是默认的 `复现计划 / 图表 / Tables`。
+- Claims-Evidence 表的 `C01` / `C02` ID 来自 `normalize_claim`,与 source_resolution 无关;但源解析失败时,fallback "Degraded fallback" 徽标会保留。
+- 验证 220/0 PASS (v0.2.8 baseline 210 + 10 new step-16 essay / talk checks)。

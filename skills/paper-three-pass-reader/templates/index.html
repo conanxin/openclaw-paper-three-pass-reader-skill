@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ ui_language }}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,15 +10,15 @@
   <header class="hero">
     <div class="hero-row">
       <div class="hero-text">
-        <div class="kicker">Three-Pass Reading · {{ paper_metadata.year }}</div>
+        <div class="kicker">三遍阅读法 · {{ paper_metadata.year }}</div>
         <h1>{{ paper_metadata.title }}</h1>
         <div class="byline">
           {% for a in paper_metadata.authors %}<span>{{ a }}</span>{% if not loop.last %}, {% endif %}{% endfor %}
           {% if paper_metadata.venue %} · <span class="venue">{{ paper_metadata.venue }}</span>{% endif %}
         </div>
         <div class="badges">
-          <span class="badge badge-mode" title="Reading mode">{{ paper_metadata.reading_mode }}</span>
-          <span class="badge badge-confidence badge-confidence-{{ intake_quality.confidence }}">{{ intake_quality.confidence }} confidence</span>
+          <span class="badge badge-mode" title="阅读模式">{{ paper_metadata.reading_mode }}</span>
+          <span class="badge badge-confidence badge-confidence-{{ intake_quality.confidence }}">{{ intake_quality.confidence }} 置信度</span>
           <span class="badge badge-input">{{ intake_quality.input_kind }}</span>
         </div>
       </div>
@@ -27,24 +27,25 @@
 
   <nav class="toc">
     <details open>
-      <summary>Contents</summary>
+      <summary>目录</summary>
       <ol>
-        <li><a href="#metadata">Paper Metadata</a></li>
-        <li><a href="#intake">Intake Status</a></li>
-        <li><a href="#summary">Summaries (1 / 3 / 10)</a></li>
-        <li><a href="#paper-map">Paper Map</a></li>
-        <li><a href="#five-cs">Five Cs</a></li>
-        <li><a href="#passes">Pass 1 / 2 / 3</a></li>
-        <li><a href="#claims">Claims → Evidence Map</a></li>
-        <li><a href="#figures">Figures &amp; Tables</a></li>
-        <li><a href="#glossary">Glossary</a></li>
-        <li><a href="#reconstruction">Method Reconstruction</a></li>
-        <li><a href="#limitations">Correctness &amp; Limitations</a></li>
-        <li><a href="#related">Related Work</a></li>
-        <li><a href="#implications">Practical Implications</a></li>
-        <li><a href="#reproduction">Reproduction Plan</a></li>
-        <li><a href="#open">Open Questions</a></li>
-        <li><a href="#checklist">Final Checklist</a></li>
+        <li><a href="#metadata">论文信息</a></li>
+        <li><a href="#intake">输入解析状态</a></li>
+        <li><a href="#resolver-trail">解析路径</a></li>
+        <li><a href="#summary">摘要（1 / 3 / 10 句）</a></li>
+        <li><a href="#paper-map">论文地图</a></li>
+        <li><a href="#five-cs">Five Cs 面板</a></li>
+        <li><a href="#passes">三遍阅读</a></li>
+        <li><a href="#claims">主张—证据地图</a></li>
+        <li><a href="#figures">图表 / 结构说明</a></li>
+        <li><a href="#glossary">关键术语</a></li>
+        <li><a href="#reconstruction">方法重建</a></li>
+        <li><a href="#limitations">正确性与局限</a></li>
+        <li><a href="#related">相关脉络</a></li>
+        <li><a href="#implications">实践启发</a></li>
+        <li><a href="#reproduction">实践计划</a></li>
+        <li><a href="#open">开放问题</a></li>
+        <li><a href="#checklist">最终理解检查表</a></li>
       </ol>
     </details>
   </nav>
@@ -52,38 +53,38 @@
   <main>
     <!-- 1. Hero Summary / Paper Metadata -->
     <section id="metadata" class="card">
-      <h2>Paper Metadata</h2>
+      <h2>论文信息</h2>
       <dl class="kv">
-        <dt>Title</dt><dd>{{ paper_metadata.title }}</dd>
-        <dt>Authors</dt><dd>{% for a in paper_metadata.authors %}{{ a }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
-        <dt>Year</dt><dd>{{ paper_metadata.year }}</dd>
-        {% if paper_metadata.venue %}<dt>Venue</dt><dd>{{ paper_metadata.venue }}</dd>{% endif %}
+        <dt>标题</dt><dd>{{ paper_metadata.title }}</dd>
+        <dt>作者</dt><dd>{% for a in paper_metadata.authors %}{{ a }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        <dt>年份</dt><dd>{{ paper_metadata.year }}</dd>
+        {% if paper_metadata.venue %}<dt>场合</dt><dd>{{ paper_metadata.venue }}</dd>{% endif %}
         {% if paper_metadata.identifiers.arxiv_id %}<dt>arXiv</dt><dd>{{ paper_metadata.identifiers.arxiv_id }}</dd>{% endif %}
         {% if paper_metadata.identifiers.doi %}<dt>DOI</dt><dd>{{ paper_metadata.identifiers.doi }}</dd>{% endif %}
         {% if paper_metadata.identifiers.url %}<dt>URL</dt><dd><a href="{{ paper_metadata.identifiers.url }}">{{ paper_metadata.identifiers.url }}</a></dd>{% endif %}
-        <dt>Source kind</dt><dd>{{ paper_metadata.source_kind }}</dd>
-        <dt>Reading mode</dt><dd>{{ paper_metadata.reading_mode }}</dd>
+        <dt>来源类型</dt><dd>{{ paper_metadata.source_kind }}</dd>
+        <dt>阅读模式</dt><dd>{{ paper_metadata.reading_mode }}</dd>
       </dl>
     </section>
 
     <!-- 2. Intake Status -->
     <section id="intake" class="card">
-      <h2>Intake Status</h2>
+      <h2>输入解析状态</h2>
       <ul class="kv-list">
-        <li><span class="label">Input kind</span> <span class="value">{{ intake_quality.input_kind }}</span></li>
-        <li><span class="label">Reading mode</span> <span class="value">{{ intake_quality.reading_mode }}</span></li>
-        <li><span class="label">Confidence</span> <span class="value badge-confidence badge-confidence-{{ intake_quality.confidence }}">{{ intake_quality.confidence }}</span></li>
-        <li><span class="label">Needs confirmation</span> <span class="value">{{ intake_quality.needs_confirmation }}</span></li>
+        <li><span class="label">输入类型</span> <span class="value">{{ intake_quality.input_kind }}</span></li>
+        <li><span class="label">阅读模式</span> <span class="value">{{ intake_quality.reading_mode }}</span></li>
+        <li><span class="label">置信度</span> <span class="value badge-confidence badge-confidence-{{ intake_quality.confidence }}">{{ intake_quality.confidence }}</span></li>
+        <li><span class="label">需要确认</span> <span class="value">{{ intake_quality.needs_confirmation }}</span></li>
       </ul>
       {% if intake_quality.warnings %}
       <details class="warnings">
-        <summary>Warnings ({{ intake_quality.warnings|length }})</summary>
+        <summary>警告（{{ intake_quality.warnings|length }}）</summary>
         <ul>{% for w in intake_quality.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
       </details>
       {% endif %}
       {% if intake_quality.missing_fields %}
       <details class="warnings">
-        <summary>Missing fields</summary>
+        <summary>缺失字段</summary>
         <ul>{% for f in intake_quality.missing_fields %}<li>{{ f }}</li>{% endfor %}</ul>
       </details>
       {% endif %}
@@ -119,8 +120,10 @@
       {% if srs.candidates_top %}
       <details class="candidates">
         <summary>Top candidates ({{ srs.candidates_top|length }})</summary>
-        <ul>{% for c in srs.candidates_top %}<li>{% if c.title %}{{ c.title }}{% endif %}{% if c.id %}{{ c.id }}{% endif %}{% if c.raw %}{{ c.raw }}{% endif %}<span class="muted"> — confidence: {% if c.confidence %}{{ c.confidence }}{% endif %}</span></li>{% endfor %}</ul>
+        <ul>{% for c in srs.candidates_top %}<li>{% if c.title %}<strong>{{ c.title }}</strong>{% endif %}{% if c.id %} <code>{{ c.id }}</code>{% endif %}{% if c.raw %} <span class="muted">({{ c.raw }})</span>{% endif %}{% if c.confidence %}<span class="muted"> — confidence: {{ c.confidence }}</span>{% endif %}</li>{% endfor %}</ul>
       </details>
+      {% else %}
+      <p class="muted">无候选论文；当前匹配来自用户提供 URL。</p>
       {% endif %}
       {% if srs.degraded %}
       <div class="callout callout-warn">Resolver degraded (status={{ srs.resolver_status }}). The run finished but the paper identity was not confirmed. Please verify the matched_paper_id / arXiv ID manually.</div>
@@ -129,18 +132,18 @@
 
     <!-- 3. Summaries -->
     <section id="summary" class="card">
-      <h2>Summaries</h2>
+      <h2>摘要</h2>
       <div class="summary-grid">
         <div class="summary-box">
-          <div class="summary-label">One sentence</div>
+          <div class="summary-label">一句话总结</div>
           <p>{{ summaries.one_sentence }}</p>
         </div>
         <div class="summary-box">
-          <div class="summary-label">Three sentences</div>
+          <div class="summary-label">三句话总结</div>
           <ol>{% for s in summaries.three_sentence %}<li>{{ s }}</li>{% endfor %}</ol>
         </div>
         <div class="summary-box summary-wide">
-          <div class="summary-label">Ten sentences</div>
+          <div class="summary-label">十句话总结</div>
           <ol>{% for s in summaries.ten_sentence %}<li>{{ s }}</li>{% endfor %}</ol>
         </div>
       </div>
@@ -148,7 +151,7 @@
 
     <!-- 4. Paper Map -->
     <section id="paper-map" class="card">
-      <h2>Paper Map</h2>
+      <h2>论文地图</h2>
       <ul class="tree">
         {% for sec in paper_outline %}
         <li>
@@ -164,19 +167,46 @@
 
     <!-- 5. Five Cs -->
     <section id="five-cs" class="card">
-      <h2>Five Cs Dashboard</h2>
+      <h2>Five Cs 面板</h2>
       <div class="five-cs-grid">
-        <article class="ccard"><h3>Category</h3><p>{{ five_cs.category }}</p></article>
-        <article class="ccard"><h3>Context</h3><p>{{ five_cs.context }}</p></article>
-        <article class="ccard"><h3>Correctness</h3><p>{{ five_cs.correctness }}</p></article>
-        <article class="ccard"><h3>Contributions</h3><ul>{% for c in five_cs.contributions %}<li>{{ c }}</li>{% endfor %}</ul></article>
-        <article class="ccard"><h3>Clarity</h3><p>{{ five_cs.clarity }}</p></article>
+        <article class="ccard">
+          <h3>{{ five_cs.category.label }}</h3>
+          {% if five_cs.category.value %}<p class="ccard-value">{{ five_cs.category.value }}</p>{% endif %}
+          {% if five_cs.category.evidence_label %}<p class="evidence-line">{{ five_cs.category.evidence_label }}</p>{% endif %}
+          {% if five_cs.category.note %}<p class="ccard-note">{{ five_cs.category.note }}</p>{% endif %}
+        </article>
+        <article class="ccard">
+          <h3>{{ five_cs.context.label }}</h3>
+          {% if five_cs.context.value %}<p class="ccard-value">{{ five_cs.context.value }}</p>{% endif %}
+          {% if five_cs.context.evidence_label %}<p class="evidence-line">{{ five_cs.context.evidence_label }}</p>{% endif %}
+          {% if five_cs.context.note %}<p class="ccard-note">{{ five_cs.context.note }}</p>{% endif %}
+        </article>
+        <article class="ccard">
+          <h3>{{ five_cs.correctness.label }}</h3>
+          {% if five_cs.correctness.value %}<p class="ccard-value">{{ five_cs.correctness.value }}</p>{% endif %}
+          {% if five_cs.correctness.evidence_label %}<p class="evidence-line">{{ five_cs.correctness.evidence_label }}</p>{% endif %}
+          {% if five_cs.correctness.note %}<p class="ccard-note">{{ five_cs.correctness.note }}</p>{% endif %}
+        </article>
+        <article class="ccard">
+          <h3>{{ five_cs.clarity.label }}</h3>
+          {% if five_cs.clarity.value %}<p class="ccard-value">{{ five_cs.clarity.value }}</p>{% endif %}
+          {% if five_cs.clarity.evidence_label %}<p class="evidence-line">{{ five_cs.clarity.evidence_label }}</p>{% endif %}
+          {% if five_cs.clarity.note %}<p class="ccard-note">{{ five_cs.clarity.note }}</p>{% endif %}
+        </article>
+        <article class="ccard ccard-wide">
+          <h3>贡献</h3>
+          {% if five_cs.contributions %}
+          <ul>{% for c in five_cs.contributions %}<li><p class="ccard-value">{{ c.value }}</p>{% if c.evidence_label %}<p class="evidence-line">{{ c.evidence_label }}</p>{% endif %}{% if c.note %}<p class="ccard-note">{{ c.note }}</p>{% endif %}</li>{% endfor %}</ul>
+          {% else %}
+          <p class="ccard-empty">（暂无明确贡献条目）</p>
+          {% endif %}
+        </article>
       </div>
     </section>
 
     <!-- 6. Pass 1 / Pass 2 / Pass 3 Tabs -->
     <section id="passes" class="card">
-      <h2>Reading Passes</h2>
+      <h2>三遍阅读</h2>
       <div class="timeline">
         <span class="dot done" title="Pass 1">1</span>
         <span class="dot {% if pass2.main_ideas %}done{% endif %}" title="Pass 2">2</span>
@@ -184,37 +214,37 @@
       </div>
       <div class="tabs">
         <div class="tab-buttons" role="tablist">
-          <button class="tab-btn active" data-tab="p1" role="tab">Pass 1 · Bird's-eye</button>
-          <button class="tab-btn" data-tab="p2" role="tab">Pass 2 · Understand</button>
-          <button class="tab-btn" data-tab="p3" role="tab">Pass 3 · Reconstruct</button>
+          <button class="tab-btn active" data-tab="p1" role="tab">第一遍 · 鸟瞰</button>
+          <button class="tab-btn" data-tab="p2" role="tab">第二遍 · 理解</button>
+          <button class="tab-btn" data-tab="p3" role="tab">第三遍 · 重建</button>
         </div>
 
         <div class="tab-panel active" data-panel="p1">
-          <h3>Pass 1 — Bird's-eye view</h3>
-          <p class="evidence-line">[Author claim] / [Paper evidence] depending on source.</p>
+          <h3>第一遍 — 鸟瞰视图</h3>
+          <p class="evidence-line">依赖来源标记为 [Author claim] / [Paper evidence] 等。</p>
           <p>{{ pass1.bird_eye_notes }}</p>
           <div class="callout">
-            <strong>Decision:</strong> <code>{{ pass1.decision }}</code>
+            <strong>决策：</strong> <code>{{ pass1.decision }}</code>
             <p>{{ pass1.decision_rationale }}</p>
           </div>
         </div>
 
         <div class="tab-panel" data-panel="p2">
-          <h3>Pass 2 — Understanding</h3>
-          <h4>Main ideas</h4>
+          <h3>第二遍 — 深入理解</h3>
+          <h4>核心观点</h4>
           <ol>{% for m in pass2.main_ideas %}<li>{{ m }}</li>{% endfor %}</ol>
           {% if pass2.key_references %}
-          <h4>Key references</h4>
+          <h4>关键参考文献</h4>
           <ul class="refs">{% for r in pass2.key_references %}<li><strong>{{ r.title }}</strong>{% if r.authors %} — {{ r.authors }}{% endif %}{% if r.year %} ({{ r.year }}){% endif %}{% if r.why %} — <em>{{ r.why }}</em>{% endif %}</li>{% endfor %}</ul>
           {% endif %}
         </div>
 
         <div class="tab-panel" data-panel="p3">
-          <h3>Pass 3 — Reconstruction</h3>
-          <h4>Method reconstruction</h4>
+          <h3>第三遍 — 重建</h3>
+          <h4>方法重建</h4>
           <ol>{% for s in pass3.method_reconstruction %}<li>{{ s }}</li>{% endfor %}</ol>
           {% if pass3.critical_review %}
-          <h4>Critical review highlights</h4>
+          <h4>批判性审视要点</h4>
           <ul>{% for c in pass3.critical_review %}<li>{{ c }}</li>{% endfor %}</ul>
           {% endif %}
         </div>
@@ -223,9 +253,9 @@
 
     <!-- 7. Claims-Evidence Map -->
     <section id="claims" class="card">
-      <h2>Claims → Evidence Map</h2>
+      <h2>主张—证据地图</h2>
       <div class="filters">
-        <label>Filter confidence:
+        <label>筛选置信度：
           <select id="filter-confidence">
             <option value="">all</option>
             <option value="high">high</option>
@@ -233,7 +263,7 @@
             <option value="low">low</option>
           </select>
         </label>
-        <label>Filter label:
+        <label>筛选证据标签：
           <select id="filter-label">
             <option value="">all</option>
             <option>[Paper evidence]</option>
@@ -244,11 +274,11 @@
             <option>[Needs verification]</option>
           </select>
         </label>
-        <label><input type="checkbox" id="filter-needs" checked /> only needs-verification</label>
+        <label><input type="checkbox" id="filter-needs" checked /> 只看需验证项</label>
       </div>
       <table class="claims-table">
         <thead>
-          <tr><th>ID</th><th>Claim</th><th>Evidence</th><th>Location</th><th>Conf.</th></tr>
+          <tr><th>ID</th><th>主张</th><th>证据标签</th><th>位置</th><th>置信度</th></tr>
         </thead>
         <tbody>
           {% for c in claims_evidence_map %}
@@ -266,7 +296,8 @@
 
     <!-- 8. Figures and Tables Explanation -->
     <section id="figures" class="card">
-      <h2>Figures &amp; Tables</h2>
+      <h2>图表 / 结构说明</h2>
+      {% if figures_tables %}
       <div class="accordion">
         {% for f in figures_tables %}
         <details>
@@ -280,78 +311,120 @@
         </details>
         {% endfor %}
       </div>
+      {% else %}
+      {% if _is_essay_talk %}
+      <p>原文无传统图表。</p>
+      <p>可将其结构理解为概念图：重要问题、勇气、野心、销售、退出、同行环境。</p>
+      {% else %}
+      <p class="muted">（原文无传统图表 / tables。）</p>
+      {% endif %}
+      {% endif %}
     </section>
 
     <!-- 9. Key Terms Glossary -->
     <section id="glossary" class="card">
-      <h2>Key Terms Glossary</h2>
+      <h2>关键术语</h2>
       <div class="chips">
         {% for g in glossary %}
-        <details class="chip"><summary>{{ g.term }}</summary>{{ g.definition }}</details>
+        <details class="chip">
+          <summary><strong>{{ g.term }}</strong>{% if g.term_zh %} <span class="muted">/ {{ g.term_zh }}</span>{% endif %}</summary>
+          <div class="chip-body">
+            {% if g.definition_zh %}<p>{{ g.definition_zh }}</p>{% else %}{% if g.definition %}<p>{{ g.definition }}</p>{% else %}<p class="muted">（暂无定义）</p>{% endif %}{% endif %}
+          </div>
+        </details>
         {% endfor %}
       </div>
     </section>
 
     <!-- 10. Method Reconstruction -->
     <section id="reconstruction" class="card">
-      <h2>Method Reconstruction (deep)</h2>
+      <h2>方法重建</h2>
       <ol>{% for s in pass3.method_reconstruction %}<li>{{ s }}</li>{% endfor %}</ol>
     </section>
 
     <!-- 11. Correctness and Limitations -->
     <section id="limitations" class="card">
-      <h2>Correctness &amp; Limitations</h2>
+      <h2>正确性与局限</h2>
       <ul>{% for l in limitations %}<li>{{ l }}</li>{% endfor %}</ul>
     </section>
 
     <!-- 12. Related Work Map -->
     <section id="related" class="card">
-      <h2>Related Work</h2>
-      {% if pass2.key_references %}
-      <ul class="refs">{% for r in pass2.key_references %}<li><strong>{{ r.title }}</strong>{% if r.authors %} — {{ r.authors }}{% endif %}{% if r.year %} ({{ r.year }}){% endif %}{% if r.why %} — <em>{{ r.why }}</em>{% endif %}</li>{% endfor %}</ul>
+      <h2>相关脉络</h2>
+      {% if related_work %}
+      <ul class="refs">{% for r in related_work %}<li><strong>{{ r.title }}</strong>{% if r.authors %} — {{ r.authors }}{% endif %}{% if r.year %} ({{ r.year }}){% endif %}{% if r.why %} — <em>{{ r.why }}</em>{% endif %}</li>{% endfor %}</ul>
       {% else %}
-      <p><em>No key references recorded.</em></p>
+      <p>原文不是学术论文，没有正式参考文献列表。</p>
+      <p>本节改为相关脉络：Bell Labs、Shannon、Los Alamos、工业研究传统、科研方法论演讲。</p>
       {% endif %}
     </section>
 
     <!-- 13. Practical Implications -->
     <section id="implications" class="card">
-      <h2>Practical Implications</h2>
+      <h2>实践启发</h2>
       <ul>
-        {% for c in five_cs.contributions %}<li><strong>Contribution:</strong> {{ c }}</li>{% endfor %}
-        {% if limitations %}<li><strong>Where it does <em>not</em> apply:</strong> {{ limitations|first }}</li>{% endif %}
+        {% for c in five_cs.contributions %}<li><strong>贡献：</strong> {{ c.value }}</li>{% endfor %}
+        {% if limitations %}<li><strong>不适用的地方：</strong> {{ limitations|first }}</li>{% endif %}
       </ul>
     </section>
 
-    <!-- 14. Reproduction Plan -->
+    <!-- 14. Reproduction Plan / 实践计划 -->
     <section id="reproduction" class="card">
-      <h2>Reproduction Plan</h2>
-      <dl class="kv">
-        {% if reproduction_plan.dataset %}<dt>Dataset</dt><dd>{{ reproduction_plan.dataset }}</dd>{% endif %}
-        {% if reproduction_plan.baseline %}<dt>Baseline</dt><dd>{{ reproduction_plan.baseline }}</dd>{% endif %}
-        {% if reproduction_plan.hardware %}<dt>Hardware</dt><dd>{{ reproduction_plan.hardware }}</dd>{% endif %}
-      </dl>
-      <h4>Steps</h4>
-      <ol>{% for s in reproduction_plan.steps %}<li>{{ s }}</li>{% endfor %}</ol>
-      {% if reproduction_plan.sanity_checks %}
-      <h4>Sanity checks</h4>
-      <ul>{% for s in reproduction_plan.sanity_checks %}<li>{{ s }}</li>{% endfor %}</ul>
-      {% endif %}
-      {% if reproduction_plan.success_criteria %}
-      <h4>Success criteria</h4>
-      <ul>{% for s in reproduction_plan.success_criteria %}<li>{{ s }}</li>{% endfor %}</ul>
+      <h2>{% if _is_essay_talk %}实践计划{% else %}复现计划{% endif %}</h2>
+      {% if _is_essay_talk %}
+        {% if reproduction_plan.plan_7_day %}
+        <h3>7 天计划</h3>
+        <ol>{% for s in reproduction_plan.plan_7_day %}<li>{{ s }}</li>{% endfor %}</ol>
+        {% endif %}
+        {% if reproduction_plan.plan_30_day %}
+        <h3>30 天计划</h3>
+        <ol>{% for s in reproduction_plan.plan_30_day %}<li>{{ s }}</li>{% endfor %}</ol>
+        {% endif %}
+        {% if reproduction_plan.plan_90_day %}
+        <h3>90 天计划</h3>
+        <ol>{% for s in reproduction_plan.plan_90_day %}<li>{{ s }}</li>{% endfor %}</ol>
+        {% endif %}
+        {% if reproduction_plan.steps %}
+        <h3>实践步骤</h3>
+        <ol>{% for s in reproduction_plan.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+        {% endif %}
+        {% if reproduction_plan.success_criteria %}
+        <h3>成功标准</h3>
+        <ul>{% for s in reproduction_plan.success_criteria %}<li>{{ s }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if reproduction_plan.risks %}
+        <h3>风险与反例</h3>
+        <ul>{% for s in reproduction_plan.risks %}<li>{{ s }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if reproduction_plan.rationale %}<p class="muted">{{ reproduction_plan.rationale }}</p>{% endif %}
+      {% else %}
+        <dl class="kv">
+          {% if reproduction_plan.dataset %}<dt>Dataset</dt><dd>{{ reproduction_plan.dataset }}</dd>{% endif %}
+          {% if reproduction_plan.baseline %}<dt>Baseline</dt><dd>{{ reproduction_plan.baseline }}</dd>{% endif %}
+          {% if reproduction_plan.hardware %}<dt>Hardware</dt><dd>{{ reproduction_plan.hardware }}</dd>{% endif %}
+        </dl>
+        <h4>步骤</h4>
+        <ol>{% for s in reproduction_plan.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+        {% if reproduction_plan.sanity_checks %}
+        <h4>合理性检查</h4>
+        <ul>{% for s in reproduction_plan.sanity_checks %}<li>{{ s }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if reproduction_plan.success_criteria %}
+        <h4>成功标准</h4>
+        <ul>{% for s in reproduction_plan.success_criteria %}<li>{{ s }}</li>{% endfor %}</ul>
+        {% endif %}
       {% endif %}
     </section>
 
     <!-- 15. Open Questions -->
     <section id="open" class="card">
-      <h2>Open Questions</h2>
+      <h2>开放问题</h2>
       <ul>{% for q in open_questions %}<li>{{ q }}</li>{% endfor %}</ul>
     </section>
 
     <!-- 16. Final Checklist -->
     <section id="checklist" class="card">
-      <h2>"Do I understand this paper?" Checklist</h2>
+      <h2>最终理解检查表</h2>
       <ol class="checklist">
         {% for c in final_checklist %}
         <li><label><input type="checkbox" /> {{ c.question }}{% if c.answerable is defined %} <span class="muted">[<em>answerable</em>]</span>{% endif %}</label></li>
@@ -361,7 +434,7 @@
   </main>
 
   <footer>
-    <p>Generated by <strong>paper-three-pass-reader v0.1.0-alpha</strong> · MIT · offline · no backend.</p>
+    <p>Generated by <strong>paper-three-pass-reader {{ generator_version }}</strong> · MIT · offline · no backend.</p>
   </footer>
 
   <script src="assets/app.js"></script>
