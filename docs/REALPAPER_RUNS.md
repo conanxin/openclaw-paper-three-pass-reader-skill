@@ -114,3 +114,9 @@ Specifically:
 ## P3PR-WEAKINPUT-1 (pointer)
 
 See [`docs/WEAKINPUT_RUNS.md`](WEAKINPUT_RUNS.md) for the full weak-input run index. P3PR-WEAKINPUT-1 (2026-06-15) exercises four weak-input kinds (title-only, abstract-only, screenshot-only, repo-clue) on the same skill version. Two of the four cases upgrade to `full_text` after a successful PDF fetch; two stay at their partial mode and never pretend to have read more than the supplied text.
+
+## P3PR-V0.2.2-FULLTEXT-AUTO-FILL-SMOKE (pointer)
+
+A real full-text run on arXiv:2503.08102 ("AI-native Memory 2.0: Second Me", Mindverse.ai, 2025) exercises the v0.2.1-alpha `--fill-pack` + `--audit` flow end-to-end. The PDF was downloaded, text was extracted via pdftotext -layout, the runner produced a draft + fill-pack, the agent filled the draft in 12 claims / 7 figures-tables / 18 glossary / 12 checklist, and the final audit returned PASS with 0 errors / 0 warnings. The page is published at `https://conanxin.github.io/paper-reading-pages/second-me-fulltext-autofill/`.
+
+Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3PR_V0_2_2_FULLTEXT_AUTO_FILL_SMOKE_REPORT.md`](PHASE_P3PR_V0_2_2_FULLTEXT_AUTO_FILL_SMOKE_REPORT.md).

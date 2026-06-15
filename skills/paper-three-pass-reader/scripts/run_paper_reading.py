@@ -579,9 +579,14 @@ def main(argv=None):
         audit_cmd.extend(["--json-output", str(audit_result_path)])
         print(f"[info] running audit: {' '.join(audit_cmd)}")
         rc = subprocess.call(audit_cmd)
+        # Note: audit_paper_reading.py returns 1 on FAIL and 0 on PASS/WARN.
+        # We do NOT exit on rc != 0 — the fill-pack (if requested) is exactly
+        # the task list to fix the audit findings, so it should still be written.
+        # Render/publish is gated below by audit_status.
         if rc != 0:
-            print(f"[error] audit_paper_reading.py exited {rc}", file=sys.stderr)
-            return rc
+            print(f"[warn] audit_paper_reading.py exited {rc} (audit FAIL). "
+                  "Continuing to write fill-pack; render/publish will be blocked.",
+                  file=sys.stderr)
         try:
             audit_doc = json.loads(audit_result_path.read_text(encoding="utf-8"))
             audit_status = audit_doc.get("status")
