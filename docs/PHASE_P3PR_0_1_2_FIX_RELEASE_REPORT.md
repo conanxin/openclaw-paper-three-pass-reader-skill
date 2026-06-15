@@ -102,7 +102,7 @@ Size: 237 bytes. Single entry for `attention-is-all-you-need`.
 ## COMMIT
 
 ```
-<filled in at the end of this run>
+7687862 Release v0.1.2-alpha with publish-script fix
 ```
 
 Commit message: `Release v0.1.2-alpha with publish-script fix`.
