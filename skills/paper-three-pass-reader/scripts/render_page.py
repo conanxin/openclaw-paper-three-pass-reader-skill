@@ -46,6 +46,149 @@ def _slug(v):
     return _SLUG_RE.sub("-", s).strip("-") or "x"
 
 
+VALID_EVIDENCE_LABELS = {
+    "[Paper evidence]", "[Figure/Table evidence]", "[Author claim]",
+    "[Agent inference]", "[Uncertain]", "[Needs verification]",
+}
+VALID_CONFIDENCE = {"high", "medium", "low"}
+VALID_DECISION = {"CONTINUE_FULL", "CONTINUE_PARTIAL", "STOP", "SEEK_REFERENCES_FIRST"}
+
+
+def _safe_label(label):
+    if label in VALID_EVIDENCE_LABELS:
+        return label
+    return "[Uncertain]"
+
+
+def _safe_confidence(c):
+    return c if c in VALID_CONFIDENCE else "low"
+
+
+def _safe_decision(d):
+    return d if d in VALID_DECISION else "CONTINUE_FULL"
+
+
+def normalize_claim(c):
+    """Defensive: accept dict or string. Return a dict with required fields."""
+    if isinstance(c, dict):
+        out = dict(c)
+    elif isinstance(c, str):
+        out = {
+            "claim_id": None,
+            "claim_text": c,
+            "evidence_label": "[Uncertain]",
+            "evidence_location": "",
+            "evidence_kind": "paper_text",
+            "confidence": "low",
+            "notes": "(auto-promoted from string entry)",
+            "needs_verification": True,
+        }
+    else:
+        out = {
+            "claim_id": None,
+            "claim_text": str(c),
+            "evidence_label": "[Uncertain]",
+            "evidence_location": "",
+            "evidence_kind": "external",
+            "confidence": "low",
+            "notes": "(auto-coerced from non-dict, non-string entry)",
+            "needs_verification": True,
+        }
+    # Required keys with safe defaults.
+    out.setdefault("claim_id", None)
+    out.setdefault("claim_text", "(missing)")
+    out.setdefault("evidence_label", "[Uncertain]")
+    out.setdefault("evidence_location", "")
+    out.setdefault("evidence_kind", "paper_text")
+    out.setdefault("confidence", "low")
+    out.setdefault("notes", "")
+    out.setdefault("needs_verification", True)
+    out["evidence_label"] = _safe_label(out["evidence_label"])
+    out["confidence"] = _safe_confidence(out["confidence"])
+    return out
+
+
+def normalize_figure_table(f, idx=0):
+    """Defensive: accept dict or string. Return a dict with required fields."""
+    if isinstance(f, dict):
+        out = dict(f)
+    elif isinstance(f, str):
+        out = {
+            "id": f"FT-{idx+1:03d}",
+            "kind": "note",
+            "number": "",
+            "title": (f[:80] + "…") if len(f) > 80 else f,
+            "explanation": f,
+            "evidence_label": "[Uncertain]",
+        }
+    else:
+        out = {
+            "id": f"FT-{idx+1:03d}",
+            "kind": "note",
+            "number": "",
+            "title": "(non-dict, non-string entry)",
+            "explanation": str(f),
+            "evidence_label": "[Uncertain]",
+        }
+    out.setdefault("id", f"FT-{idx+1:03d}")
+    out.setdefault("kind", "note")
+    out.setdefault("number", "")
+    out.setdefault("title", "(missing title)")
+    out.setdefault("explanation", "")
+    if "evidence_label" in out:
+        out["evidence_label"] = _safe_label(out["evidence_label"])
+    else:
+        out["evidence_label"] = "[Uncertain]"
+    return out
+
+
+def normalize_glossary(g):
+    """Defensive: accept dict or string. Return a dict."""
+    if isinstance(g, dict):
+        out = dict(g)
+    elif isinstance(g, str):
+        out = {"term": g, "definition": ""}
+    else:
+        out = {"term": "(non-dict, non-string entry)", "definition": str(g)}
+    out.setdefault("term", "(missing term)")
+    out.setdefault("definition", "")
+    return out
+
+
+def normalize_checklist_item(c):
+    """Defensive: accept dict or string. Return a dict."""
+    if isinstance(c, dict):
+        out = dict(c)
+    elif isinstance(c, str):
+        out = {"question": c, "answerable": True}
+    else:
+        out = {"question": str(c), "answerable": True}
+    out.setdefault("question", "(missing question)")
+    out.setdefault("answerable", True)
+    return out
+
+
+def normalize_reading(data):
+    """Top-level normalization. Mutates and returns data."""
+    if not isinstance(data, dict):
+        return data
+    data["claims_evidence_map"] = [normalize_claim(c) for c in (data.get("claims_evidence_map") or [])]
+    data["figures_tables"]      = [normalize_figure_table(f, i) for i, f in enumerate(data.get("figures_tables") or [])]
+    data["glossary"]            = [normalize_glossary(g) for g in (data.get("glossary") or [])]
+    data["final_checklist"]     = [normalize_checklist_item(c) for c in (data.get("final_checklist") or [])]
+    # Defensive on pass1.decision
+    if isinstance(data.get("pass1"), dict):
+        data["pass1"]["decision"] = _safe_decision(data["pass1"].get("decision", "CONTINUE_FULL"))
+    # Defensive on intake_quality.reading_mode (must be one of 4)
+    VALID_MODES = {"full_text", "partial_text", "abstract_only", "screenshot_only"}
+    for k in ("paper_metadata", "intake_quality"):
+        if isinstance(data.get(k), dict):
+            rm = data[k].get("reading_mode")
+            if rm not in VALID_MODES:
+                data[k]["reading_mode"] = "full_text"
+    return data
+
+
 def _get(dotted, ctx):
     """Resolve dotted path in ctx. ctx may be a dict; list items are dicts too."""
     cur = ctx
@@ -256,6 +399,10 @@ def write_data_mirrors(out: Path, data: dict):
                json.dumps(data.get("claims_evidence_map", []), indent=2, ensure_ascii=False))
     write_text(data_dir / "figures_tables.json",
                json.dumps(data.get("figures_tables", []), indent=2, ensure_ascii=False))
+    write_text(data_dir / "glossary.json",
+               json.dumps(data.get("glossary", []), indent=2, ensure_ascii=False))
+    write_text(data_dir / "final_checklist.json",
+               json.dumps(data.get("final_checklist", []), indent=2, ensure_ascii=False))
     write_text(data_dir / "source_resolution.json",
                json.dumps(data.get("source_resolution", {"steps": []}), indent=2, ensure_ascii=False))
     write_text(data_dir / "candidate_papers.json",
@@ -337,12 +484,14 @@ def write_reports(out: Path, data: dict):
         "\n".join(f"{i+1}. {m}" for i, m in enumerate(p2.get('main_ideas', []) or [])) + "\n")
     write_text(r / "pass2_figures_tables.md",
         "# Pass 2 — Figures & Tables\n\n" +
-        "\n".join(f"### {f.get('kind','figure').title()} {f.get('number','')} — {f.get('title','')}\n\n{f.get('explanation','')}\n"
-                  for f in data.get('figures_tables', []) or []) + "\n")
+        "\n".join(
+            (lambda f: f"### {f.get('kind','figure').title()} {f.get('number','')} — {f.get('title','')}\n\n{f.get('explanation','')}\n")(f if isinstance(f, dict) else {"kind":"note","number":"","title":(str(f)[:80] if f else ''),"explanation":str(f)})
+            for f in (data.get('figures_tables') or [])) + "\n")
     write_text(r / "pass2_claims_evidence_map.md",
         "# Pass 2 — Claims → Evidence Map\n\n" +
-        "\n".join(f"- **{c.get('claim_id','')}** — {c.get('claim_text','')}  \n  Evidence: {c.get('evidence_label','')} ({c.get('evidence_location','')})  \n  Confidence: {c.get('confidence','')}"
-                  for c in data.get('claims_evidence_map', []) or []) + "\n")
+        "\n".join(
+            (lambda c: f"- **{c.get('claim_id','')}** — {c.get('claim_text','')}  \n  Evidence: {c.get('evidence_label','[Uncertain]')} ({c.get('evidence_location','')})  \n  Confidence: {c.get('confidence','low')}")(c if isinstance(c, dict) else {"claim_id":None,"claim_text":str(c),"evidence_label":"[Uncertain]","evidence_location":"","confidence":"low"})
+            for c in (data.get('claims_evidence_map') or [])) + "\n")
     refs = p2.get('key_references', []) or []
     write_text(r / "pass2_key_references.md",
         "# Pass 2 — Key References\n\n" +
@@ -453,6 +602,9 @@ def main(argv=None):
     except json.JSONDecodeError as e:
         print(f"[error] input is not valid JSON: {e}", file=sys.stderr)
         return 2
+
+    # Defensive normalization — must happen BEFORE any template/render step.
+    normalize_reading(data)
 
     copy_assets(out)
     write_data_mirrors(out, data)

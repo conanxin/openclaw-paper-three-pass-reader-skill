@@ -588,7 +588,12 @@
       "section_or_page": "Abstract; §1 Introduction",
       "evidence": "The paper reports 28.4 BLEU on WMT 2014 En→De and 41.8 BLEU on WMT 2014 En→Fr with a model whose core operation is multi-head self-attention; recurrence and convolutions are explicitly removed in §3.",
       "confidence": "high",
-      "comment": "Direct empirical claim of the paper. Replicated thousands of times since."
+      "comment": "Direct empirical claim of the paper. Replicated thousands of times since.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-002",
@@ -597,7 +602,12 @@
       "section_or_page": "§1 Introduction, third paragraph; Table comparing path lengths in §3.2.1 (Why Self-Attention).",
       "evidence": "The paper's Table of path lengths lists self-attention at O(1), recurrent at O(n), convolutional at O(log_k(n)).",
       "confidence": "high",
-      "comment": "Worst-case path-length argument; depends on the number of layers used."
+      "comment": "Worst-case path-length argument; depends on the number of layers used.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-003",
@@ -606,7 +616,12 @@
       "section_or_page": "§3.2.1 (Scaled Dot-Product Attention), second paragraph.",
       "evidence": "The paper states: 'We suspect that for large values of dₖ, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients. To counteract this effect, we scale the dot products by 1/√dₖ.'",
       "confidence": "high",
-      "comment": "Standard fact about softmax saturation; widely accepted."
+      "comment": "Standard fact about softmax saturation; widely accepted.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-004",
@@ -615,7 +630,12 @@
       "section_or_page": "Table 4 (ablations on the number of heads).",
       "evidence": "The paper's ablation table reports that varying h on the base model from 1 to 32 changes BLEU, with the best at h = 8 for the base configuration; single-head attention trails multi-head.",
       "confidence": "high",
-      "comment": "Quantitative ablation result inside the paper."
+      "comment": "Quantitative ablation result inside the paper.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-005",
@@ -624,7 +644,12 @@
       "section_or_page": "§3.5 (Positional Encoding), final paragraph.",
       "evidence": "The paper reports: 'We also experimented with using learned positional embeddings [30] and found that the two versions produced nearly identical results.'",
       "confidence": "high",
-      "comment": "Empirical claim; 'nearly identical' is approximate, not a statistical test."
+      "comment": "Empirical claim; 'nearly identical' is approximate, not a statistical test.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-006",
@@ -633,7 +658,12 @@
       "section_or_page": "Table 2, row 'Transformer (big)', WMT 2014 En→De column.",
       "evidence": "The table lists Transformer-big at 28.4 BLEU En→De; the best non-Transformer (GNMT + RL Ensemble, 26.30 BLEU) is listed for comparison.",
       "confidence": "high",
-      "comment": "Direct numerical claim; reproducible on the standard WMT split."
+      "comment": "Direct numerical claim; reproducible on the standard WMT split.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-007",
@@ -642,7 +672,12 @@
       "section_or_page": "Table 2, row 'Transformer (big)', WMT 2014 En→Fr column.",
       "evidence": "The table lists 41.8 BLEU for Transformer-big on En→Fr; the abstract reports 3.5 days on eight P100 GPUs.",
       "confidence": "high",
-      "comment": "Single-model SOTA at publication; later work has pushed this higher."
+      "comment": "Single-model SOTA at publication; later work has pushed this higher.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-008",
@@ -651,7 +686,12 @@
       "section_or_page": "Table 3 (English constituency parsing).",
       "evidence": "Table 3 reports the Transformer beating or matching strong LSTM and CNN baselines on the WSJ parsing benchmark, both with limited and large training data.",
       "confidence": "medium",
-      "comment": "Reasonable claim, but parsing is far less replicated than the translation result."
+      "comment": "Reasonable claim, but parsing is far less replicated than the translation result.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-009",
@@ -661,7 +701,12 @@
       "evidence": "Figure 5 shows a head attending to the previous noun for coreference, and other heads attending to syntactic dependencies in the same sentence.",
       "evidence_qualitative": true,
       "confidence": "medium",
-      "comment": "Qualitative visualisation; not a quantitative claim. Useful as evidence that attention is doing interpretable work, not as proof of necessity."
+      "comment": "Qualitative visualisation; not a quantitative claim. Useful as evidence that attention is doing interpretable work, not as proof of necessity.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     },
     {
       "claim_id": "C-010",
@@ -670,7 +715,12 @@
       "section_or_page": "n/a (derived from §3.2.1).",
       "evidence": "Self-attention computes an n×n attention matrix, so memory grows as O(n²). The paper does not call this a limitation explicitly, but later work (Longformer, Linformer, FlashAttention) addresses exactly this issue.",
       "confidence": "high",
-      "comment": "Standard derived consequence; not stated as a limitation in the paper."
+      "comment": "Standard derived consequence; not stated as a limitation in the paper.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
     }
   ],
   "figures_tables": [

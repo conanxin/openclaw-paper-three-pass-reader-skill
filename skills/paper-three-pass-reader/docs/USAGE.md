@@ -159,6 +159,8 @@ The HTML page surfaces the reading mode as a badge in the hero. Pass 2 and Pass 
 
 ## 5. Publish the page to GitHub Pages
 
+### 5a. Single-page mode (legacy)
+
 ```bash
 ./skills/paper-three-pass-reader/scripts/publish_output_to_github.sh \
     --output paper-reading-output \
@@ -166,6 +168,25 @@ The HTML page surfaces the reading mode as a badge in the hero. Pass 2 and Pass 
     --branch gh-pages \
     --message "Publish reading page for XYZ"
 ```
+
+The entire `gh-pages` branch is replaced with the output dir. Use this when the repo only ever holds one page.
+
+### 5b. Multi-page mode (v0.1.1+)
+
+When the repo holds several papers, use `--site-path` so each paper lives in its own subdirectory:
+
+```bash
+./skills/paper-three-pass-reader/scripts/publish_output_to_github.sh \
+    --output runs/attention-is-all-you-need-20260615/paper-reading-output \
+    --repo conanxin/paper-reading-pages \
+    --branch gh-pages \
+    --site-path attention-is-all-you-need \
+    --page-title "Attention Is All You Need"
+```
+
+The page lives at `https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/`. The repo root becomes a small index page listing every published paper. Re-publishing the same paper updates the entry (no duplicate); other papers are untouched.
+
+The script refuses `--site-path` values outside `[A-Za-z0-9._-]+` (no path separators, no whitespace).
 
 Prerequisites:
 

@@ -8,12 +8,89 @@ This document explains how to publish a generated `paper-reading-output/` direct
 
 `skills/paper-three-pass-reader/scripts/publish_output_to_github.sh` pushes the contents of `paper-reading-output/` to the **gh-pages** branch of a GitHub repo. GitHub Pages then serves it as a static site.
 
+It supports **two modes**:
+
+1. **Single-page mode** (legacy / default): the entire `gh-pages` branch contents are replaced with the output dir.
+2. **Multi-page mode** (with `--site-path` + optional `--page-title`): the output dir is copied into a subdirectory and other pages are preserved; the branch root becomes a small index page listing every published paper.
+
 What it does **not** do:
 
 - It does **not** silently create the target repo. If `conanxin/paper-reading-pages` does not exist, the script prints the exact `gh repo create` command and exits.
 - It does **not** enable Pages on the repo. You do that once in the repo's **Settings → Pages** panel.
 - It does **not** print tokens or secrets.
 - It does **not** do retries, rollbacks, or force pushes.
+
+---
+
+## Multi-page mode (v0.1.1+)
+
+When you have several papers to publish into one repo, use `--site-path` to put each paper into its own subdirectory:
+
+```bash
+./skills/paper-three-pass-reader/scripts/publish_output_to_github.sh \
+  --output runs/attention-is-all-you-need-20260615/paper-reading-output \
+  --repo conanxin/paper-reading-pages \
+  --branch gh-pages \
+  --site-path attention-is-all-you-need \
+  --page-title "Attention Is All You Need" \
+  --message "Publish Attention Is All You Need reading page under slug"
+```
+
+What happens:
+
+1. The output dir is copied to `gh-pages/attention-is-all-you-need/` (overwriting that subdirectory's previous contents only — other page subdirs are preserved).
+2. Each page subdir gets its own `.nojekyll`.
+3. With `--page-title`, the script also regenerates the branch root's `index.html` and `published_pages.json`, upserting the entry for `attention-is-all-you-need`.
+4. In index mode, the branch root is normalised to hold only `.nojekyll`, `assets/`, `index.html`, `published_pages.json`, and the per-page subdirs. Any stray top-level `data/`, `reports/`, `README.md` etc. (left over from a previous single-page deploy) are removed.
+
+`--site-path` must match `[A-Za-z0-9._-]+`. Anything else (including path separators) is rejected with exit code 6.
+
+### Resulting layout
+
+```
+gh-pages/
+├── .nojekyll
+├── assets/
+│   └── index.css         (only used by the root index)
+├── index.html            (lists every published page)
+├── published_pages.json  (machine-readable manifest)
+├── attention-is-all-you-need/
+│   ├── .nojekyll
+│   ├── index.html        (the actual reading page)
+│   ├── assets/
+│   ├── data/
+│   └── reports/
+└── <next-slug>/…
+```
+
+### URLs
+
+- Root index: `https://<owner>.github.io/<repo>/`
+- Each paper: `https://<owner>.github.io/<repo>/<site-path>/`
+
+For the Attention run:
+
+- `https://conanxin.github.io/paper-reading-pages/`
+- `https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/`
+
+### Manifest
+
+`published_pages.json` is a JSON file with one `pages` array, each entry shaped like:
+
+```json
+{
+  "slug": "attention-is-all-you-need",
+  "title": "Attention Is All You Need",
+  "path": "/attention-is-all-you-need/",
+  "published_at": "2026-06-15T02:39:03Z"
+}
+```
+
+The script upserts by `slug` (so re-publishing the same paper updates `title` and `published_at`, doesn't duplicate). The array is sorted by `published_at`. The root `index.html` is regenerated from this manifest each time.
+
+---
+
+## Single-page mode (legacy)
 
 ---
 

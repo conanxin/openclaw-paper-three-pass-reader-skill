@@ -26,7 +26,8 @@ Each run has a unique ID of the form `P3PR-REALPAPER-N`.
 | **Extracted text** | `runs/attention-is-all-you-need-20260615/extracted/attention-is-all-you-need.txt` (40 074 chars via `pdftotext` 24.02.0) |
 | **Work JSON** | `runs/attention-is-all-you-need-20260615/work/paper_reading.json` |
 | **Local page** | `runs/attention-is-all-you-need-20260615/paper-reading-output/index.html` |
-| **GitHub Pages** | https://conanxin.github.io/paper-reading-pages/ |
+| **GitHub Pages** | https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/ |
+| **GitHub Pages root** | https://conanxin.github.io/paper-reading-pages/ |
 | **GitHub Pages repo** | https://github.com/conanxin/paper-reading-pages (`gh-pages` branch) |
 | **Phase report** | [`docs/PHASE_P3PR_REALPAPER_1_ATTENTION_REPORT.md`](PHASE_P3PR_REALPAPER_1_ATTENTION_REPORT.md) |
 
@@ -83,7 +84,19 @@ For each new real-paper run:
 3. Fill `work/paper_reading.json` based on the **actual paper text**, not the sample.
 4. Render the page: `python3 skills/paper-three-pass-reader/scripts/render_page.py --input runs/.../work/paper_reading.json --output runs/.../paper-reading-output`.
 5. Smoke-check the page (mandatory sections present, evidence labels visible, claim filter wired).
-6. Push to GitHub Pages with `publish_output_to_github.sh`.
+6. Push to GitHub Pages with `publish_output_to_github.sh` (use `--site-path <slug> --page-title "Title"` for multi-page mode in v0.1.1+).
 7. Write `docs/PHASE_P3PR_REALPAPER_<N>_<slug>_REPORT.md`.
 8. Append a row to this file under a new `P3PR-REALPAPER-N` heading.
 9. Commit + push the run data, the report, and this index.
+
+## v0.1.1 multi-page layout
+
+As of v0.1.1-alpha, the GitHub Pages repo (`conanxin/paper-reading-pages`) holds a small root index plus one subdirectory per published paper:
+
+```
+https://conanxin.github.io/paper-reading-pages/                      <- root index
+https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/
+https://conanxin.github.io/paper-reading-pages/<next-slug>/          <- future papers
+```
+
+The root index is regenerated from `published_pages.json` on every publish call. To publish a new paper, run the `publish_output_to_github.sh` with `--site-path <new-slug> --page-title "Title"`. The script preserves other page subdirs and upserts (not duplicates) the manifest entry for the slug.

@@ -165,7 +165,7 @@ bash scripts/validate.sh
 
 ---
 
-## 当前版本限制(v0.1.0-alpha)
+## 当前版本限制(v0.1.1-alpha)
 
 - 内置样例只用了 Keshav 自己的《How to Read a Paper》——元选择。流水线支持任意论文,但仓库只预置了这一个样例。
 - Stage 0 是**输入驱动**的,不会自己去抓论文;你需要提供论文或强线索。
@@ -173,10 +173,24 @@ bash scripts/validate.sh
 - 不内置 PDF 解析、OCR、网页抓取。需要你自己提供文本或 URL。
 - 发布脚本刻意做得极简——不会自动回滚、自动重试、自动协调。推送失败请读错误。
 
+## 多页发布(v0.1.1+)
+
+把多篇论文归档到一个 Pages repo,用 slug 模式:
+
+```bash
+./skills/paper-three-pass-reader/scripts/publish_output_to_github.sh \
+  --output runs/attention-is-all-you-need-20260615/paper-reading-output \
+  --repo conanxin/paper-reading-pages \
+  --site-path attention-is-all-you-need \
+  --page-title "Attention Is All You Need"
+```
+
+页面会被复制到 `gh-pages/attention-is-all-you-need/`,repo 根变成一个简洁的索引页(`index.html` + `published_pages.json`),列出所有已发布的论文。每次调用新增/更新一条,其它论文保留。脚本会校验 slug,只允许 `[A-Za-z0-9._-]+`。
+
 ---
 
 ## License
 
 MIT — 见 [`LICENSE`](LICENSE)。
 
-版本:**v0.1.0-alpha**。
+版本:**v0.1.1-alpha**。

@@ -121,6 +121,67 @@ step 6 "SKILL.md substance"
 wc=$(wc -w < "$SKILL_DIR/SKILL.md")
 if [[ "$wc" -ge 800 ]]; then ok "SKILL.md has $wc words (≥800)"; else bad "SKILL.md too thin: $wc words"; fi
 
+# 7. v0.1.1 hardening: render_page.py + publish_output_to_github.sh behaviour
+step 7 "v0.1.1 hardening"
+
+# 7a. render_page.py tolerates figures_tables string entries + bad evidence labels.
+SKILL_DIR_FOR_TEST="$SKILL_DIR"
+export SKILL_DIR_FOR_TEST
+python3 - <<PYEOF >/dev/null 2>&1 && ok "render_page.py handles figures_tables string entry" || bad "render_page.py crashed on figures_tables string entry"
+import json, subprocess, tempfile, pathlib, os
+payload = {
+    "schema_version": "0.1.0",
+    "paper_metadata": {"title":"t","authors":["a"],"year":2024,"venue":"v","identifiers":{"arxiv_id":None,"doi":None,"openreview_id":None,"url":None},"source_kind":"complete_paper","reading_mode":"full_text"},
+    "intake_quality": {"input_kind":"complete_paper","reading_mode":"full_text","confidence":"high","needs_confirmation":False,"missing_fields":[],"warnings":[]},
+    "summaries": {"one_sentence":"x","three_sentence":["a","b","c"],"ten_sentence":["1","2","3","4","5","6","7","8","9","10"]},
+    "five_cs": {"category":"x","context":"x","correctness":"x","contributions":["c1"],"clarity":"x"},
+    "pass1": {"bird_eye_notes":"n","decision":"CONTINUE_FULL","decision_rationale":"r"},
+    "pass2": {"main_ideas":["m1"],"key_references":[]},
+    "pass3": {"method_reconstruction":["s1"],"critical_review":["cr1"]},
+    "claims_evidence_map": [
+        "plain string claim",
+        {"claim_id":"C-002","claim_text":"dict","evidence_label":"[NotALegalLabel]","confidence":"ultra-high","evidence_location":"s1","evidence_kind":"paper_text","notes":"","needs_verification":False},
+    ],
+    "figures_tables": ["Figure 1 plain string note"],
+    "glossary": ["Transformer (string)"],
+    "limitations": ["L1"],
+    "reproduction_plan": {"dataset":"","baseline":"","hardware":"","steps":["s1"],"sanity_checks":[],"success_criteria":[]},
+    "open_questions": ["q1"],
+    "final_checklist": ["plain string question"],
+}
+src = pathlib.Path(os.environ["SKILL_DIR_FOR_TEST"]) / "scripts" / "render_page.py"
+with tempfile.TemporaryDirectory() as td:
+    inp = pathlib.Path(td)/"in.json"; out = pathlib.Path(td)/"out"
+    inp.write_text(json.dumps(payload), encoding="utf-8")
+    r = subprocess.run(["python3", str(src), "--input", str(inp), "--output", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, f"render failed rc={r.returncode}\nSTDOUT:\n{r.stdout}\nSTDERR:\n{r.stderr}"
+    assert (out/"index.html").exists(), "no index.html produced"
+    text = (out/"index.html").read_text(encoding="utf-8")
+    assert "[Uncertain]" in text, "no fallback [Uncertain] label in rendered page"
+PYEOF
+
+# 7b. publish script help text mentions --site-path and --page-title.
+HELP="$(bash "$SKILL_DIR/scripts/publish_output_to_github.sh" --help 2>&1 || true)"
+if echo "$HELP" | grep -q -- "--site-path"; then ok "publish script advertises --site-path"; else bad "publish script help missing --site-path"; fi
+if echo "$HELP" | grep -q -- "--page-title"; then ok "publish script advertises --page-title"; else bad "publish script help missing --page-title"; fi
+
+# 7c. publish script --check mode passes.
+if bash "$SKILL_DIR/scripts/publish_output_to_github.sh" --check >/dev/null 2>&1; then ok "publish script --check exits 0"; else bad "publish script --check failed"; fi
+
+# 7d. Attention run re-renders without crashing.
+rm -rf /tmp/p3pr-attn-validate
+if python3 "$SKILL_DIR/scripts/render_page.py" \
+     --input "$ROOT/runs/attention-is-all-you-need-20260615/work/paper_reading.json" \
+     --output /tmp/p3pr-attn-validate >/dev/null 2>&1; then
+  if [[ -f /tmp/p3pr-attn-validate/index.html ]]; then
+    ok "Attention run re-renders OK"
+  else
+    bad "Attention re-render produced no index.html"
+  fi
+else
+  bad "Attention run re-render failed"
+fi
+
 # Summary
 echo
 echo "================================================="

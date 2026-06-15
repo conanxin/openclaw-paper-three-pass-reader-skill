@@ -204,7 +204,7 @@ If you see a load-bearing claim without a label, treat it as `[Needs verificatio
 
 ---
 
-## Limitations (v0.1.0-alpha)
+## Limitations (v0.1.1-alpha)
 
 - Sample data uses S. Keshav's *How to Read a Paper* itself — a meta choice. The full pipeline works on any paper, but only the Keshav sample is pre-built into the repo.
 - Stage 0 is **input-driven** — it does not fetch the paper itself. You provide the paper (or the strong hint) and the skill normalises it.
@@ -212,10 +212,24 @@ If you see a load-bearing claim without a label, treat it as `[Needs verificatio
 - No PDF parsing, OCR, or web scraping is included. Bring your own text or URL.
 - `publish_output_to_github.sh` is intentionally minimal — it will not roll back, retry, or reconcile. If a push fails, read the error.
 
+## Multi-page publishing (v0.1.1+)
+
+To publish several papers into one GitHub Pages repo, use the slug mode:
+
+```bash
+./skills/paper-three-pass-reader/scripts/publish_output_to_github.sh \
+  --output runs/attention-is-all-you-need-20260615/paper-reading-output \
+  --repo conanxin/paper-reading-pages \
+  --site-path attention-is-all-you-need \
+  --page-title "Attention Is All You Need"
+```
+
+The page is copied into `gh-pages/attention-is-all-you-need/` and the repo root becomes a tiny index (`index.html` + `published_pages.json`) that lists every published page. Each call adds (or updates) one entry; other pages are preserved. The script validates the slug and refuses anything outside `[A-Za-z0-9._-]+`.
+
 ---
 
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.1.0-alpha**.
+Version: **v0.1.1-alpha**.
