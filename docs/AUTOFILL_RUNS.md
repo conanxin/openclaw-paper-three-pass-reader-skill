@@ -64,3 +64,24 @@ Each run has a unique ID of the form `P3PR-AUTOFILL-N` or `P3PR-Vx.y.z-FOO-N`.
 - **Evidence labels preserved in English** — `[Paper evidence]`, `[Author claim]`, `[Needs verification]` etc. remained as English enums so the audit can match them.
 - **Paper / method / author names preserved** — paper title stays in its original English form (this is the author-written title).
 - **Backward compatible** — the English draft from v0.2.2 (`second-me-fulltext-autofill/`) still renders in English because its JSON does not declare `ui_language = "zh-CN"`. No English content was changed or removed.
+
+## P3PR-V0.2.4-ZH-CN-QUALITY-GATE
+
+| Field | Value |
+| --- | --- |
+| Run ID | `P3PR-V0.2.4-ZH-CN-QUALITY-GATE` |
+| Phase | v0.2.4-alpha |
+| Inputs | Second Me zh-CN run + bad zh-CN sample |
+| Script | `skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py` |
+| Second Me PASS | `runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/work/quality_gate_zh_cn.json` (status PASS, 75/75 CJK, 0 long_en_blobs) |
+| Bad sample FAIL | `runs/quality-gate-smoke-20260615/bad-zh-cn-draft/work/quality_gate_zh_cn.json` (status FAIL, 0/16 CJK, 5 long_en_blobs, 4 errors) |
+| Validation | 129/0 PASS |
+| Report | `docs/PHASE_P3PR_V0_2_4_ZH_CN_QUALITY_GATE_REPORT.md` |
+
+### Notable points
+
+- **Quality gate is structural, not LLM-based.** It catches English carryover (long English blobs in Chinese-claimed fields), shallow glossary/claims/checklist, missing `[Paper evidence]` in full_text mode, missing Pass 2/3.
+- **Audit `--quality-gate` integration.** Audit runs quality gate after structural audit, exits non-zero on combined FAIL. Without the flag, audit prints a hint.
+- **Runner `--quality-gate` integration.** Runner runs quality gate after audit, blocks render/publish on FAIL (unless `--audit-warn-only`).
+- **Fill-pack `11_zh_cn_quality_gate.md`.** New step explains what the gate checks and how to fix common failures.
+- **Bad zh-CN sample** in `runs/quality-gate-smoke-20260615/bad-zh-cn-draft/` is a regression test: declares `target_language = zh-CN` but is all-English with empty glossary and 2-item checklist. Quality gate returns FAIL.

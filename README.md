@@ -298,7 +298,8 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.2.0-alpha` | immutable | One-command runner for turning weak/complete inputs into a standard run layout + draft JSON + (optional) rendered/published page. |
 | `v0.2.1-alpha` | immutable | Agent Fill Pack + structural audit. Runner gained `--fill-pack`, `--audit`, `--agent-profile`, `--language`, `--max-claims`, `--max-figures`. |
 | `v0.2.2-alpha` | immutable | Auto-fill smoke run + runner/render robustness fixes. |
-| `v0.2.3-alpha` | current | First-class Chinese (zh-CN) output. Runner writes `target_language` / `ui_language`; renderer localizes UI; audit checks Chinese content. |
+| `v0.2.3-alpha` | immutable | First-class Chinese (zh-CN) output. Runner writes `target_language` / `ui_language`; renderer localizes UI; audit checks Chinese content. |
+| `v0.2.4-alpha` | current | zh-CN quality gate. Goes beyond "has Chinese?" to "is the Chinese actually a reading?". Catches low CJK coverage, English carryover, shallow glossary/claims/checklist, full_text with no `[Paper evidence]`. Integrated into audit (`--quality-gate`) and runner. |
 
 ## Language support (zh-CN / en)
 
@@ -322,10 +323,42 @@ python3 skills/paper-three-pass-reader/scripts/render_page.py \
 
 (But really, the recommended path is: re-run with `--language zh-CN` so the fill-pack is Chinese too.)
 
+## zh-CN quality gate
+
+As of v0.2.4-alpha, the skill has a dedicated quality gate for Chinese output. The structural audit (`audit_paper_reading.py`) checks JSON shape and reading-mode discipline. The **quality gate** (`quality_gate_zh_cn.py`) checks whether the Chinese explanation is actually a reading — not just a UI-flip or an English carryover.
+
+The gate catches:
+
+- **Low CJK coverage** — fewer than 50% of the main interpretive fields contain Chinese characters.
+- **Long English blobs** — single field contains 30+ consecutive ASCII characters without CJK (typical English-draft carryover).
+- **Shallow glossary / claims / checklist** — fewer than 10 / 8 / 8 items respectively.
+- **full_text mode with no `[Paper evidence]` claims** — all claims are `[Author claim]` or `[Uncertain]`, which is suspicious for a real reading.
+- **Missing Pass 2 / Pass 3 in full_text mode** — draft was not actually written.
+
+The gate is **structural + bilingual-discipline**, not LLM-truth-judging. It does not score translation quality subjectively.
+
+```bash
+# Standalone:
+python3 skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py \
+  --input runs/myrun/work/paper_reading.json
+
+# Integrated into audit:
+python3 skills/paper-three-pass-reader/scripts/audit_paper_reading.py \
+  --input runs/myrun/work/paper_reading.json \
+  --quality-gate
+
+# Integrated into runner:
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "..." --input-kind paper_title --slug <slug> --output-root <root> \
+  --language zh-CN --fill-pack --quality-gate
+```
+
+See [`skills/paper-three-pass-reader/docs/ZH_CN_QUALITY_GATE.md`](skills/paper-three-pass-reader/docs/ZH_CN_QUALITY_GATE.md).
+
 ---
 
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.2.1-alpha**.
+Version: **v0.2.4-alpha**.

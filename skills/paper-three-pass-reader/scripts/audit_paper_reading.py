@@ -327,6 +327,9 @@ def main(argv=None) -> int:
     p.add_argument("--warn-only", action="store_true",
                    help="Do not exit non-zero on WARN; only exit non-zero on FAIL.")
     p.add_argument("--json-output", help="Write audit result as JSON here.")
+    p.add_argument("--quality-gate", action="store_true",
+                   help="Run the zh-CN quality gate after the structural audit. "
+                        "Only effective when target_language/ui_language is zh-CN.")
     args = p.parse_args(argv)
 
     path = Path(args.input)
@@ -336,6 +339,36 @@ def main(argv=None) -> int:
     doc = _load(path)
     result = audit(doc)
     sys.stdout.write(render_text(result))
+
+    # Optional: zh-CN quality gate.
+    target_lang = doc.get("target_language", "en")
+    ui_lang = doc.get("ui_language", "en")
+    qg_status: str = "SKIPPED"
+    qg_warn = ""
+    if args.quality_gate and (target_lang == "zh-CN" or ui_lang == "zh-CN"):
+        try:
+            from quality_gate_zh_cn import run_quality_gate, render_text as _qg_render
+            qg_result = run_quality_gate(doc, _DummyArgs())
+            qg_status = qg_result["status"]
+            print()
+            print("[quality_gate_zh_cn]")
+            sys.stdout.write(_qg_render(qg_result))
+            if args.json_output:
+                qg_out = Path(args.json_output).with_name("quality_gate_zh_cn.json")
+                qg_out.write_text(
+                    json.dumps(qg_result, indent=2, ensure_ascii=False) + "\n",
+                    encoding="utf-8",
+                )
+        except ImportError as e:
+            qg_warn = f"quality gate module not importable: {e}"
+            print(f"[warn] {qg_warn}", file=sys.stderr)
+    elif not args.quality_gate and (target_lang == "zh-CN" or ui_lang == "zh-CN"):
+        print()
+        print(
+            "[hint] target_language/ui_language = zh-CN. Re-run with --quality-gate "
+            "to invoke skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py.",
+        )
+
     if args.json_output:
         out = Path(args.json_output)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -346,10 +379,21 @@ def main(argv=None) -> int:
         print(f"[ok] wrote audit result: {out}")
     if result["status"] == "FAIL":
         return 1
+    if qg_status == "FAIL":
+        return 1
     if result["status"] == "WARN" and not args.warn_only:
         # WARN still returns 0 (informational); use --warn-only to silence that.
         return 0
     return 0
+
+
+class _DummyArgs:
+    """Stand-in for argparse Namespace so the quality gate can be invoked
+    directly from audit without re-parsing argv."""
+    min_cjk_ratio = 0.5
+    min_claims = 8
+    min_glossary = 10
+    min_checklist = 8
 
 
 if __name__ == "__main__":

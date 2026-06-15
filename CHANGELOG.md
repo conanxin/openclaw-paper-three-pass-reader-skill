@@ -15,6 +15,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Chinese page published** — `https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/` (HTTP 200).
 - **Validation extended** — `scripts/validate.sh` now has 120 checks (was 108). New step 10 covers: runner `--language` flag, zh-CN draft `target_language` / `ui_language`, Chinese fill-pack content, Chinese UI label presence, audit Chinese-content warning, Second Me zh-CN real run audit, Second Me zh-CN page label check.
 
+## [v0.2.4-alpha] — 2026-06-15
+
+### Added
+
+- **zh-CN quality gate** — new `skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py`. Goes beyond "does this draft have Chinese?" to "is the Chinese explanation actually a reading?". Catches: low CJK coverage, long English blobs (carryover from English draft), too-few glossary/claims/checklist items, full_text mode with no `[Paper evidence]` claims, missing Pass 2/3 in full_text mode.
+- **Audit `--quality-gate` integration** — when `target_language` / `ui_language` is `zh-CN` and the flag is passed, the audit calls the quality gate after the structural audit and exits non-zero on quality-gate FAIL. Without the flag, the audit prints a hint to re-run with `--quality-gate`.
+- **Runner `--quality-gate` integration** — `run_paper_reading.py --quality-gate` (only effective with `--language zh-CN`) runs the quality gate after the audit and writes `work/quality_gate_zh_cn.json` and `reports/quality_gate_zh_cn.md`. Quality-gate FAIL blocks `--render` and `--publish` unless `--audit-warn-only` is set.
+- **Fill-pack `11_zh_cn_quality_gate.md`** — new step in the agent fill pack that explains what the quality gate checks, how to fix common WARN/FAIL patterns, why evidence labels stay in English, and why "has CJK chars" is not enough.
+- **Bad zh-CN sample** — `runs/quality-gate-smoke-20260615/bad-zh-cn-draft/` for validation: declares `target_language = zh-CN` but contains English content + only 2 claims + empty glossary + 2-item checklist. Quality gate returns FAIL with 4 errors and 4 warnings. This guards against the quality gate becoming a rubber stamp.
+- **Validation extended** — `scripts/validate.sh` now has 129 checks (was 120). New step 11 covers: quality-gate script help, executable, Second Me zh-CN PASS, bad sample FAIL, runner `--quality-gate` flag, audit `--quality-gate` flag, fill-pack `11_zh_cn_quality_gate.md` present, audit `--quality-gate` integration PASS, audit default hint on zh-CN run.
+- **Documentation** — new `skills/paper-three-pass-reader/docs/ZH_CN_QUALITY_GATE.md`. `RUNNER.md`, `AUDIT.md`, `AGENT_FILL_PACK.md`, `USAGE.md`, `README.md`, `CHANGELOG.md`, `docs/AUTOFILL_RUNS.md`, `docs/REALPAPER_RUNS.md` updated. Release notes and phase report.
+
+### Design notes
+
+- The quality gate is **structural + bilingual-discipline**, not LLM-truth-judging. It catches specific failure modes that "audit alone" misses but does not score translation quality subjectively.
+- Evidence labels remain fixed English enums for audit compatibility. Explanatory text around them is Chinese.
+- The default zh-CN thresholds (8 claims, 10 glossary, 8 checklist, 50% CJK ratio) are tuned for full_text real-paper readings, not weak-mode drafts. For weak-mode drafts, the quality gate should be run with `--warn-only`.
+
 ### Changed
 
 - `render_page.py` — `render_index` now reads `ui_language` and applies the UI map. Backward compatible: when `ui_language` is absent or `"en"`, behaviour is unchanged.

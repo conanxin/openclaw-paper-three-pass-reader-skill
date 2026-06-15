@@ -126,3 +126,9 @@ Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3P
 A Chinese full-text run on arXiv:2503.08102 ("Second Me") that exercises the v0.2.3 zh-CN language support end-to-end. The runner writes `target_language` and `ui_language` to the draft, the audit checks for Chinese content, and the renderer localizes the UI to Chinese. The page is published at `https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/`. Audit: PASS, 0 errors / 0 warnings.
 
 Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3PR_V0_2_3_ZH_CN_OUTPUT_REPORT.md`](PHASE_P3PR_V0_2_3_ZH_CN_OUTPUT_REPORT.md).
+
+## P3PR-V0.2.4-ZH-CN-QUALITY-GATE (pointer)
+
+The Second Me Chinese run (`second-me-human-inspired-memory-cn/`) was re-checked with the new `quality_gate_zh_cn.py` script: status PASS, 75/75 CJK coverage, 0 long English blobs, 12 claims / 14 glossary / 12 checklist, 9 `[Paper evidence]` / 3 `[Author claim]`. A new bad sample at `runs/quality-gate-smoke-20260615/bad-zh-cn-draft/` was created to demonstrate the gate's FAIL path (4 errors, 4 warnings).
+
+Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3PR_V0_2_4_ZH_CN_QUALITY_GATE_REPORT.md`](PHASE_P3PR_V0_2_4_ZH_CN_QUALITY_GATE_REPORT.md).

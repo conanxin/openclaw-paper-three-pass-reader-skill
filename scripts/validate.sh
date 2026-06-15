@@ -515,6 +515,87 @@ else
   bad "Second Me zh-CN index.html missing"
 fi
 
+# 11. v0.2.4 zh-CN quality gate
+step 11 "v0.2.4 zh-CN quality gate"
+
+# 11a. quality_gate_zh_cn.py --help runs.
+if python3 "$SKILL_DIR/scripts/quality_gate_zh_cn.py" --help >/dev/null 2>&1; then
+  ok "quality_gate_zh_cn.py --help exits 0"
+else
+  bad "quality_gate_zh_cn.py --help failed"
+fi
+
+# 11b. quality_gate_zh_cn.py is executable.
+if [[ -x "$SKILL_DIR/scripts/quality_gate_zh_cn.py" ]]; then
+  ok "quality_gate_zh_cn.py is executable"
+else
+  bad "quality_gate_zh_cn.py not executable"
+fi
+
+# 11c. Second Me zh-CN run quality gate PASS.
+QG_SM="$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/work/quality_gate_zh_cn.json"
+if [[ -f "$QG_SM" ]]; then
+  if grep -q '"status": "PASS"' "$QG_SM"; then
+    ok "Second Me zh-CN quality gate PASS"
+  else
+    bad "Second Me zh-CN quality gate not PASS"
+  fi
+else
+  bad "Second Me zh-CN quality_gate_zh_cn.json missing"
+fi
+
+# 11d. Bad zh-CN sample quality gate FAILS (or WARNs).
+if [[ -f "$ROOT/runs/quality-gate-smoke-20260615/bad-zh-cn-draft/work/paper_reading.json" ]]; then
+  if python3 "$SKILL_DIR/scripts/quality_gate_zh_cn.py" \
+       --input "$ROOT/runs/quality-gate-smoke-20260615/bad-zh-cn-draft/work/paper_reading.json" \
+       --json-output /tmp/p3pr-bad-qg.json >/dev/null 2>&1; then
+    bad "bad zh-CN sample should FAIL quality gate but did not"
+  else
+    ok "bad zh-CN sample correctly FAILed quality gate"
+  fi
+else
+  bad "bad zh-CN sample draft missing"
+fi
+
+# 11e. runner help mentions --quality-gate.
+if echo "$RUNNER_HELP" | grep -q -- "--quality-gate"; then
+  ok "runner --help mentions --quality-gate"
+else
+  bad "runner --help missing --quality-gate"
+fi
+
+# 11f. audit help mentions --quality-gate.
+AUDIT_HELP="$(python3 "$SKILL_DIR/scripts/audit_paper_reading.py" --help 2>&1 || true)"
+if echo "$AUDIT_HELP" | grep -q -- "--quality-gate"; then
+  ok "audit --help mentions --quality-gate"
+else
+  bad "audit --help missing --quality-gate"
+fi
+
+# 11g. zh-CN fill-pack contains 11_zh_cn_quality_gate.md.
+if [[ -f /tmp/p3pr-runner-zh-cn-fp/runner-zh-cn-fp/fill-pack/11_zh_cn_quality_gate.md ]]; then
+  ok "zh-CN fill-pack contains 11_zh_cn_quality_gate.md"
+else
+  bad "zh-CN fill-pack missing 11_zh_cn_quality_gate.md"
+fi
+
+# 11h. audit --quality-gate integration on Second Me zh-CN run.
+if python3 "$SKILL_DIR/scripts/audit_paper_reading.py" \
+     --input "$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/work/paper_reading.json" \
+     --quality-gate 2>&1 | grep -q "Quality gate status: PASS"; then
+  ok "audit --quality-gate integration PASS on Second Me zh-CN"
+else
+  bad "audit --quality-gate integration failed on Second Me zh-CN"
+fi
+
+# 11i. audit default hint on zh-CN run (without --quality-gate).
+if python3 "$SKILL_DIR/scripts/audit_paper_reading.py" \
+     --input "$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/work/paper_reading.json" 2>&1 | grep -q "Re-run with --quality-gate"; then
+  ok "audit shows --quality-gate hint on zh-CN run"
+else
+  bad "audit did not show --quality-gate hint on zh-CN run"
+fi
+
 # Summary
 echo
 echo "================================================="

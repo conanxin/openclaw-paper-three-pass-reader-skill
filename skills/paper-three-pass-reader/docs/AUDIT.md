@@ -153,3 +153,19 @@ The check intentionally does **not** flag:
 The check is a **WARN**, not a FAIL. The audit's PASS/WARN/FAIL semantics for `en` drafts are unchanged.
 
 To verify: a fresh `paper_reading.json` with `--language zh-CN` and no manual filling should trigger the warning.
+
+## v0.2.4 — `--quality-gate` integration
+
+The audit gained a `--quality-gate` flag. When set on a `zh-CN` draft, the audit invokes `quality_gate_zh_cn.py` after the structural audit. The combined behaviour:
+
+- **Without `--quality-gate`** on a `zh-CN` draft, the audit prints a hint:
+  > `[hint] target_language/ui_language = zh-CN. Re-run with --quality-gate to invoke skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py.`
+- **With `--quality-gate`**, the audit:
+  1. Runs the structural audit (unchanged).
+  2. Runs the quality gate.
+  3. Writes `quality_gate_zh_cn.json` next to the audit JSON.
+  4. Exits non-zero on structural-audit FAIL OR quality-gate FAIL.
+
+The structural audit and quality gate are independent — both can run, both can pass, both can fail. The combined exit code is the OR of the two.
+
+When the draft is `en`, the `--quality-gate` flag is silently ignored.

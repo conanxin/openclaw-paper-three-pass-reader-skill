@@ -148,3 +148,15 @@ The fill-pack instructs the agent (regardless of UI language) to:
 - Mark uncertain content with `[Uncertain]` or `[Needs verification]` rather than guessing.
 
 When `--language zh-CN` is passed, every fill-pack document except the fixed enums is generated in Chinese.
+
+## v0.2.4 — `11_zh_cn_quality_gate.md`
+
+A new step in the fill-pack: `11_zh_cn_quality_gate.md`. It is generated for both `zh-CN` and `en` runs (the rule is the same; the explanation is in the chosen language). The file tells the agent:
+
+- What the quality gate checks.
+- How to fix common WARN / FAIL patterns.
+- Why evidence labels stay in English.
+- Why "has CJK chars" alone is not enough.
+- How to re-render and re-publish after fixing.
+
+The agent should treat the `11_zh_cn_quality_gate.md` as a checklist before declaring the fill-pack done. Running `quality_gate_zh_cn.py` and getting `status: PASS` is the strongest signal that the fill is complete and high-quality.

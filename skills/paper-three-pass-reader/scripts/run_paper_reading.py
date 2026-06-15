@@ -499,6 +499,10 @@ def main(argv=None):
     p.add_argument("--audit-warn-only", action="store_true",
                    help="Treat audit WARN as PASS for the purpose of "
                         "deciding whether to render / publish.")
+    p.add_argument("--quality-gate", action="store_true",
+                   help="Run the zh-CN quality gate after the audit (no-op "
+                        "for non-zh-CN runs). Blocks --render on FAIL unless "
+                        "--audit-warn-only is also set.")
     p.add_argument("--agent-profile", default="default",
                    choices=["default", "strict", "beginner", "researcher", "engineer"],
                    help="Tone of the fill-pack instructions. Default 'default'.")
@@ -674,6 +678,69 @@ def main(argv=None):
             block_render = True
             print("[error] audit status FAIL; refusing to render. "
                   "Fix the JSON or pass --audit-warn-only.", file=sys.stderr)
+
+    # Optional: zh-CN quality gate (v0.2.4+).
+    if args.quality_gate and args.language == "zh-CN":
+        qg_script = HERE / "quality_gate_zh_cn.py"
+        if not qg_script.exists():
+            print(f"[warn] quality gate script missing: {qg_script}", file=sys.stderr)
+        else:
+            qg_out_json = work_dir / "quality_gate_zh_cn.json"
+            qg_cmd = [
+                sys.executable, str(qg_script),
+                "--input", str(work_json),
+                "--json-output", str(qg_out_json),
+            ]
+            print(f"[info] running quality gate: {' '.join(qg_cmd)}")
+            qg_rc = subprocess.call(qg_cmd)
+            if qg_rc == 0:
+                qg_status = "PASS_OR_WARN"
+            else:
+                qg_status = "FAIL"
+            if qg_status == "FAIL" and not args.audit_warn_only:
+                block_render = True
+                print("[error] quality gate status FAIL; refusing to render. "
+                      "Fix the JSON or pass --audit-warn-only.", file=sys.stderr)
+            # Also write a markdown summary alongside audit_summary.md.
+            try:
+                import json as _json
+                qg_data = _json.loads(qg_out_json.read_text(encoding="utf-8"))
+                qg_reports_dir = run_dir / "reports"
+                qg_reports_dir.mkdir(parents=True, exist_ok=True)
+                qg_md = qg_reports_dir / "quality_gate_zh_cn.md"
+                lines = [
+                    "# Quality Gate (zh-CN) — paper-three-pass-reader",
+                    "",
+                    f"- Status: **{qg_data.get('status')}**",
+                    f"- target_language = {qg_data.get('target_language')!r}",
+                    f"- ui_language = {qg_data.get('ui_language')!r}",
+                    f"- reading_mode = {qg_data.get('reading_mode')!r}",
+                ]
+                cjk = qg_data.get("cjk_coverage", {})
+                lines.append(
+                    f"- CJK coverage: {cjk.get('fields_with_cjk', 0)}/"
+                    f"{cjk.get('checked_fields', 0)} = {cjk.get('ratio', 0):.2f}"
+                )
+                counts = qg_data.get("counts", {})
+                lines.append(
+                    f"- counts: claims={counts.get('claims')}, "
+                    f"glossary_terms={counts.get('glossary_terms')}, "
+                    f"checklist_items={counts.get('checklist_items')}"
+                )
+                if qg_data.get("errors"):
+                    lines.append("")
+                    lines.append("## Errors")
+                    for e in qg_data["errors"]:
+                        lines.append(f"- {e}")
+                if qg_data.get("warnings"):
+                    lines.append("")
+                    lines.append("## Warnings")
+                    for w in qg_data["warnings"]:
+                        lines.append(f"- {w}")
+                qg_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                print(f"[ok] wrote quality gate summary: {qg_md}")
+            except Exception as e:  # noqa: BLE001
+                print(f"[warn] could not write quality gate markdown: {e}", file=sys.stderr)
 
     # Render?
     if args.render and not block_render:

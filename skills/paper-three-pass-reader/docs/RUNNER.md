@@ -354,3 +354,27 @@ python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
 ```
 
 After the runner finishes, follow the fill-pack instructions in Chinese to fill the draft, then re-audit. The renderer will produce a Chinese UI page because the JSON carries `ui_language = "zh-CN"`.
+
+## v0.2.4 — Quality gate integration
+
+The runner gained a `--quality-gate` flag (no-op for non-zh-CN runs):
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "arXiv:2503.08102 — Second Me" \
+  --input-kind paper_identifier \
+  --slug second-me-human-inspired-memory-cn \
+  --output-root runs/second-me-zh-cn-20260615 \
+  --language zh-CN \
+  --fill-pack --quality-gate
+```
+
+When `--quality-gate` is set and `--language == zh-CN`:
+
+1. After the audit, the runner invokes `quality_gate_zh_cn.py` and writes:
+   - `work/quality_gate_zh_cn.json` — JSON report
+   - `reports/quality_gate_zh_cn.md` — markdown summary
+2. If the quality gate returns FAIL and `--audit-warn-only` is not set, the runner blocks `--render` and `--publish`.
+3. If the quality gate returns PASS or WARN (under `--warn-only`), the runner proceeds as usual.
+
+The quality gate checks: language fields, CJK coverage, English-blob carryover, glossary / claims / checklist counts, full_text `[Paper evidence]` discipline, Pass 2/3 presence. See [`ZH_CN_QUALITY_GATE.md`](ZH_CN_QUALITY_GATE.md) for the full spec.

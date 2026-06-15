@@ -301,3 +301,46 @@ python3 skills/paper-three-pass-reader/scripts/render_page.py \
   --input runs/myrun/work/paper_reading.json \
   --output runs/myrun/paper-reading-output
 ```
+
+### Run the zh-CN quality gate
+
+After filling a zh-CN draft, run the quality gate to make sure the Chinese explanation is a real reading:
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py \
+  --input runs/myrun/work/paper_reading.json \
+  --json-output runs/myrun/work/quality_gate_zh_cn.json
+```
+
+The gate checks:
+
+- Language fields are `zh-CN`.
+- ≥ 50% of main interpretive fields contain CJK characters.
+- No field contains a long English blob (≥ 30 ASCII chars, no CJK).
+- glossary ≥ 10, claims_evidence_map ≥ 8, final_checklist ≥ 8.
+- full_text: at least one `[Paper evidence]` claim; not all `[Author claim]`.
+- full_text: Pass 2 main_ideas and Pass 3 method_reconstruction non-empty.
+
+The gate is **structural + bilingual-discipline**, not an LLM truth judgment. It catches specific failure modes (English carryover, shallow glossary, missing Pass 2/3) that the structural audit alone misses.
+
+For weak-mode drafts, pass `--warn-only` so that WARN doesn't block render:
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py \
+  --input runs/weak-myrun/work/paper_reading.json \
+  --warn-only
+```
+
+You can also have the runner or audit invoke it automatically:
+
+```bash
+# Via the runner (blocks render on FAIL):
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "..." --input-kind paper_title --slug <slug> --output-root <root> \
+  --language zh-CN --fill-pack --quality-gate
+
+# Via the audit (no render):
+python3 skills/paper-three-pass-reader/scripts/audit_paper_reading.py \
+  --input runs/myrun/work/paper_reading.json \
+  --quality-gate
+```
