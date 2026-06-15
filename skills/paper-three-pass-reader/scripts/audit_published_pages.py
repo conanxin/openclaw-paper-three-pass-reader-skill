@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 audit_published_pages.py — published-pages regression audit for paper-three-pass-reader
+(v0.2.12-alpha: page-type classification + root-index exemption)
 
 Reads published_pages.json (live URL or local file), fetches every page, and checks
 for regressions against the v0.2.9+ renderer/template expectations:
@@ -13,7 +14,26 @@ for regressions against the v0.2.9+ renderer/template expectations:
   F. Claims / Evidence           (warning if claims section missing or all claim IDs empty)
   G. Glossary                    (warning if section missing for non-screenshot-only)
   H. Essay / talk rendering      (warning if essay page missing 实践计划 / 结构说明 / 相关脉络)
-  I. Root index / manifest       (warning if pages count mismatches manifest)
+  I. Page-type classification    (site_index / paper_page / manifest / unknown)
+  J. Site-index / manifest-only  (warning if site_root has no manifest links or empty)
+
+Page-type rules (v0.2.12-alpha):
+
+  * site_index   — the site root itself (`<site_root>/` or `<site_root>`). The page is
+                   a manifest of all published paper pages. It is NOT a paper page,
+                   so paper-level checks (Resolver Trail, Claims, Glossary,
+                   no_visible_claim_id, glossary_no_explicit_definition,
+                   essay_page_missing_practice_plan, weak_zh_cn_ui) are skipped.
+                   Severe checks (template_leak, raw_dict, old_footer) still apply.
+                   Index-specific checks are added: HTTP 200, non-empty, has title,
+                   has at least one published-page link, and link count roughly
+                   matches the manifest.
+  * paper_page   — a normal paper reading page produced by render_page.py. All
+                   paper-level checks apply.
+  * manifest     — the published_pages.json manifest itself (when --include-manifest
+                   is set). Manifest-only checks apply: JSON valid, pages list present,
+                   every entry has title+slug+path, no duplicate slugs / urls.
+  * unknown      — fallback. Treated as paper_page for safety.
 
 stdlib-only. No external deps.
 """
@@ -68,6 +88,29 @@ EVIDENCE_LABELS = [
     "[Needs verification]",
 ]
 
+# Page types
+PAGE_TYPE_SITE_INDEX = "site_index"
+PAGE_TYPE_PAPER_PAGE = "paper_page"
+PAGE_TYPE_MANIFEST = "manifest"
+PAGE_TYPE_UNKNOWN = "unknown"
+ALL_PAGE_TYPES = [PAGE_TYPE_SITE_INDEX, PAGE_TYPE_PAPER_PAGE, PAGE_TYPE_MANIFEST, PAGE_TYPE_UNKNOWN]
+
+# Paper-level checks that site_index is exempt from (codes).
+PAPER_LEVEL_CODES = {
+    "missing_resolver_trail",
+    "missing_claims_section",
+    "missing_glossary",
+    "no_visible_claim_id",
+    "no_evidence_label",
+    "glossary_no_explicit_definition",
+    "essay_missing_markers",
+    "zh_cn_markers_weak",
+    "empty_claim_id",
+}
+
+# Severe checks that still apply to site_index (templates leaks / footers).
+SEVERE_CODES = {"template_leak", "raw_dict", "old_footer"}
+
 # ----------------------------------------------------------------------------
 # HTTP helpers
 # ----------------------------------------------------------------------------
@@ -104,6 +147,67 @@ def _extract_title(body: str) -> str:
     return re.sub(r"\s+", " ", m.group(1)).strip()
 
 
+def _normalize_url_for_compare(u: str) -> str:
+    """Lowercase + strip trailing slashes + drop fragment for slug-like comparison."""
+    if not u:
+        return ""
+    parsed = urllib.parse.urlparse(u)
+    path = parsed.path.rstrip("/")
+    return path.lower()
+
+
+# ----------------------------------------------------------------------------
+# Page-type classification
+# ----------------------------------------------------------------------------
+
+def _classify_page_type(
+    url: str,
+    slug: str,
+    title_hint: str,
+    body: str,
+    site_root: str,
+    is_root_requested: bool = False,
+) -> str:
+    """Classify a page entry as site_index / paper_page / manifest / unknown.
+
+    Site-index detection is conservative: it requires either (a) the caller
+    marked this URL as the requested site root, or (b) the URL path is empty /
+    "/" AND the body shows manifest-style content. Manifest detection is via
+    JSON content shape (returns manifest when body is a valid published_pages.json).
+    """
+    parsed = urllib.parse.urlparse(url)
+    site_root_norm = site_root.rstrip("/")
+    path = (parsed.path or "").rstrip("/")
+    body_low = body or ""
+
+    # Manifest: JSON published_pages.json
+    if body_low.lstrip().startswith("{") and '"pages"' in body_low and '"slug"' in body_low:
+        try:
+            obj = json.loads(body_low)
+            if isinstance(obj, dict) and isinstance(obj.get("pages"), list):
+                return PAGE_TYPE_MANIFEST
+        except Exception:
+            pass
+
+    # Site-index: explicit root flag, or URL is the bare site_root.
+    if is_root_requested:
+        return PAGE_TYPE_SITE_INDEX
+    if url.rstrip("/") == site_root_norm and path == "":
+        return PAGE_TYPE_SITE_INDEX
+    # Strong HTML evidence (for live audits that follow manifest-only).
+    if path == "":
+        manifest_signals = (
+            "published_pages.json" in body_low
+            or "Paper Reading Pages" in body_low
+            or "Published pages" in body_low
+        )
+        links_to_slugs = bool(re.search(r'<a href="[^"]+/[^"]+/">', body_low))
+        if manifest_signals or links_to_slugs:
+            return PAGE_TYPE_SITE_INDEX
+
+    return PAGE_TYPE_PAPER_PAGE
+
+
 # ----------------------------------------------------------------------------
 # Issue construction
 # ----------------------------------------------------------------------------
@@ -118,7 +222,7 @@ def _mk_issue(severity: str, code: str, message: str, recommendation: str = "") 
 
 
 # ----------------------------------------------------------------------------
-# Check functions
+# Check functions (paper-level)
 # ----------------------------------------------------------------------------
 
 def _check_template_leak(body: str) -> List[Dict[str, str]]:
@@ -289,6 +393,141 @@ def _check_zh_cn_markers(body: str, slug: str, title: str) -> List[Dict[str, str
 
 
 # ----------------------------------------------------------------------------
+# Site-index specific checks
+# ----------------------------------------------------------------------------
+
+def _check_site_index(body: str, url: str, manifest_pages: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Index-specific checks (run only when page_type == site_index).
+
+    Returns a list of issues. By convention, the site index should:
+      - have a non-empty body (already checked upstream)
+      - have a <title>
+      - contain at least one published-page link
+      - reference published_pages.json (or have a corresponding manifest loaded)
+      - link count should roughly match the manifest
+    """
+    issues: List[Dict[str, str]] = []
+
+    # Title
+    title = _extract_title(body)
+    if not title:
+        issues.append(_mk_issue(
+            "warning",
+            "index_missing_title",
+            "site_index 缺少 <title>。",
+            "publish_output_to_github.sh 会写入 <title>Paper Reading Pages — index</title>;检查 publisher 模板。",
+        ))
+
+    # At least one published-page link
+    page_links = re.findall(r'<a\s+href="([^"#]+)"[^>]*>([^<]*)</a>', body)
+    slugs_from_links: List[str] = []
+    for href, _ in page_links:
+        # Only treat as a paper link if it has the path form /<slug>/...
+        m = re.search(r"/([^/]+)/?$", urllib.parse.urlparse(href).path.rstrip("/"))
+        if m:
+            slugs_from_links.append(m.group(1))
+
+    if not slugs_from_links:
+        issues.append(_mk_issue(
+            "warning",
+            "index_no_page_links",
+            "site_index 没有指向任何已发布页面(/<slug>/ 形式)的链接。",
+            "确认 publisher 用 multi-page mode + manifest 列表正确注入。",
+        ))
+    else:
+        # Compare to manifest
+        manifest_slugs = {str(p.get("slug", "")).strip() for p in manifest_pages if p.get("slug")}
+        manifest_slugs.discard("")
+        if manifest_slugs:
+            only_in_index = set(slugs_from_links) - manifest_slugs
+            only_in_manifest = manifest_slugs - set(slugs_from_links)
+            # Only emit a warning when the delta is large (>50% of manifest missing).
+            missing_ratio = (len(only_in_manifest) / len(manifest_slugs)) if manifest_slugs else 0
+            if missing_ratio > 0.5:
+                issues.append(_mk_issue(
+                    "warning",
+                    "index_links_mismatch",
+                    f"site_index 仅链接 {len(set(slugs_from_links))} 个 slug,manifest 有 {len(manifest_slugs)} 个;超过 50% manifest 条目在 index 缺失。",
+                    "确认 publish_output_to_github.sh 的 index 重新生成逻辑使用了最新 manifest。",
+                ))
+
+    # Reference to published_pages.json (or the manifest URL)
+    if "published_pages.json" not in body:
+        issues.append(_mk_issue(
+            "info",
+            "index_no_manifest_link",
+            "site_index 页面未引用 published_pages.json (audit 仍可工作,但用户可能无法直接跳转到 manifest)。",
+            "publisher 可选地在 <head> 或 <footer> 加 <link rel=alternate> 到 manifest URL。",
+        ))
+
+    return issues
+
+
+def _check_manifest_pages(manifest_pages: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Manifest-specific checks. Run once per audit (top-level) and recorded as
+    a synthetic page entry."""
+    issues: List[Dict[str, str]] = []
+    if not isinstance(manifest_pages, list):
+        return [_mk_issue(
+            "error",
+            "manifest_pages_not_list",
+            "published_pages.json.pages 不是 list。",
+            "确认 publisher 用 schema_version 0.1 写入 manifest。",
+        )]
+    if not manifest_pages:
+        issues.append(_mk_issue(
+            "warning",
+            "manifest_empty",
+            "published_pages.json.pages 为空 — 没有任何已发布页面。",
+            "publish_output_to_github.sh --site-path 会向 manifest 添加条目;确认至少有一页发布。",
+        ))
+        return issues
+
+    # Each entry must have slug + title + path
+    missing_fields = []
+    slugs_seen: Dict[str, int] = {}
+    paths_seen: Dict[str, int] = {}
+    for i, p in enumerate(manifest_pages):
+        if not isinstance(p, dict):
+            missing_fields.append(f"#{i}: not a dict")
+            continue
+        for k in ("slug", "title", "path"):
+            if not p.get(k):
+                missing_fields.append(f"#{i}: missing {k}")
+        s = (p.get("slug") or "").strip()
+        path = (p.get("path") or "").strip()
+        if s:
+            slugs_seen[s] = slugs_seen.get(s, 0) + 1
+        if path:
+            paths_seen[_normalize_url_for_compare(path)] = paths_seen.get(_normalize_url_for_compare(path), 0) + 1
+    if missing_fields:
+        issues.append(_mk_issue(
+            "warning",
+            "manifest_incomplete_entries",
+            f"manifest 存在不完整条目: {', '.join(missing_fields[:5])}{' ...' if len(missing_fields) > 5 else ''}。",
+            "publish_output_to_github.sh 写入每个 entry 时必须含 slug + title + path。",
+        ))
+
+    dup_slugs = [s for s, n in slugs_seen.items() if n > 1]
+    if dup_slugs:
+        issues.append(_mk_issue(
+            "warning",
+            "manifest_duplicate_slugs",
+            f"manifest 含重复 slug: {', '.join(sorted(dup_slugs))}。",
+            "publisher 不应写入重复 slug;检查 site-path 冲突。",
+        ))
+    dup_paths = [p for p, n in paths_seen.items() if n > 1]
+    if dup_paths:
+        issues.append(_mk_issue(
+            "warning",
+            "manifest_duplicate_paths",
+            f"manifest 含重复 path: {', '.join(sorted(dup_paths))}。",
+            "publisher 不应写入重复 path;检查 site-path 冲突。",
+        ))
+    return issues
+
+
+# ----------------------------------------------------------------------------
 # Manifest handling
 # ----------------------------------------------------------------------------
 
@@ -313,7 +552,15 @@ def _load_manifest(args) -> Tuple[str, List[Dict[str, Any]]]:
 # Page audit
 # ----------------------------------------------------------------------------
 
-def _audit_page(url: str, title_hint: str, slug: str, args) -> Dict[str, Any]:
+def _audit_page(
+    url: str,
+    title_hint: str,
+    slug: str,
+    args,
+    site_root: str,
+    manifest_pages: List[Dict[str, Any]],
+    page_type_override: Optional[str] = None,
+) -> Dict[str, Any]:
     page: Dict[str, Any] = {
         "url": url,
         "slug": slug,
@@ -321,6 +568,7 @@ def _audit_page(url: str, title_hint: str, slug: str, args) -> Dict[str, Any]:
         "http_status": 0,
         "fetched_bytes": 0,
         "issues": [],
+        "page_type": PAGE_TYPE_UNKNOWN,
     }
     status, body = _http_get(url, timeout=args.timeout)
     page["http_status"] = status
@@ -346,16 +594,54 @@ def _audit_page(url: str, title_hint: str, slug: str, args) -> Dict[str, Any]:
     if actual_title:
         page["title"] = actual_title
 
-    # Walk all checks
+    # Classify the page first
+    is_root = bool(getattr(args, "_root_url", None) and url == args._root_url)
+    if page_type_override:
+        page["page_type"] = page_type_override
+    else:
+        page["page_type"] = _classify_page_type(
+            url=url,
+            slug=slug,
+            title_hint=page["title"],
+            body=body,
+            site_root=site_root,
+            is_root_requested=is_root,
+        )
+
+    # Severe checks apply to all page types
     issues: List[Dict[str, str]] = []
     issues.extend(_check_template_leak(body))
     issues.extend(_check_old_footer(body))
     issues.extend(_check_raw_dict(body))
-    issues.extend(_check_resolver_trail(body, url))
-    issues.extend(_check_claims(body))
-    issues.extend(_check_glossary(body))
-    issues.extend(_check_essay_talk(body, slug, page["title"], url))
-    issues.extend(_check_zh_cn_markers(body, slug, page["title"]))
+
+    if page["page_type"] == PAGE_TYPE_SITE_INDEX:
+        # Index-specific checks
+        issues.extend(_check_site_index(body, url, manifest_pages))
+        # Note: paper-level checks are skipped by design for site_index.
+    elif page["page_type"] == PAGE_TYPE_MANIFEST:
+        # Manifest: only structural validity is reported (already validated upstream);
+        # add a synthetic info entry confirming manifest shape.
+        try:
+            obj = json.loads(body)
+            if isinstance(obj, dict) and isinstance(obj.get("pages"), list):
+                issues.append(_mk_issue(
+                    "info",
+                    "manifest_ok",
+                    f"published_pages.json 合法,含 {len(obj.get('pages', []))} 条 entry。",
+                ))
+        except Exception:
+            issues.append(_mk_issue(
+                "error", "manifest_invalid_json",
+                "manifest 抓取后 JSON parse 失败。",
+                "确认 published_pages.json 写入时无 BOM / trailing whitespace。",
+            ))
+    else:
+        # paper_page / unknown → run full paper-level checks
+        issues.extend(_check_resolver_trail(body, url))
+        issues.extend(_check_claims(body))
+        issues.extend(_check_glossary(body))
+        issues.extend(_check_essay_talk(body, slug, page["title"], url))
+        issues.extend(_check_zh_cn_markers(body, slug, page["title"]))
 
     page["issues"] = issues
 
@@ -391,10 +677,26 @@ def _issue_counts(pages: List[Dict[str, Any]]) -> Dict[str, int]:
     return out
 
 
-def _build_recommendations(pages: List[Dict[str, Any]]) -> List[str]:
+def _page_type_counts(pages: List[Dict[str, Any]]) -> Dict[str, int]:
+    out = {t: 0 for t in ALL_PAGE_TYPES}
+    for p in pages:
+        t = p.get("page_type", PAGE_TYPE_UNKNOWN)
+        out[t] = out.get(t, 0) + 1
+    return out
+
+
+def _build_recommendations(
+    pages: List[Dict[str, Any]],
+    page_type_counts: Dict[str, int],
+) -> List[str]:
     recs: List[str] = []
     codes_seen: Dict[str, int] = {}
     for p in pages:
+        # Only count issues from paper_page / manifest for paper-level codes;
+        # site_index issues use index-level codes and should not pollute the
+        # paper-level recommendation list.
+        if p.get("page_type") == PAGE_TYPE_SITE_INDEX:
+            continue
         for i in p.get("issues", []):
             codes_seen[i["code"]] = codes_seen.get(i["code"], 0) + 1
     if codes_seen.get("template_leak"):
@@ -406,25 +708,46 @@ def _build_recommendations(pages: List[Dict[str, Any]]) -> List[str]:
     if codes_seen.get("http_error"):
         recs.append(f"{codes_seen['http_error']} 页面 HTTP 非 200 — 检查 gh-pages 部署状态。")
     if codes_seen.get("missing_resolver_trail"):
-        recs.append(f"{codes_seen['missing_resolver_trail']} 页面缺 Resolver Trail — v0.2.8 之前渲染,建议在 v0.2.11+ 分批重渲染。")
+        recs.append(f"{codes_seen['missing_resolver_trail']} 论文页缺 Resolver Trail — v0.2.8 之前渲染,建议在 v0.2.11+ 分批重渲染。")
     if codes_seen.get("zh_cn_markers_weak"):
-        recs.append(f"{codes_seen['zh_cn_markers_weak']} zh-CN 页面中文 marker 不足 — 重新渲染并确认 ui_language=zh-CN。")
+        recs.append(f"{codes_seen['zh_cn_markers_weak']} zh-CN 论文页中文 marker 不足 — 重新渲染并确认 ui_language=zh-CN。")
     if codes_seen.get("essay_missing_markers"):
-        recs.append(f"{codes_seen['essay_missing_markers']} essay 页面缺 essay-mode 标记 — 重新渲染以使用 is_essay_talk 切换。")
+        recs.append(f"{codes_seen['essay_missing_markers']} essay 论文页缺 essay-mode 标记 — 重新渲染以使用 is_essay_talk 切换。")
     if codes_seen.get("missing_glossary"):
-        recs.append(f"{codes_seen['missing_glossary']} 页面缺 Glossary — 检查 paper_reading.json 的 glossary 字段。")
+        recs.append(f"{codes_seen['missing_glossary']} 论文页缺 Glossary — 检查 paper_reading.json 的 glossary 字段。")
+
+    # site_index-specific
+    site_index_pages = [p for p in pages if p.get("page_type") == PAGE_TYPE_SITE_INDEX]
+    if site_index_pages:
+        site_errors = [i for p in site_index_pages for i in p.get("issues", []) if i["severity"] == "error"]
+        site_warnings = [i for p in site_index_pages for i in p.get("issues", []) if i["severity"] == "warning"]
+        if not site_errors and not site_warnings:
+            recs.append("Root index is treated as site_index and exempted from paper-page checks (missing_resolver_trail / missing_claims_section / missing_glossary skipped by design).")
+        else:
+            for p in site_index_pages:
+                for i in p.get("issues", []):
+                    if i["severity"] in ("error", "warning"):
+                        recs.append(f"site_index 触发严重/警告: {i['code']} — {i['message']}")
+    if page_type_counts.get(PAGE_TYPE_UNKNOWN, 0) > 0:
+        recs.append(f"{page_type_counts[PAGE_TYPE_UNKNOWN]} 页面 page_type=unknown — 检查 _classify_page_type 规则是否覆盖。")
     if not recs:
         recs.append("所有页面通过审计;无需立即行动。")
     return recs
 
 
-def _build_json_report(args, manifest_url: str, pages: List[Dict[str, Any]], manifest_ok: bool) -> Dict[str, Any]:
+def _build_json_report(
+    args,
+    manifest_url: str,
+    pages: List[Dict[str, Any]],
+    manifest_ok: bool,
+    page_type_counts: Dict[str, int],
+) -> Dict[str, Any]:
     counts = _issue_counts(pages)
     pass_n = sum(1 for p in pages if p.get("status") == "PASS")
     warn_n = sum(1 for p in pages if p.get("status") == "WARN")
     fail_n = sum(1 for p in pages if p.get("status") == "FAIL")
     return {
-        "schema_version": "0.1.0",
+        "schema_version": "0.2.0",
         "generated_at": _dt.datetime.utcnow().isoformat() + "Z",
         "status": _overall_status(pages, manifest_ok),
         "site_root": args.site_root,
@@ -436,8 +759,9 @@ def _build_json_report(args, manifest_url: str, pages: List[Dict[str, Any]], man
         "pages_warn": warn_n,
         "pages_fail": fail_n,
         "issues_by_severity": counts,
+        "page_type_counts": page_type_counts,
         "pages": pages,
-        "recommendations": _build_recommendations(pages),
+        "recommendations": _build_recommendations(pages, page_type_counts),
     }
 
 
@@ -462,15 +786,25 @@ def _build_markdown_report(report: Dict[str, Any]) -> str:
     )
     lines.append("")
 
+    # Page Type Summary (v0.2.12-alpha)
+    ptc = report.get("page_type_counts", {})
+    lines.append("## Page Type Summary")
+    lines.append("")
+    lines.append("| Page type | Count |")
+    lines.append("|---|---|")
+    for t in ALL_PAGE_TYPES:
+        lines.append(f"| {t} | {ptc.get(t, 0)} |")
+    lines.append("")
+
     lines.append("## Pages")
     lines.append("")
-    lines.append("| # | URL | Status | HTTP | Title | Issues |")
-    lines.append("|---|---|---|---|---|---|")
+    lines.append("| # | URL | Status | HTTP | Page type | Title | Issues |")
+    lines.append("|---|---|---|---|---|---|---|")
     for i, p in enumerate(report["pages"], 1):
         title = (p.get("title") or "")[:80].replace("|", "\\|")
         url = p.get("url", "")
         issues_short = ", ".join(sorted({i2["code"] for i2 in p.get("issues", [])})) or "—"
-        lines.append(f"| {i} | {url} | {p.get('status', '?')} | {p.get('http_status', '?')} | {title} | {issues_short} |")
+        lines.append(f"| {i} | {url} | {p.get('status', '?')} | {p.get('http_status', '?')} | {p.get('page_type', '?')} | {title} | {issues_short} |")
     lines.append("")
 
     lines.append("## Detailed issues")
@@ -482,6 +816,10 @@ def _build_markdown_report(report: Dict[str, Any]) -> str:
         any_issue = True
         lines.append(f"### {p.get('url', '?')}")
         lines.append("")
+        lines.append(f"- **Page type**: {p.get('page_type', '?')}")
+        if p.get("page_type") == PAGE_TYPE_SITE_INDEX:
+            lines.append("- **Paper-level checks**: skipped by design")
+            lines.append("- **Index checks**: ran")
         for i in p["issues"]:
             lines.append(f"- **[{i['severity']}]** `{i['code']}` — {i['message']}")
             if i.get("recommendation"):
@@ -504,7 +842,11 @@ def _build_markdown_report(report: Dict[str, Any]) -> str:
 # ----------------------------------------------------------------------------
 
 def _selftest(args) -> Dict[str, Any]:
-    """Run synthetic pages through the same checks. Returns a report dict."""
+    """Run synthetic pages through the same checks. Returns a report dict.
+
+    Includes a fake site_index fixture so the page-type classifier can be
+    validated without network access.
+    """
     fake_manifest_pages = [
         {
             "slug": "fake-essay",
@@ -548,6 +890,20 @@ def _selftest(args) -> Dict[str, Any]:
             "_url": "file://" + os.path.join(args.selftest_dir, "fake-old-footer.html"),
             "_expect": ["old_footer"],
         },
+        {
+            "slug": "fake-site-index",
+            "title": "Fake Site Index",
+            "path": "/fake-site-index/",
+            "_url": "file://" + os.path.join(args.selftest_dir, "fake-site-index.html"),
+            "_expect": [],
+        },
+        {
+            "slug": "fake-site-index-leak",
+            "title": "Fake Site Index With Leak",
+            "path": "/fake-site-index-leak/",
+            "_url": "file://" + os.path.join(args.selftest_dir, "fake-site-index-leak.html"),
+            "_expect": ["template_leak"],
+        },
     ]
     # monkey-patch _http_get for file:// urls
     import urllib.parse as _up
@@ -563,10 +919,22 @@ def _selftest(args) -> Dict[str, Any]:
     orig = globals()["_http_get"]
     globals()["_http_get"] = _file_get
     try:
+        site_root = "file://" + args.selftest_dir
+        # The fake site-index fixtures need to be classified as site_index
+        # regardless of the URL we point _http_get at (file:// fixture path);
+        # we use page_type_override so the classifier rule and the
+        # page_type field both stay consistent with the spec.
+        site_index_slugs = {"fake-site-index", "fake-site-index-leak"}
         pages: List[Dict[str, Any]] = []
         for entry in fake_manifest_pages:
             url = entry["_url"]
-            page = _audit_page(url, entry["title"], entry["slug"], args)
+            override = PAGE_TYPE_SITE_INDEX if entry["slug"] in site_index_slugs else None
+            page = _audit_page(
+                url, entry["title"], entry["slug"], args,
+                site_root=site_root,
+                manifest_pages=fake_manifest_pages,
+                page_type_override=override,
+            )
             pages.append(page)
     finally:
         globals()["_http_get"] = orig
@@ -576,7 +944,11 @@ def _selftest(args) -> Dict[str, Any]:
         codes = {i["code"] for i in page.get("issues", [])}
         page["_expect_hit"] = sorted(c for c in entry["_expect"] if c in codes)
         page["_expect_miss"] = sorted(c for c in entry["_expect"] if c not in codes)
-    return _build_json_report(args, "selftest://manifest", pages, manifest_ok=True)
+    return _build_json_report(
+        args, "selftest://manifest", pages,
+        manifest_ok=True,
+        page_type_counts=_page_type_counts(pages),
+    )
 
 
 # ----------------------------------------------------------------------------
@@ -585,7 +957,7 @@ def _selftest(args) -> Dict[str, Any]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Audit every page in a published_pages.json manifest against v0.2.9+ renderer expectations.",
+        description="Audit every page in a published_pages.json manifest against v0.2.9+ renderer expectations (v0.2.12-alpha adds page-type classification + root-index exemption).",
     )
     parser.add_argument("--manifest-url", help="Live manifest URL (e.g. https://conanxin.github.io/paper-reading-pages/published_pages.json)")
     parser.add_argument("--manifest-file", help="Local manifest JSON path (alternative to --manifest-url)")
@@ -595,7 +967,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--warn-only", action="store_true", help="Always exit 0 unless something is structurally broken")
     parser.add_argument("--timeout", type=float, default=20.0, help="HTTP timeout per page (default 20s)")
     parser.add_argument("--max-pages", type=int, default=0, help="Cap pages to check (0 = no cap)")
-    parser.add_argument("--include-root", action="store_true", help="Also audit the site root index.html")
+    parser.add_argument("--include-root", action="store_true", help="Also audit the site root index.html (treated as site_index)")
+    parser.add_argument("--include-manifest", action="store_true", help="Also audit the manifest JSON itself (treated as manifest)")
     parser.add_argument("--strict", action="store_true", help="Treat warnings as failures for the overall status")
     parser.add_argument("--selftest-dir", help="(selftest) directory containing fake-*.html fixtures")
     args = parser.parse_args(argv)
@@ -627,6 +1000,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             os.makedirs(os.path.dirname(os.path.abspath(args.json_output)) or ".", exist_ok=True)
             with open(args.json_output, "w", encoding="utf-8") as f:
                 json.dump({
+                    "schema_version": "0.2.0",
                     "status": "FAIL",
                     "site_root": args.site_root,
                     "manifest_url": args.manifest_url or "",
@@ -637,12 +1011,22 @@ def main(argv: Optional[List[str]] = None) -> int:
                     "pages_warn": 0,
                     "pages_fail": 0,
                     "issues_by_severity": {"error": 1, "warning": 0, "info": 0},
+                    "page_type_counts": {t: 0 for t in ALL_PAGE_TYPES},
                     "pages": [],
                     "recommendations": ["无法读取 manifest — 检查 --manifest-url 是否可访问。"],
                 }, f, ensure_ascii=False, indent=2)
         return 1
 
     pages_to_check: List[Dict[str, Any]] = []
+
+    # Optional: include manifest JSON itself as a manifest page entry.
+    if args.include_manifest:
+        pages_to_check.append({
+            "url": manifest_url,
+            "title": "published_pages.json (manifest)",
+            "slug": "published_pages_json",
+        })
+
     for entry in manifest_pages:
         path = entry.get("path", "")
         url = urllib.parse.urljoin(args.site_root.rstrip("/") + "/", path.lstrip("/"))
@@ -650,8 +1034,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         title = entry.get("title", "")
         pages_to_check.append({"url": url, "title": title, "slug": slug})
 
+    root_url: Optional[str] = None
     if args.include_root:
-        pages_to_check.insert(0, {"url": args.site_root.rstrip("/") + "/", "title": "(site root)", "slug": "index"})
+        root_url = args.site_root.rstrip("/") + "/"
+        # Insert root at position 0 so it appears first in the report.
+        pages_to_check.insert(0, {"url": root_url, "title": "(site root)", "slug": "index"})
+        args._root_url = root_url
 
     if args.max_pages and args.max_pages > 0:
         pages_to_check = pages_to_check[: args.max_pages]
@@ -659,7 +1047,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     audited: List[Dict[str, Any]] = []
     for entry in pages_to_check:
         try:
-            p = _audit_page(entry["url"], entry["title"], entry["slug"], args)
+            page_type_override = PAGE_TYPE_MANIFEST if entry["slug"] == "published_pages_json" else None
+            p = _audit_page(
+                entry["url"], entry["title"], entry["slug"], args,
+                site_root=args.site_root,
+                manifest_pages=manifest_pages,
+                page_type_override=page_type_override,
+            )
         except Exception as e:
             p = {
                 "url": entry["url"],
@@ -669,10 +1063,27 @@ def main(argv: Optional[List[str]] = None) -> int:
                 "fetched_bytes": 0,
                 "issues": [_mk_issue("error", "audit_crashed", f"审计脚本异常: {e}", "查看 audit_published_pages.py 错误日志。")],
                 "status": "FAIL",
+                "page_type": PAGE_TYPE_UNKNOWN,
             }
         audited.append(p)
 
-    report = _build_json_report(args, manifest_url, audited, manifest_ok)
+    # Top-level manifest-shape validation (always)
+    manifest_shape_issues = _check_manifest_pages(manifest_pages)
+    if manifest_shape_issues:
+        # Emit as an info-level synthetic page so it appears in the report
+        audited.insert(0 if not args.include_root else 1, {
+            "url": manifest_url,
+            "slug": "_manifest_shape",
+            "title": "published_pages.json shape",
+            "http_status": 200,
+            "fetched_bytes": 0,
+            "issues": manifest_shape_issues,
+            "status": "FAIL" if any(i["severity"] == "error" for i in manifest_shape_issues) else "WARN",
+            "page_type": PAGE_TYPE_MANIFEST,
+        })
+
+    page_type_counts = _page_type_counts(audited)
+    report = _build_json_report(args, manifest_url, audited, manifest_ok, page_type_counts)
     if args.strict and any(i["severity"] == "warning" for p in audited for i in p.get("issues", [])):
         report["status"] = "FAIL"
 

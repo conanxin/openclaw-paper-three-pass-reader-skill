@@ -1,8 +1,10 @@
-# PUBLISHED_PAGES_AUDIT — paper-three-pass-reader (v0.2.10)
+# PUBLISHED_PAGES_AUDIT — paper-three-pass-reader (v0.2.12-alpha)
 
 `audit_published_pages.py` is the published-pages regression audit for `paper-three-pass-reader`. It reads `published_pages.json` (live URL or local file), fetches every page, and produces a structured regression report.
 
 This document is the canonical reference for the audit tool: what it checks, how to run it, how to read the output, and what the three overall statuses (PASS / WARN / FAIL) mean.
+
+v0.2.12-alpha adds **page-type classification** (`site_index` / `paper_page` / `manifest` / `unknown`) so the root index / manifest is no longer falsely flagged with `missing_resolver_trail` / `missing_claims_section` / `missing_glossary`. See [Page-type classification (v0.2.12-alpha)](#page-type-classification-v0212-alpha).
 
 ## Why this tool exists
 
@@ -163,3 +165,92 @@ The audit is a **read-only** tool. It never writes back to the manifest, never t
 - `audit_published_pages.py` is stdlib-only. No `requests`, no `beautifulsoup4`, no `playwright`. Just `urllib`, `json`, `re`, `argparse`.
 - Works against any host that serves `published_pages.json` + per-page `index.html`. Tested against GitHub Pages.
 - Backwards compatible with the v0.1 manifest schema (`schema_version: "0.1"`).
+
+## Page-type classification (v0.2.12-alpha)
+
+v0.2.10/v0.2.11 audits ran every page in the manifest through the same paper-level
+check set. This was correct for paper pages, but it produced three false-positive
+warnings on the **root index**:
+
+- `missing_resolver_trail` — the root index never had a Resolver Trail block, by
+  design. It's a manifest, not a paper page.
+- `missing_claims_section` — same.
+- `missing_glossary` — same.
+
+The root index legitimately has none of those sections: it lists links to paper
+pages. Flagging it for "missing Claims / Glossary / Resolver Trail" is a
+**misclassification**, not a regression.
+
+Starting with v0.2.12-alpha, every audited page is classified into one of four
+`page_type` values, and check selection is driven by that classification.
+
+| `page_type` | Meaning | Paper-level checks (Claims / Glossary / Resolver / Essay / zh-CN) | Severe checks (template_leak / raw_dict / old_footer) | Index / manifest checks |
+|---|---|---|---|---|
+| `site_index` | The site root (`<site_root>/`). A manifest of all published pages. | **Skipped by design** | **Run** (template leak / old footer / raw dict on the index are still real regressions) | **Run** — title present, ≥1 published-page link, link count roughly matches manifest, manifest reference present |
+| `paper_page` | A normal paper reading page produced by `render_page.py`. | **Run** (full paper-level check set) | **Run** | n/a |
+| `manifest` | The `published_pages.json` JSON itself (when `--include-manifest` is set). | **Skipped** | **Skipped** | **Run** — JSON valid, `pages` list present, every entry has `slug` + `title` + `path`, no duplicate slugs / paths |
+| `unknown` | Fallback for unclassified URLs. | Treated as `paper_page` (safe default) | Run | n/a |
+
+### Where classification happens
+
+`_classify_page_type()` in `audit_published_pages.py` uses these rules:
+
+1. If the body parses as JSON containing `pages: [...]` and at least one
+   `slug`, the page is `manifest`.
+2. If the URL is the requested site root (`--include-root` flag or URL matches
+   `<site_root>` with empty path), the page is `site_index`.
+3. If the URL has an empty path and the body contains manifest signals
+   (`published_pages.json`, `Paper Reading Pages`, `Published pages`, or links
+   to `/<slug>/` paths), the page is `site_index`.
+4. Otherwise the page is `paper_page`.
+
+### Audit JSON schema additions (v0.2.12-alpha)
+
+Top-level:
+
+- `schema_version`: bumped from `0.1.0` to `0.2.0`.
+- `page_type_counts`: object with counts per `page_type` (`site_index`,
+  `paper_page`, `manifest`, `unknown`).
+
+Per-page:
+
+- `page_type`: one of `site_index` / `paper_page` / `manifest` / `unknown`.
+
+The Markdown report gains a `## Page Type Summary` table and a per-page
+`Page type:` line in the Detailed Issues section. For `site_index` pages, the
+section also notes `Paper-level checks: skipped by design` and
+`Index checks: ran`.
+
+### Live audit example
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
+  --manifest-url https://conanxin.github.io/paper-reading-pages/published_pages.json \
+  --site-root https://conanxin.github.io/paper-reading-pages \
+  --include-root --warn-only
+```
+
+Before v0.2.12-alpha: `[audit] overall=WARN pages=10 pass=9 warn=1 fail=0`
+(root index has 3 paper-level warnings).
+
+After v0.2.12-alpha: `[audit] overall=PASS pages=10 pass=10 warn=0 fail=0`
+with `page_type_counts: {site_index: 1, paper_page: 9, manifest: 0, unknown: 0}`.
+
+The recommendations block in the JSON report surfaces the rule with
+`Root index is treated as site_index and exempted from paper-page checks (...)`.
+
+### Selftest additions
+
+`audit_published_pages.py --selftest-dir <dir>` runs eight synthetic pages:
+
+- `fake-essay`, `fake-zhcn`, `fake-pass`, `fake-template-leak`, `fake-raw-dict`,
+  `fake-old-footer` (the original six).
+- `fake-site-index` — a clean root index; expected codes: `[ ]`. Must be
+  classified as `site_index` and must NOT trigger `missing_resolver_trail`,
+  `missing_claims_section`, or `missing_glossary`.
+- `fake-site-index-leak` — a root index that contains `{% else %}` in the body.
+  Expected codes: `[template_leak]`. Must be classified as `site_index` and
+  must FAIL on the severe check.
+
+`scripts/validate.sh` step 18 verifies both new fixtures plus the live audit
+shape end-to-end.

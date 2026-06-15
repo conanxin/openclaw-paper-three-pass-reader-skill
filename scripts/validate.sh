@@ -1339,6 +1339,33 @@ cat > "$SELFTEST_DIR/fake-old-footer.html" <<'HTMLEOF'
 </body></html>
 HTMLEOF
 
+# v0.2.12-alpha fixtures: fake site_index pages.
+cat > "$SELFTEST_DIR/fake-site-index.html" <<'HTMLEOF'
+<!doctype html>
+<html lang="en"><head><title>Paper Reading Pages — index</title></head>
+<body><h1>Paper Reading Pages</h1>
+<ul class="pages">
+<li><a href="/fake-essay/">Fake Essay — Self Test</a> <span class="slug">[fake-essay]</span></li>
+<li><a href="/fake-pass/">Fake Pass</a> <span class="slug">[fake-pass]</span></li>
+<li><a href="/fake-template-leak/">Fake Template Leak</a> <span class="slug">[fake-template-leak]</span></li>
+<li><a href="/fake-raw-dict/">Fake Raw Dict</a> <span class="slug">[fake-raw-dict]</span></li>
+<li><a href="/fake-old-footer/">Fake Old Footer</a> <span class="slug">[fake-old-footer]</span></li>
+</ul>
+<p>Manifest: <a href="/published_pages.json">published_pages.json</a></p>
+</body></html>
+HTMLEOF
+
+cat > "$SELFTEST_DIR/fake-site-index-leak.html" <<'HTMLEOF'
+<!doctype html>
+<html lang="en"><head><title>Site Index With Leak</title></head>
+<body><h1>Paper Reading Pages</h1>
+<p>Leak: {% else %} inside a comment</p>
+<ul class="pages">
+<li><a href="/fake-pass/">Fake Pass</a> <span class="slug">[fake-pass]</span></li>
+</ul>
+</body></html>
+HTMLEOF
+
 SELFTEST_JSON="$(mktemp)"
 SELFTEST_MD="$(mktemp)"
 python3 "$AUDIT_SCRIPT" \
@@ -1382,7 +1409,7 @@ for p in d['pages']:
 print('\n'.join(hits) if hits else 'OK')
 ")
 if [[ "$SELFTEST_HITS" == "OK" ]]; then
-  ok "all 6 selftest fixtures triggered their expected issue code (template_leak / raw_dict / old_footer / essay_missing_markers / zh_cn_markers_weak / pass)"
+  ok "all 8 selftest fixtures triggered their expected issue code (template_leak / raw_dict / old_footer / essay_missing_markers / zh_cn_markers_weak / pass / site_index_clean / site_index_with_leak)"
 else
   bad "selftest expectations not met: $SELFTEST_HITS"
 fi
@@ -1400,6 +1427,148 @@ sys.exit(1)
 else
   bad "selftest fake-pass page did not reach PASS"
 fi
+
+# ----------------------------------------------------------------
+# Step 18 — v0.2.12-alpha root-index audit exemption
+# ----------------------------------------------------------------
+step 18 "v0.2.12-alpha root-index audit exemption"
+
+# 18a. audit_published_pages.py --help runs (already checked in 17a; re-assert here for symmetry)
+if python3 "$AUDIT_SCRIPT" --help >/dev/null 2>&1; then
+  ok "audit_published_pages.py --help runs"
+else
+  bad "audit_published_pages.py --help failed"
+fi
+
+# Helper: extract the fake-site-index / fake-site-index-leak pages from selftest JSON.
+read_page() {
+  python3 -c "
+import json, sys
+d = json.load(open('$SELFTEST_JSON'))
+for p in d['pages']:
+    if p['slug'] == '$1':
+        print(json.dumps(p, ensure_ascii=False))
+        sys.exit(0)
+sys.exit(1)
+"
+}
+
+# 18b. fake-site-index is classified as site_index.
+SITE_INDEX_JSON="$(read_page fake-site-index 2>/dev/null || echo '')"
+if [[ -n "$SITE_INDEX_JSON" ]] && \
+   python3 -c "import json,sys; d=json.loads(sys.argv[1]); sys.exit(0 if d.get('page_type')=='site_index' else 1)" "$SITE_INDEX_JSON" >/dev/null 2>&1; then
+  ok "fake root index is classified as site_index"
+else
+  bad "fake root index was not classified as site_index"
+fi
+
+# 18c. fake-site-index does NOT trigger missing_resolver_trail.
+if [[ -n "$SITE_INDEX_JSON" ]] && \
+   ! python3 -c "import json,sys; d=json.loads(sys.argv[1]); sys.exit(0 if any(i.get('code')=='missing_resolver_trail' for i in d.get('issues',[])) else 1)" "$SITE_INDEX_JSON" >/dev/null 2>&1; then
+  ok "fake root index does not trigger missing_resolver_trail"
+else
+  bad "fake root index still triggered missing_resolver_trail"
+fi
+
+# 18d. fake-site-index does NOT trigger missing_claims_section.
+if [[ -n "$SITE_INDEX_JSON" ]] && \
+   ! python3 -c "import json,sys; d=json.loads(sys.argv[1]); sys.exit(0 if any(i.get('code')=='missing_claims_section' for i in d.get('issues',[])) else 1)" "$SITE_INDEX_JSON" >/dev/null 2>&1; then
+  ok "fake root index does not trigger missing_claims_section"
+else
+  bad "fake root index still triggered missing_claims_section"
+fi
+
+# 18e. fake-site-index does NOT trigger missing_glossary.
+if [[ -n "$SITE_INDEX_JSON" ]] && \
+   ! python3 -c "import json,sys; d=json.loads(sys.argv[1]); sys.exit(0 if any(i.get('code')=='missing_glossary' for i in d.get('issues',[])) else 1)" "$SITE_INDEX_JSON" >/dev/null 2>&1; then
+  ok "fake root index does not trigger missing_glossary"
+else
+  bad "fake root index still triggered missing_glossary"
+fi
+
+# 18f. fake-site-index-leak STILL triggers template_leak even though it's a site_index.
+SITE_INDEX_LEAK_JSON="$(read_page fake-site-index-leak 2>/dev/null || echo '')"
+if [[ -n "$SITE_INDEX_LEAK_JSON" ]] && \
+   python3 -c "
+import json,sys
+d = json.loads(sys.argv[1])
+assert d.get('page_type') == 'site_index', d.get('page_type')
+assert any(i.get('code') == 'template_leak' and i.get('severity') == 'error' for i in d.get('issues', [])), [i.get('code') for i in d.get('issues', [])]
+assert d.get('status') == 'FAIL', d.get('status')
+" "$SITE_INDEX_LEAK_JSON" >/dev/null 2>&1; then
+  ok "fake root index with template_leak still triggers template_leak error (and FAILs)"
+else
+  bad "fake root index with template_leak did NOT trigger template_leak error"
+fi
+
+# 18g. fake paper page (fake-essay) still runs paper-level checks (essay_missing_markers).
+ESSAY_JSON="$(read_page fake-essay 2>/dev/null || echo '')"
+if [[ -n "$ESSAY_JSON" ]] && \
+   python3 -c "import json,sys; d=json.loads(sys.argv[1]); assert d.get('page_type')=='paper_page'; assert any(i.get('code')=='essay_missing_markers' for i in d.get('issues',[]))" "$ESSAY_JSON" >/dev/null 2>&1; then
+  ok "fake paper page still runs paper-level checks (essay_missing_markers fired)"
+else
+  bad "fake paper page did not run paper-level checks"
+fi
+
+# 18h. audit JSON includes page_type_counts.
+if python3 -c "
+import json, sys
+d = json.load(open('$SELFTEST_JSON'))
+ptc = d.get('page_type_counts')
+assert isinstance(ptc, dict), type(ptc)
+for k in ('site_index','paper_page','manifest','unknown'):
+    assert k in ptc, (k, list(ptc.keys()))
+sys.exit(0)
+" >/dev/null 2>&1; then
+  ok "audit JSON contains page_type_counts with all four page types"
+else
+  bad "audit JSON missing page_type_counts"
+fi
+
+# 18i. every page entry has page_type.
+if python3 -c "
+import json, sys
+d = json.load(open('$SELFTEST_JSON'))
+miss = [p['slug'] for p in d.get('pages',[]) if 'page_type' not in p]
+sys.exit(0 if not miss else 1)
+" >/dev/null 2>&1; then
+  ok "every page entry has page_type field"
+else
+  bad "some page entries missing page_type"
+fi
+
+# 18j. markdown report contains Page Type Summary section.
+if [[ -s "$SELFTEST_MD" ]] && grep -q "^## Page Type Summary" "$SELFTEST_MD"; then
+  ok "markdown report contains Page Type Summary"
+else
+  bad "markdown report missing Page Type Summary"
+fi
+
+# 18k. live site audit: --include-root run against the live site must produce
+#      page_type_counts.site_index == 1 for the root index.
+LIVE_AUDIT_JSON="$(mktemp)"
+LIVE_AUDIT_MD="$(mktemp)"
+if python3 "$AUDIT_SCRIPT" \
+   --manifest-url "https://conanxin.github.io/paper-reading-pages/published_pages.json" \
+   --site-root "https://conanxin.github.io/paper-reading-pages" \
+   --include-root \
+   --warn-only \
+   --json-output "$LIVE_AUDIT_JSON" \
+   --markdown-output "$LIVE_AUDIT_MD" >/dev/null 2>&1; then
+  if python3 -c "
+import json, sys
+d = json.load(open('$LIVE_AUDIT_JSON'))
+ptc = d.get('page_type_counts', {})
+sys.exit(0 if ptc.get('site_index', 0) >= 1 else 1)
+" >/dev/null 2>&1; then
+    ok "live site audit root index page_type = site_index"
+  else
+    bad "live site audit root index page_type != site_index"
+  fi
+else
+  bad "live site audit run failed"
+fi
+rm -f "$LIVE_AUDIT_JSON" "$LIVE_AUDIT_MD"
 
 rm -rf "$SELFTEST_DIR" "$SELFTEST_JSON" "$SELFTEST_MD"
 

@@ -3,6 +3,32 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.12-alpha] — 2026-06-16
+
+### Added
+
+- **Page-type classification** in `audit_published_pages.py`. Every audited page is now classified as one of `site_index` / `paper_page` / `manifest` / `unknown`. The classification is recorded as a new `page_type` field on every `pages[*]` entry, and a top-level `page_type_counts` object summarises the audit's page-type distribution.
+- **Root-index audit exemption.** Pages classified as `site_index` (the `<site_root>/` manifest) are now exempt from the paper-level check set: `missing_resolver_trail` / `missing_claims_section` / `missing_glossary` / `no_visible_claim_id` / `no_evidence_label` / `glossary_no_explicit_definition` / `essay_missing_markers` / `zh_cn_markers_weak` / `empty_claim_id` no longer fire on the root index. The three severe checks (`template_leak` / `raw_dict` / `old_footer`) **still** fire on the root index — those would still be real regressions.
+- **Index-specific checks** (`_check_site_index`): title present, ≥1 published-page link, manifest reference present, link-vs-manifest delta within tolerance. Surfaced as `index_missing_title` / `index_no_page_links` / `index_links_mismatch` / `index_no_manifest_link`.
+- **Manifest-specific checks** (`_check_manifest_pages`): pages list present, every entry has `slug` + `title` + `path`, no duplicate slugs / paths. Surfaced as `manifest_pages_not_list` / `manifest_empty` / `manifest_incomplete_entries` / `manifest_duplicate_slugs` / `manifest_duplicate_paths`. The manifest check is always emitted; with `--include-manifest` the manifest JSON itself is fetched and audited too.
+- **`--include-manifest` CLI flag.** Default off; opt-in audit of the `published_pages.json` JSON itself (classified as `manifest`).
+- **`## Page Type Summary` section** in the Markdown audit report (one row per `page_type`).
+- **Live audit landed at PASS.** Live run against `conanxin.github.io/paper-reading-pages` now reports `[audit] overall=PASS pages=10 pass=10 warn=0 fail=0` (was `WARN/1/0/0`). Recorded under `runs/published-pages-audit-20260615-root-index-exemption/`.
+- **`scripts/validate.sh` step 18.** Adds 11 sub-checks for the page-type classifier and the exemption. Two new selftest fixtures (`fake-site-index` clean, `fake-site-index-leak` with `{% else %}`). One new live-site smoke sub-check that asserts `page_type_counts.site_index >= 1`. Validation is now 236/0 PASS (was 225/0 PASS at v0.2.10).
+- **`docs/RELEASE_NOTES_v0.2.12-alpha.md`** and **`docs/PHASE_P3PR_V0_2_12_ROOT_INDEX_AUDIT_EXEMPTION_REPORT.md`** — release notes + final phase report.
+
+### Changed
+
+- `audit_published_pages.py` `schema_version` bumped from `0.1.0` to `0.2.0` to reflect the new top-level `page_type_counts` and per-page `page_type`.
+- The recommendations builder now distinguishes paper-level issue codes from site-index-specific issue codes; site-index exemption is surfaced as `Root index is treated as site_index and exempted from paper-page checks (...)` whenever the root index passes.
+- The Markdown report's `## Detailed issues` section now records each page's `page_type` and, for `site_index` pages, the line `Paper-level checks: skipped by design`.
+
+### Compatibility
+
+- Existing pages remain unchanged. The v0.2.11 remediation commit stays valid; no consumer pages are re-rendered by this release.
+- Existing audit output (downstream consumers that only read `pages_pass` / `pages_warn` / `pages_fail` / `issues_by_severity` / `pages[*].issues`) remains readable; new fields are additive.
+- No old tags moved. v0.2.10-alpha is immutable and stays at the v0.2.10 remediation commit.
+
 ## [v0.2.10-alpha] — 2026-06-15
 
 ### Added

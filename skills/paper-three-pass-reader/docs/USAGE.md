@@ -466,3 +466,79 @@ The selftest is wired into `scripts/validate.sh` step 17, so `bash scripts/valid
 Pass `--strict` to promote WARN to FAIL (useful for CI gates).
 
 See [`PUBLISHED_PAGES_AUDIT.md`](PUBLISHED_PAGES_AUDIT.md) for the full reference.
+
+---
+
+## v0.2.12-alpha: page-type classification + root-index exemption
+
+The root index `<site_root>/` is a **manifest of all published pages**, not a
+paper reading page. Pre-v0.2.12-alpha audits ran every page in the manifest
+through the same paper-level check set, which produced three false-positive
+warnings on the root index:
+
+- `missing_resolver_trail` — by design, the index has no Resolver Trail.
+- `missing_claims_section` — by design, the index has no Claims / Evidence.
+- `missing_glossary` — by design, the index has no Glossary.
+
+Starting with v0.2.12-alpha, every audited page is classified into one of four
+`page_type` values: `site_index` / `paper_page` / `manifest` / `unknown`.
+
+| `page_type` | What runs |
+|---|---|
+| `site_index` | Index-specific checks (title, ≥1 link, manifest reference, link-vs-manifest delta). Severe checks (template_leak, raw_dict, old_footer) still run. Paper-level checks are skipped by design. |
+| `paper_page` | Full paper-level check set. |
+| `manifest` | Manifest shape checks (JSON valid, `pages` list, every entry has `slug`+`title`+`path`, no duplicate slugs/paths). |
+| `unknown` | Treated as `paper_page` (safe default). |
+
+### New CLI flag
+
+- `--include-manifest` — also audit the `published_pages.json` JSON itself
+  (classified as `manifest`). Defaults to off; only enable when you want to
+  check the manifest shape.
+
+### Output JSON schema additions
+
+- `schema_version`: bumped from `0.1.0` to `0.2.0`.
+- Top-level `page_type_counts` object: `{site_index, paper_page, manifest, unknown}`.
+- Each `pages[*]` entry gets a `page_type` field.
+
+The Markdown report gains a `## Page Type Summary` table.
+
+### Live audit example
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
+  --manifest-url https://conanxin.github.io/paper-reading-pages/published_pages.json \
+  --site-root https://conanxin.github.io/paper-reading-pages \
+  --include-root \
+  --include-manifest \
+  --json-output runs/published-pages-audit-20260615-root-index-exemption/audit.json \
+  --markdown-output runs/published-pages-audit-20260615-root-index-exemption/audit.md \
+  --warn-only
+```
+
+Output:
+
+```
+[audit] overall=PASS pages=10 pass=10 warn=0 fail=0
+```
+
+`page_type_counts`:
+
+```json
+{"site_index": 1, "paper_page": 9, "manifest": 0, "unknown": 0}
+```
+
+The `recommendations` block surfaces the rule:
+
+```
+Root index is treated as site_index and exempted from paper-page checks
+(missing_resolver_trail / missing_claims_section / missing_glossary skipped by design).
+```
+
+### What still fails on the root index
+
+The three severe checks (`template_leak`, `raw_dict`, `old_footer`) **still run**
+on `site_index` pages — they would still be real regressions. A root index that
+inadvertently leaks `{% else %}` would still fail the audit; the exemption is
+only against paper-level content checks.
