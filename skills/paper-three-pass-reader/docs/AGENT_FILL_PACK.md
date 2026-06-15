@@ -128,3 +128,23 @@ To upgrade `abstract_only` / `screenshot_only` to `full_text`:
 - **`audit FAIL after fill-pack generation`** — Runner refuses to render (unless `--audit-warn-only`). Check `work/audit_result.json` for the structural issues.
 - **`fill-pack/00_README.md` says "draft_fields_count = N" but no drafts in JSON`** — Usually means the runner wrote `[DRAFT]` placeholders that the audit correctly flagged. Replace them.
 - **`field_checklist.json` shows everything `unavailable_due_to_reading_mode`** — Reading mode was set to a weak mode; switch to `full_text` and supply body.
+
+## v0.2.3 — Language-aware fill pack
+
+The fill-pack respects `--language`:
+
+- `00_README.md` — opening instructions in the chosen language
+- `01_stage0_intake_resolution.md` — stage 0 checklist (lang-aware)
+- `02_pass1_five_cs.md` through `10_quality_gate.md` — per-stage task descriptions
+- `prompts.json` — sample prompts in the chosen language
+- `field_checklist.json` — checklist with `language` field
+- `draft_status.json` — initial status with `language` field
+
+The fill-pack instructs the agent (regardless of UI language) to:
+
+- Use the chosen language for **all explanatory content** (pass notes, claim text, glossary definitions, method reconstruction steps, critical review, final checklist answers).
+- Keep **evidence labels** as fixed English enums: `[Paper evidence]`, `[Figure/Table evidence]`, `[Author claim]`, `[Agent inference]`, `[Uncertain]`, `[Needs verification]`.
+- Keep **paper names, method names, benchmark names, author names** in the form the author wrote them.
+- Mark uncertain content with `[Uncertain]` or `[Needs verification]` rather than guessing.
+
+When `--language zh-CN` is passed, every fill-pack document except the fixed enums is generated in Chinese.

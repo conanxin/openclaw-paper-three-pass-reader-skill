@@ -407,6 +407,8 @@ def make_draft(args, hint) -> dict:
 
     draft = OrderedDict([
         ("schema_version", "0.1.0"),
+        ("target_language", args.language),
+        ("ui_language", args.language),
         ("paper_metadata", paper_metadata),
         ("intake_quality", intake_quality),
         ("summaries", summaries),

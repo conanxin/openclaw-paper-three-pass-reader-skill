@@ -296,9 +296,31 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.1.1-alpha` | immutable | Renderer hardening (loose-JSON tolerance) + multi-page publishing script. |
 | `v0.1.2-alpha` | immutable | Publish-script fix that preserves sibling page subdirectories on re-publish. |
 | `v0.2.0-alpha` | immutable | One-command runner for turning weak/complete inputs into a standard run layout + draft JSON + (optional) rendered/published page. |
-| `v0.2.1-alpha` | current | Agent Fill Pack + structural audit. Runner gained `--fill-pack`, `--audit`, `--agent-profile`, `--language`, `--max-claims`, `--max-figures`. |
+| `v0.2.1-alpha` | immutable | Agent Fill Pack + structural audit. Runner gained `--fill-pack`, `--audit`, `--agent-profile`, `--language`, `--max-claims`, `--max-figures`. |
+| `v0.2.2-alpha` | immutable | Auto-fill smoke run + runner/render robustness fixes. |
+| `v0.2.3-alpha` | current | First-class Chinese (zh-CN) output. Runner writes `target_language` / `ui_language`; renderer localizes UI; audit checks Chinese content. |
 
-This project treats published tags as immutable: never force-moves an existing tag, never rewrites history.
+## Language support (zh-CN / en)
+
+As of v0.2.3-alpha, the skill carries the output language through every stage:
+
+- **Runner** writes `target_language` and `ui_language` in the draft JSON (default `zh-CN`).
+- **Fill-pack** instructions are generated in the chosen language.
+- **Renderer** localizes UI labels to Chinese when `ui_language = "zh-CN"`. Section headings, tabs, accordions, metadata labels, and the Five Cs all switch.
+- **Audit** checks the main interpretive fields for Chinese characters when `target_language = "zh-CN"` and warns if fewer than 50% contain them.
+
+Evidence labels stay in English (so the audit can match them): `[Paper evidence]`, `[Figure/Table evidence]`, `[Author claim]`, `[Agent inference]`, `[Uncertain]`, `[Needs verification]`. Paper titles, method names, benchmark names, and author names also stay in the original form the author wrote them.
+
+To regenerate a Chinese page from an existing English draft, set `ui_language` in the JSON and re-render:
+
+```bash
+python3 -c "import json,sys; p=sys.argv[1]; d=json.load(open(p)); d['target_language']='zh-CN'; d['ui_language']='zh-CN'; open(p,'w').write(json.dumps(d,indent=2,ensure_ascii=False))" runs/myrun/work/paper_reading.json
+python3 skills/paper-three-pass-reader/scripts/render_page.py \
+  --input runs/myrun/work/paper_reading.json \
+  --output runs/myrun/paper-reading-output
+```
+
+(But really, the recommended path is: re-run with `--language zh-CN` so the fill-pack is Chinese too.)
 
 ---
 

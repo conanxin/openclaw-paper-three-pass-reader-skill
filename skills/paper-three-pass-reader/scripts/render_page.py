@@ -378,7 +378,96 @@ def render_index(out: Path, data: dict):
     tpl_path = TEMPLATE_DIR / "index.html"
     template = tpl_path.read_text(encoding="utf-8")
     html = render(template, data)
+    # UI language localization (zh-CN)
+    ui_lang = data.get("ui_language", "en")
+    if ui_lang == "zh-CN":
+        html = _localize_ui_zh_cn(html)
     write_text(out / "index.html", html)
+
+
+_UI_ZH_CN_MAP = {
+    "Three-Pass Reading": "三遍阅读法",
+    "Paper Metadata": "论文信息",
+    "Intake Status": "输入解析状态",
+    "Summaries": "摘要",
+    "One sentence": "一句话总结",
+    "Three sentences": "三句话总结",
+    "Ten sentences": "十句话总结",
+    "Paper Map": "论文地图",
+    "Five Cs": "Five Cs",
+    "Pass 1 / 2 / 3": "第一遍 / 第二遍 / 第三遍阅读",
+    "Claims → Evidence Map": "主张—证据地图",
+    "Figures & Tables": "图表解读",
+    "Glossary": "术语表",
+    "Method Reconstruction": "方法重建",
+    "Correctness & Limitations": "正确性与局限",
+    "Related Work": "相关工作",
+    "Practical Implications": "实践启发",
+    "Reproduction Plan": "复现计划",
+    "Open Questions": "开放问题",
+    "Final Checklist": "最终理解检查表",
+    "Contents": "目录",
+    "Title": "标题",
+    "Authors": "作者",
+    "Year": "年份",
+    "Venue": "发表 venue",
+    "Source kind": "来源类型",
+    "Reading mode": "阅读模式",
+    "Input kind": "输入类型",
+    "Confidence": "置信度",
+    "Needs confirmation": "需要确认",
+    "Warnings": "警告",
+    "Missing fields": "缺失字段",
+    "Category": "类别",
+    "Context": "背景",
+    "Correctness": "正确性",
+    "Contributions": "贡献",
+    "Clarity": "清晰度",
+    "Decision": "决策",
+    "Main ideas": "核心观点",
+    "Method summary": "方法摘要",
+    "Figure / table notes": "图表注释",
+    "Key references": "关键参考文献",
+    "Method reconstruction": "方法重建",
+    "Critical review": "批判性审视",
+    "Hidden assumptions": "隐含假设",
+    "Limitations": "局限",
+    "Future work": "未来工作",
+    "Application notes": "应用场景",
+    "Dataset": "数据集",
+    "Baseline": "基线",
+    "Hardware": "硬件",
+    "Steps": "步骤",
+    "Sanity checks": "合理性检查",
+    "Success criteria": "成功标准",
+    "Do I understand this paper?": "我是否理解了这篇论文？",
+    "Reading mode badge": "阅读模式",
+    "Evidence labels": "证据标签",
+    "Progress timeline": "阅读进度",
+    "Glossary chips": "术语卡片",
+    "Claim filter": "主张筛选",
+    "Confidence labels": "置信度标签",
+    "Tabs": "标签页",
+    "Accordions": "折叠面板",
+    "Local-only static HTML": "纯本地静态 HTML",
+    "No backend service": "不依赖后端服务",
+    "Pass 1 · Bird's-eye": "第一遍 · 鸟瞰",
+    "Pass 2 · Understand": "第二遍 · 理解",
+    "Pass 3 · Reconstruct": "第三遍 · 重建",
+    "Pass 1 — Bird's-eye view": "第一遍 — 鸟瞰视图",
+    "Pass 2 — Understanding": "第二遍 — 深入理解",
+    "Pass 3 — Reconstruction": "第三遍 — 重建",
+    "Pass 1": "第一遍阅读",
+    "Pass 2": "第二遍阅读",
+    "Pass 3": "第三遍阅读",
+}
+
+
+def _localize_ui_zh_cn(html: str) -> str:
+    """Replace known English UI strings with zh-CN equivalents."""
+    for en, zh in _UI_ZH_CN_MAP.items():
+        html = html.replace(en, zh)
+    return html
 
 
 def write_data_mirrors(out: Path, data: dict):

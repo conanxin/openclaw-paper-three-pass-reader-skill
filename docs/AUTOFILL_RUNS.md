@@ -41,3 +41,26 @@ Each run has a unique ID of the form `P3PR-AUTOFILL-N` or `P3PR-Vx.y.z-FOO-N`.
 ### Status
 
 **PASS_PAGE_PUSHED_DEPLOYMENT_PENDING** at the time the smoke was run; page URL confirmed `HTTP/2 200` after GitHub Pages propagation. All four required URLs (`/`, page, manifest, data) returned 200.
+
+## P3PR-V0.2.3-ZH-CN-OUTPUT
+
+| Field | Value |
+| --- | --- |
+| Run ID | `P3PR-V0.2.3-ZH-CN-OUTPUT` |
+| Phase | v0.2.3-alpha |
+| Paper | "Second Me: Human-Inspired Memory Mechanism for LLM Agents" (Mindverse.ai, arXiv:2503.08102) |
+| Input | `arXiv:2503.08102 — Second Me: Human-Inspired Memory Mechanism for LLM Agents` (paper_identifier) |
+| Reading mode | `full_text` |
+| Language | `zh-CN` (target_language + ui_language) |
+| Output | `runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/` |
+| Page | https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/ |
+| Audit | PASS — 0 errors / 0 warnings / 0 recommendations, 12 claims / 12 checklist / 0 [DRAFT] |
+| Report | `docs/PHASE_P3PR_V0_2_3_ZH_CN_OUTPUT_REPORT.md` |
+
+### Notable points
+
+- **First-class Chinese output** — the runner wrote `target_language` and `ui_language` into the draft JSON. The renderer applied a deterministic English→Chinese UI label map (60+ mappings) to switch section headings, tabs, accordions, metadata labels, and the Five Cs.
+- **Audit Chinese content check** — passed cleanly. All five interpretive fields scanned contained Chinese characters.
+- **Evidence labels preserved in English** — `[Paper evidence]`, `[Author claim]`, `[Needs verification]` etc. remained as English enums so the audit can match them.
+- **Paper / method / author names preserved** — paper title stays in its original English form (this is the author-written title).
+- **Backward compatible** — the English draft from v0.2.2 (`second-me-fulltext-autofill/`) still renders in English because its JSON does not declare `ui_language = "zh-CN"`. No English content was changed or removed.

@@ -130,3 +130,26 @@ Only these labels are valid:
 - `AGENT_FILL_PACK.md` — how the runner generates the fill pack.
 - `OUTPUT_SCHEMA.md` — JSON shape contract.
 - `DESIGN_RATIONALE.md` — why reading-mode discipline matters.
+
+## v0.2.3 — Language check
+
+When the draft declares `target_language` or `ui_language` as `zh-CN`, the audit adds a content check:
+
+1. Scans 5 main interpretive fields:
+   - `summaries.one_sentence`
+   - `pass2.main_ideas` (joined)
+   - `pass3.method_reconstruction` (joined)
+   - `pass3.critical_review` (joined)
+   - `glossary` (joined `definition` field of each entry)
+2. Counts how many of those fields contain at least one CJK character (U+4E00–U+9FFF).
+3. If fewer than 50% contain CJK, emits a **WARN**:
+   > `target_language/ui_language = zh-CN but fewer than 50% of main interpretive fields contain Chinese characters (X/Y). ...`
+
+The check intentionally does **not** flag:
+- English evidence labels (`[Paper evidence]`, etc.)
+- Paper titles, method names, benchmark names
+- Author names
+
+The check is a **WARN**, not a FAIL. The audit's PASS/WARN/FAIL semantics for `en` drafts are unchanged.
+
+To verify: a fresh `paper_reading.json` with `--language zh-CN` and no manual filling should trigger the warning.

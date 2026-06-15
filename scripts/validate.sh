@@ -393,6 +393,128 @@ else
   bad "Attention real run audit failed (rc=$?)"
 fi
 
+# 10. v0.2.3 zh-CN language support
+step 10 "v0.2.3 zh-CN language support"
+
+# 10a. runner --help mentions --language.
+if echo "$RUNNER_HELP" | grep -q -- "--language"; then
+  ok "runner --help mentions --language"
+else
+  bad "runner --help missing --language"
+fi
+
+# 10b. zh-CN runner smoke produces target_language / ui_language.
+rm -rf /tmp/p3pr-runner-zh-cn
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "Attention Is All You Need" \
+     --input-kind paper_title \
+     --slug runner-zh-cn \
+     --output-root /tmp/p3pr-runner-zh-cn \
+     --language zh-CN >/dev/null 2>&1; then
+  if grep -q '"target_language": "zh-CN"' /tmp/p3pr-runner-zh-cn/runner-zh-cn/work/paper_reading.json; then
+    ok "zh-CN runner smoke has target_language=zh-CN"
+  else
+    bad "zh-CN runner smoke missing target_language=zh-CN"
+  fi
+  if grep -q '"ui_language": "zh-CN"' /tmp/p3pr-runner-zh-cn/runner-zh-cn/work/paper_reading.json; then
+    ok "zh-CN runner smoke has ui_language=zh-CN"
+  else
+    bad "zh-CN runner smoke missing ui_language=zh-CN"
+  fi
+else
+  bad "zh-CN runner smoke failed"
+fi
+
+# 10c. zh-CN fill-pack is in Chinese.
+rm -rf /tmp/p3pr-runner-zh-cn-fp
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "Attention Is All You Need" \
+     --input-kind paper_title \
+     --slug runner-zh-cn-fp \
+     --output-root /tmp/p3pr-runner-zh-cn-fp \
+     --language zh-CN \
+     --fill-pack >/dev/null 2>&1; then
+  if [[ -f /tmp/p3pr-runner-zh-cn-fp/runner-zh-cn-fp/fill-pack/00_README.md ]]; then
+    if grep -q "任务包" /tmp/p3pr-runner-zh-cn-fp/runner-zh-cn-fp/fill-pack/00_README.md; then
+      ok "zh-CN fill-pack README is Chinese"
+    else
+      bad "zh-CN fill-pack README not Chinese"
+    fi
+  else
+    bad "zh-CN fill-pack missing"
+  fi
+else
+  bad "zh-CN fill-pack smoke run failed"
+fi
+
+# 10d. zh-CN render produces Chinese UI labels.
+rm -rf /tmp/p3pr-zh-cn-render
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "Attention Is All You Need" \
+     --input-kind paper_title \
+     --slug runner-zh-cn-render \
+     --output-root /tmp/p3pr-zh-cn-render \
+     --language zh-CN \
+     --render --audit-warn-only >/dev/null 2>&1; then
+  ZH_INDEX="/tmp/p3pr-zh-cn-render/runner-zh-cn-render/paper-reading-output/index.html"
+  if grep -q "输入解析状态" "$ZH_INDEX"; then
+    ok "zh-CN rendered page has Chinese UI label"
+  else
+    bad "zh-CN rendered page missing Chinese UI label"
+  fi
+  if grep -q "第一遍阅读" "$ZH_INDEX" || grep -q "第一遍" "$ZH_INDEX"; then
+    ok "zh-CN rendered page has Pass 1 Chinese label"
+  else
+    bad "zh-CN rendered page missing Pass 1 Chinese label"
+  fi
+else
+  bad "zh-CN render smoke run failed"
+fi
+
+# 10e. audit detects missing Chinese content on zh-CN draft.
+rm -rf /tmp/p3pr-zh-cn-audit
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "Attention Is All You Need" \
+     --input-kind paper_title \
+     --slug runner-zh-cn-audit \
+     --output-root /tmp/p3pr-zh-cn-audit \
+     --language zh-CN \
+     --audit >/dev/null 2>&1; then
+  # The fresh draft has no Chinese content; audit should warn.
+  if grep -q "zh-CN but fewer than 50%" /tmp/p3pr-zh-cn-audit/runner-zh-cn-audit/work/audit_result.json; then
+    ok "audit warns on zh-CN draft with no Chinese content"
+  else
+    bad "audit did not warn on zh-CN draft with no Chinese content"
+  fi
+else
+  bad "zh-CN audit smoke run failed"
+fi
+
+# 10f. Second Me zh-CN real run audit passes.
+if [[ -f "$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/work/audit_final.json" ]]; then
+  if grep -q '"status": "PASS"' "$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/work/audit_final.json"; then
+    ok "Second Me zh-CN real run audit PASS"
+  else
+    bad "Second Me zh-CN real run audit not PASS"
+  fi
+else
+  bad "Second Me zh-CN audit_final.json missing"
+fi
+
+# 10g. Second Me zh-CN rendered page has Chinese labels.
+if [[ -f "$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/paper-reading-output/index.html" ]]; then
+  ZH_SM_INDEX="$ROOT/runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/paper-reading-output/index.html"
+  for zh_label in "输入解析状态" "主张" "证据" "最终理解检查表"; do
+    if grep -q "$zh_label" "$ZH_SM_INDEX"; then
+      ok "Second Me zh-CN page has: $zh_label"
+    else
+      bad "Second Me zh-CN page missing: $zh_label"
+    fi
+  done
+else
+  bad "Second Me zh-CN index.html missing"
+fi
+
 # Summary
 echo
 echo "================================================="

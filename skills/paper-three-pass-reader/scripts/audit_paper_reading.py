@@ -232,6 +232,37 @@ def audit(doc: dict) -> dict:
             if k not in iq:
                 warnings.append(f"intake_quality.{k} is missing.")
 
+    # 8. Language check (zh-CN).
+    target_lang = doc.get("target_language", "en")
+    ui_lang = doc.get("ui_language", "en")
+    if target_lang == "zh-CN" or ui_lang == "zh-CN":
+        # Check that main interpretive fields contain Chinese characters.
+        _CHINESE_RE = re.compile(r"[\u4e00-\u9fff]")
+        zh_check_fields = {
+            "summaries.one_sentence": (doc.get("summaries") or {}).get("one_sentence", ""),
+            "pass2.main_ideas": " ".join(str(x) for x in (pass2.get("main_ideas") or [])),
+            "pass3.method_reconstruction": " ".join(str(x) for x in (pass3.get("method_reconstruction") or [])),
+            "pass3.critical_review": " ".join(str(x) for x in (pass3.get("critical_review") or [])),
+            "glossary": " ".join(
+                (g.get("definition") or "") for g in (doc.get("glossary") or [])
+            ),
+        }
+        zh_hits = 0
+        zh_total = 0
+        for field_name, text in zh_check_fields.items():
+            if text.strip():
+                zh_total += 1
+                if _CHINESE_RE.search(text):
+                    zh_hits += 1
+        if zh_total > 0 and zh_hits / zh_total < 0.5:
+            warnings.append(
+                f"target_language/ui_language = zh-CN but fewer than 50% of main "
+                f"interpretive fields contain Chinese characters ({zh_hits}/{zh_total}). "
+                f"Fields checked: {list(zh_check_fields.keys())}. "
+                "Ensure explanatory content is in Chinese; evidence labels and "
+                "paper names may remain in English."
+            )
+
     # Decide status.
     if errors:
         status = "FAIL"

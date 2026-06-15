@@ -319,3 +319,38 @@ This produces:
 - `runs/fill-pack-smoke-20260615/fillpack-title-attention/`
 - `runs/fill-pack-smoke-20260615/fillpack-abstract-keshav/`
 - `runs/fill-pack-smoke-20260615/fillpack-screenshot-keshav/`
+
+## v0.2.3 — Language output
+
+The runner carries a `--language` flag (default `zh-CN`) into the draft JSON via two top-level fields:
+
+```json
+{
+  "target_language": "zh-CN",
+  "ui_language": "zh-CN"
+}
+```
+
+- `target_language` is read by the **audit** to decide whether to check for Chinese characters in interpretive fields.
+- `ui_language` is read by the **renderer** to decide whether to apply the Chinese UI label map.
+
+Both default to the value passed to `--language`. If the flag is omitted, the default is `zh-CN` (this matches the project's home user being Chinese-first).
+
+Example (Chinese full-text run on arXiv:2503.08102):
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "arXiv:2503.08102 — Second Me: Human-Inspired Memory Mechanism for LLM Agents" \
+  --input-kind paper_identifier \
+  --slug second-me-human-inspired-memory-cn \
+  --output-root runs/second-me-zh-cn-20260615 \
+  --title "Second Me: Human-Inspired Memory Mechanism for LLM Agents" \
+  --arxiv-id "2503.08102" \
+  --paper-url "https://arxiv.org/abs/2503.08102" \
+  --reading-mode full_text \
+  --language zh-CN \
+  --fill-pack \
+  --audit
+```
+
+After the runner finishes, follow the fill-pack instructions in Chinese to fill the draft, then re-audit. The renderer will produce a Chinese UI page because the JSON carries `ui_language = "zh-CN"`.

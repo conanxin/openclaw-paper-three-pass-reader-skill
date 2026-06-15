@@ -120,3 +120,9 @@ See [`docs/WEAKINPUT_RUNS.md`](WEAKINPUT_RUNS.md) for the full weak-input run in
 A real full-text run on arXiv:2503.08102 ("AI-native Memory 2.0: Second Me", Mindverse.ai, 2025) exercises the v0.2.1-alpha `--fill-pack` + `--audit` flow end-to-end. The PDF was downloaded, text was extracted via pdftotext -layout, the runner produced a draft + fill-pack, the agent filled the draft in 12 claims / 7 figures-tables / 18 glossary / 12 checklist, and the final audit returned PASS with 0 errors / 0 warnings. The page is published at `https://conanxin.github.io/paper-reading-pages/second-me-fulltext-autofill/`.
 
 Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3PR_V0_2_2_FULLTEXT_AUTO_FILL_SMOKE_REPORT.md`](PHASE_P3PR_V0_2_2_FULLTEXT_AUTO_FILL_SMOKE_REPORT.md).
+
+## P3PR-V0.2.3-ZH-CN-OUTPUT (pointer)
+
+A Chinese full-text run on arXiv:2503.08102 ("Second Me") that exercises the v0.2.3 zh-CN language support end-to-end. The runner writes `target_language` and `ui_language` to the draft, the audit checks for Chinese content, and the renderer localizes the UI to Chinese. The page is published at `https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/`. Audit: PASS, 0 errors / 0 warnings.
+
+Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3PR_V0_2_3_ZH_CN_OUTPUT_REPORT.md`](PHASE_P3PR_V0_2_3_ZH_CN_OUTPUT_REPORT.md).

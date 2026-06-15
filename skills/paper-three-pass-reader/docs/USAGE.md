@@ -265,3 +265,39 @@ The fill pack lands at `runs/myrun/fill-pack/` with 11 markdown files and 3 JSON
 2. Re-run with `--reading-mode full_text` (overrides the kind-forced mode).
 3. Re-run audit; claims can now carry `[Paper evidence]` / `[Figure/Table evidence]`.
 
+
+### Generate a Chinese (zh-CN) page
+
+The skill supports first-class Chinese output. Pass `--language zh-CN` to the runner and the entire downstream pipeline (fill-pack, audit, render) will produce Chinese output:
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "arXiv:2503.08102 — Second Me: Human-Inspired Memory Mechanism for LLM Agents" \
+  --input-kind paper_identifier \
+  --slug second-me-human-inspired-memory-cn \
+  --output-root runs/second-me-zh-cn-20260615 \
+  --title "Second Me: Human-Inspired Memory Mechanism for LLM Agents" \
+  --arxiv-id "2503.08102" \
+  --reading-mode full_text \
+  --language zh-CN \
+  --fill-pack \
+  --audit
+```
+
+The renderer will:
+
+- Show Chinese UI labels: "输入解析状态" (Intake Status), "第一遍阅读" (Pass 1), "主张—证据地图" (Claims → Evidence Map), "最终理解检查表" (Final Checklist), etc.
+- Keep evidence labels in English (so the audit can match them).
+- Keep paper titles, method names, and author names in their original form.
+
+### Regenerate a Chinese page from an existing English draft
+
+If you already have an `en` draft, you can flip it to `zh-CN` and re-render. The explanatory content stays English (the renderer only localizes the UI chrome), so for a real Chinese reading you should re-run with `--language zh-CN` and re-fill.
+
+```bash
+# Quick UI flip (chrome-only, content stays English):
+python3 -c "import json; p='runs/myrun/work/paper_reading.json'; d=json.load(open(p)); d['target_language']='zh-CN'; d['ui_language']='zh-CN'; open(p,'w').write(json.dumps(d,indent=2,ensure_ascii=False))"
+python3 skills/paper-three-pass-reader/scripts/render_page.py \
+  --input runs/myrun/work/paper_reading.json \
+  --output runs/myrun/paper-reading-output
+```

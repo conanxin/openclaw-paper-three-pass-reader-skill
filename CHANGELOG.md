@@ -3,6 +3,44 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.3-alpha] — 2026-06-15
+
+### Added
+
+- **First-class Chinese (zh-CN) output support** — the runner, fill-pack, audit, and renderer all carry language fields. Pages are now fully bilingual-capable.
+- **Runner language propagation** — `run_paper_reading.py` now writes `target_language` and `ui_language` to the draft JSON. Both default to whatever `--language` was passed (default `zh-CN`).
+- **Renderer UI localization** — `render_page.py` reads `ui_language` and applies a deterministic English→Chinese UI label map. The map covers: section headings, key terms, evidence labels (preserved in English), tabs, accordions, all metadata labels.
+- **Audit Chinese content check** — when `target_language` / `ui_language` = `zh-CN`, the audit scans 5 main interpretive fields (`summaries.one_sentence`, `pass2.main_ideas`, `pass3.method_reconstruction`, `pass3.critical_review`, `glossary.definitions`) and warns if fewer than 50% contain Chinese characters. Evidence labels, paper names, and method names in English do NOT trigger the warning.
+- **Second Me Chinese full-text run** — new run directory `runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/` with 12 claims, 7 figure/table entries, 14 glossary terms, 12-item checklist. Audit: PASS, 0 errors / 0 warnings.
+- **Chinese page published** — `https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/` (HTTP 200).
+- **Validation extended** — `scripts/validate.sh` now has 120 checks (was 108). New step 10 covers: runner `--language` flag, zh-CN draft `target_language` / `ui_language`, Chinese fill-pack content, Chinese UI label presence, audit Chinese-content warning, Second Me zh-CN real run audit, Second Me zh-CN page label check.
+
+### Changed
+
+- `render_page.py` — `render_index` now reads `ui_language` and applies the UI map. Backward compatible: when `ui_language` is absent or `"en"`, behaviour is unchanged.
+- `audit_paper_reading.py` — added step 8 (language check). Does not change PASS/WARN/FAIL semantics for `en` drafts.
+- `run_paper_reading.py` — `make_draft` now writes `target_language` and `ui_language` at the top level (after `schema_version`).
+
+### Notes
+
+- Evidence labels remain **fixed English enums** (`[Paper evidence]`, `[Figure/Table evidence]`, `[Author claim]`, `[Agent inference]`, `[Uncertain]`, `[Needs verification]`) regardless of UI language. They are intentionally untranslatable so the audit can match them.
+- Paper titles, method names, benchmark names, and author names remain in their original form (English or Chinese as the author wrote them).
+- Re-rendering an `en` draft still produces an English page; the locale only kicks in when the JSON explicitly says `ui_language = "zh-CN"`.
+
+## [v0.2.2-alpha] — 2026-06-15
+
+### Added
+
+- **Auto-fill smoke run** — `runs/v022-fulltext-autofill-secondme-20260615/second-me-fulltext-autofill/`. End-to-end PDF download + pdftotext extraction + runner draft + agent fill + audit + render + publish for arXiv:2503.08102 ("AI-native Memory 2.0: Second Me", Mindverse.ai).
+- **Skill bug fixes** during the smoke:
+  - `run_paper_reading.py` no longer `return rc` on audit FAIL when `--fill-pack` is requested (the fill-pack is the task list, must be written even when audit fails).
+  - `render_page.py` now tolerates string entries in `pass2.key_references` (same pattern as `claims_evidence_map`).
+- **Documentation** — `docs/AUTOFILL_RUNS.md`, `docs/PHASE_P3PR_V0_2_2_FULLTEXT_AUTO_FILL_SMOKE_REPORT.md`, `docs/RELEASE_NOTES_v0.2.2-alpha.md`.
+
+### Notes
+
+- No schema or page-template changes; only runner/render robustness.
+
 ## [v0.2.1-alpha] — 2026-06-15
 
 ### Added
