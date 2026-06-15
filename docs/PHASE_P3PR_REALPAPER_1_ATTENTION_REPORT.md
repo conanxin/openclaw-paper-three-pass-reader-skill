@@ -325,10 +325,11 @@ None in the skill repo's skill code (`skills/paper-three-pass-reader/**`, `scrip
 ## COMMIT
 
 ```
-<will be created in the next step>
+4faee7f Add real paper reading run for Attention Is All You Need
+670de43 Add rendered Attention Is All You Need page and supporting files
 ```
 
-After this report is committed, the skill repo's `main` branch will carry:
+The skill repo's `main` branch now carries:
 
 - `docs/PHASE_P3PR_REALPAPER_1_ATTENTION_REPORT.md`
 - `docs/REALPAPER_RUNS.md`
