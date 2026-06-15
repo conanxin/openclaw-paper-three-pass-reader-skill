@@ -153,19 +153,14 @@ else
   # If --page-title is given, regenerate the root index.html from published_pages.json.
   if [[ -n "$PAGE_TITLE" ]]; then
     echo "[info] updating root index.html + published_pages.json for: $PAGE_TITLE"
-    # In multi-page index mode the branch root holds ONLY: .nojekyll, assets/, index.html, published_pages.json, and per-page subdirectories.
-    # Wipe any stray non-infrastructure files at the root that pre-date this index mode.
-    (cd "$STAGING/repo" && find . -mindepth 1 -maxdepth 1 \
-        ! -name '.git' \
-        ! -name '.nojekyll' \
-        ! -name 'assets' \
-        ! -name 'index.html' \
-        ! -name 'published_pages.json' \
-        -exec rm -rf {} +)
-    # Also remove any top-level files that were previously placed by single-page mode (README.md, data/, reports/ etc.)
-    (cd "$STAGING/repo" && find . -mindepth 1 -maxdepth 1 \
-        -name 'README.md' -o -name 'data' -o -name 'reports' -o -name 'index.html.bak' \
-        -exec rm -rf {} + 2>/dev/null || true)
+    # In multi-page index mode the branch root holds ONLY: .nojekyll, assets/, index.html,
+    # published_pages.json, and per-page subdirectories.
+    # Remove only known-stale FILE leftovers from previous single-page deploys (README.md,
+    # data/, reports/, stray index backups, etc.). DO NOT remove unknown directories —
+    # those are other published pages.
+    (cd "$STAGING/repo" && for stale in README.md data reports index.html.bak README.zh-CN.md; do
+      if [[ -e "$stale" ]]; then rm -rf "$stale"; echo "[info] removed stale root entry: $stale"; fi
+    done)
     MANIFEST="$STAGING/repo/published_pages.json"
     if [[ -f "$MANIFEST" ]]; then
       # Read existing manifest, upsert this entry.
