@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# validate.sh — paper-three-pass-reader (v0.1.0-alpha)
+# validate.sh — paper-three-pass-reader (v0.2.1-alpha)
 #
 # Smoke check only. No long tests, no CI complexity.
 #
@@ -261,6 +261,136 @@ if python3 "$SKILL_DIR/scripts/render_page.py" \
   fi
 else
   bad "sample render failed"
+fi
+
+# 9. v0.2.1 agent fill pack + audit
+step 9 "v0.2.1 agent fill pack + audit"
+
+# 9a. runner help mentions all v0.2.1 flags.
+RUNNER_HELP="$(python3 "$SKILL_DIR/scripts/run_paper_reading.py" --help 2>&1 || true)"
+for flag in --fill-pack --audit --audit-warn-only --agent-profile --language --max-claims --max-figures; do
+  if echo "$RUNNER_HELP" | grep -q -- "$flag"; then ok "runner advertises $flag"; else bad "runner help missing $flag"; fi
+done
+
+# 9b. audit script exists and --help runs.
+if [[ -x "$SKILL_DIR/scripts/audit_paper_reading.py" ]]; then
+  ok "audit script exists and is executable"
+else
+  bad "audit script missing or not executable: $SKILL_DIR/scripts/audit_paper_reading.py"
+fi
+if python3 "$SKILL_DIR/scripts/audit_paper_reading.py" --help >/dev/null 2>&1; then
+  ok "audit script --help exits 0"
+else
+  bad "audit script --help failed"
+fi
+
+# 9c. fill_pack_writer exists.
+if [[ -x "$SKILL_DIR/scripts/fill_pack_writer.py" ]]; then
+  ok "fill_pack_writer exists and is executable"
+else
+  bad "fill_pack_writer missing or not executable: $SKILL_DIR/scripts/fill_pack_writer.py"
+fi
+
+# 9d. title-only smoke run with --fill-pack + --audit.
+rm -rf /tmp/p3pr-fillpack-title
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "Attention Is All You Need" \
+     --input-kind paper_title \
+     --slug fillpack-title \
+     --output-root /tmp/p3pr-fillpack-title \
+     --reading-mode partial_text \
+     --fill-pack --audit --audit-warn-only \
+     --render >/dev/null 2>&1; then
+  for f in \
+      /tmp/p3pr-fillpack-title/fillpack-title/work/paper_reading.json \
+      /tmp/p3pr-fillpack-title/fillpack-title/work/audit_result.json \
+      /tmp/p3pr-fillpack-title/fillpack-title/reports/audit_summary.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/00_README.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/01_stage0_intake_resolution.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/02_pass1_five_cs.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/03_pass2_main_ideas.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/04_claims_evidence_map.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/05_figures_tables.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/06_pass3_reconstruction.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/07_critical_review.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/08_reproduction_plan.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/09_finalize_json.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/10_quality_gate.md \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/prompts.json \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/field_checklist.json \
+      /tmp/p3pr-fillpack-title/fillpack-title/fill-pack/draft_status.json \
+      /tmp/p3pr-fillpack-title/fillpack-title/paper-reading-output/index.html \
+      ; do
+    if [[ -f "$f" ]]; then ok "fillpack smoke produced: ${f#/tmp/p3pr-fillpack-title/fillpack-title/}"; else bad "fillpack smoke missing: ${f#/tmp/p3pr-fillpack-title/fillpack-title/}"; fi
+  done
+  # Audit result must be PASS or WARN (we used --audit-warn-only).
+  if grep -q '"status": "PASS"' /tmp/p3pr-fillpack-title/fillpack-title/work/audit_result.json \
+     || grep -q '"status": "WARN"' /tmp/p3pr-fillpack-title/fillpack-title/work/audit_result.json; then
+    ok "fillpack title smoke audit PASS/WARN"
+  else
+    bad "fillpack title smoke audit not PASS/WARN"
+  fi
+else
+  bad "title-only fillpack smoke run failed"
+fi
+
+# 9e. abstract-only fillpack run page contains abstract_only.
+rm -rf /tmp/p3pr-fillpack-abstract
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "abstract excerpt of How to Read a Paper" \
+     --input-kind paper_excerpt \
+     --slug fillpack-abstract \
+     --output-root /tmp/p3pr-fillpack-abstract \
+     --reading-mode abstract_only \
+     --fill-pack --audit --audit-warn-only \
+     --render >/dev/null 2>&1; then
+  if grep -q "abstract_only" /tmp/p3pr-fillpack-abstract/fillpack-abstract/paper-reading-output/index.html; then
+    ok "abstract_only fillpack smoke page contains abstract_only"
+  else
+    bad "abstract_only fillpack smoke page missing abstract_only"
+  fi
+  # audit must NOT mark abstract_only as full_text-missing failure.
+  if grep -q '"status": "FAIL"' /tmp/p3pr-fillpack-abstract/fillpack-abstract/work/audit_result.json; then
+    bad "abstract_only audit wrongly marked FAIL"
+  else
+    ok "abstract_only audit did not falsely mark FAIL"
+  fi
+else
+  bad "abstract-only fillpack smoke run failed"
+fi
+
+# 9f. screenshot-only fillpack run.
+rm -rf /tmp/p3pr-fillpack-screenshot
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "OCR transcript of How to Read a Paper screenshot" \
+     --input-kind paper_screenshot \
+     --slug fillpack-screenshot \
+     --output-root /tmp/p3pr-fillpack-screenshot \
+     --reading-mode screenshot_only \
+     --fill-pack --audit --audit-warn-only \
+     --render >/dev/null 2>&1; then
+  if grep -q "screenshot_only" /tmp/p3pr-fillpack-screenshot/fillpack-screenshot/paper-reading-output/index.html; then
+    ok "screenshot_only fillpack smoke page contains screenshot_only"
+  else
+    bad "screenshot_only fillpack smoke page missing screenshot_only"
+  fi
+  # audit must mark missing_parts with body hints.
+  if grep -q "full body" /tmp/p3pr-fillpack-screenshot/fillpack-screenshot/work/paper_reading.json \
+     || grep -qi "full_body" /tmp/p3pr-fillpack-screenshot/fillpack-screenshot/work/paper_reading.json; then
+    ok "screenshot_only draft has body-related missing_parts"
+  else
+    bad "screenshot_only draft missing body-related missing_parts"
+  fi
+else
+  bad "screenshot-only fillpack smoke run failed"
+fi
+
+# 9g. Attention real run audit still passes.
+if python3 "$SKILL_DIR/scripts/audit_paper_reading.py" \
+     --input "$ROOT/runs/attention-is-all-you-need-20260615/work/paper_reading.json" >/dev/null 2>&1; then
+  ok "Attention real run audit passes"
+else
+  bad "Attention real run audit failed (rc=$?)"
 fi
 
 # Summary

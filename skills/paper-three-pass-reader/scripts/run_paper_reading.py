@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-run_paper_reading.py — paper-three-pass-reader (v0.2.0-alpha)
+run_paper_reading.py — paper-three-pass-reader (v0.2.1-alpha)
 
 One-command runner that turns a weak or complete paper-shaped input into a
-standard run directory + draft `paper_reading.json` + (optional) rendered
-HTML page + (optional) published GitHub Page.
+standard run directory + draft `paper_reading.json` + (optional) agent fill
+pack + (optional) audit + (optional) rendered HTML page + (optional)
+published GitHub Page.
 
 Usage (minimal):
     python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
@@ -462,7 +463,7 @@ def write_run_layout(out_root: Path, slug: str, args) -> tuple[Path, Path, Path,
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description="One-command paper reading runner (v0.2.0-alpha).")
+    p = argparse.ArgumentParser(description="One-command paper reading runner (v0.2.1-alpha).")
     p.add_argument("--input", help="Raw input string (e.g. title, URL, repo URL).")
     p.add_argument("--input-file", help="Path to a file containing the raw input.")
     p.add_argument("--input-kind", required=True,
@@ -487,6 +488,25 @@ def main(argv=None):
     p.add_argument("--branch", default="gh-pages", help="Branch for --publish (default gh-pages).")
     p.add_argument("--site-path", help="Site path for --publish (defaults to --slug).")
     p.add_argument("--page-title", help="Page title for --publish.")
+    p.add_argument("--fill-pack", action="store_true",
+                   help="Write an Agent Fill Pack into <run_dir>/fill-pack/ "
+                        "with per-stage instructions and field checklist.")
+    p.add_argument("--audit", action="store_true",
+                   help="Run audit_paper_reading.py after writing the draft. "
+                        "Blocks --render on FAIL unless --audit-warn-only.")
+    p.add_argument("--audit-warn-only", action="store_true",
+                   help="Treat audit WARN as PASS for the purpose of "
+                        "deciding whether to render / publish.")
+    p.add_argument("--agent-profile", default="default",
+                   choices=["default", "strict", "beginner", "researcher", "engineer"],
+                   help="Tone of the fill-pack instructions. Default 'default'.")
+    p.add_argument("--language", default="zh-CN",
+                   choices=["zh-CN", "en"],
+                   help="Language of fill-pack instructions. Default 'zh-CN'.")
+    p.add_argument("--max-claims", type=int, default=8,
+                   help="Suggested maximum number of claims for the fill pack.")
+    p.add_argument("--max-figures", type=int, default=6,
+                   help="Suggested maximum number of figure/table slots.")
     args = p.parse_args(argv)
 
     # Validate inputs.
@@ -544,8 +564,112 @@ def main(argv=None):
           f"confidence = {draft['intake_quality']['confidence']}, "
           f"needs_confirmation = {draft['intake_quality']['needs_confirmation']}")
 
+    # Audit?
+    audit_status = None
+    audit_result_path = None
+    if args.audit:
+        AUDIT_SCRIPT = HERE / "audit_paper_reading.py"
+        audit_result_path = work_dir / "audit_result.json"
+        audit_cmd = [
+            sys.executable, str(AUDIT_SCRIPT),
+            "--input", str(work_json),
+        ]
+        if args.audit_warn_only:
+            audit_cmd.append("--warn-only")
+        audit_cmd.extend(["--json-output", str(audit_result_path)])
+        print(f"[info] running audit: {' '.join(audit_cmd)}")
+        rc = subprocess.call(audit_cmd)
+        if rc != 0:
+            print(f"[error] audit_paper_reading.py exited {rc}", file=sys.stderr)
+            return rc
+        try:
+            audit_doc = json.loads(audit_result_path.read_text(encoding="utf-8"))
+            audit_status = audit_doc.get("status")
+        except Exception:
+            audit_doc = None
+            audit_status = None
+        print(f"[ok] audit status: {audit_status}  ({audit_result_path})")
+
+        # Write a short markdown summary next to the JSON.
+        reports_dir = run_dir / "reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            audit_md = reports_dir / "audit_summary.md"
+            lines = [
+                f"# Audit summary for {args.slug}",
+                "",
+                f"- status: **{audit_status}**",
+                f"- reading_mode: `{draft['paper_metadata']['reading_mode']}`",
+                f"- input_kind: `{draft['intake_quality']['input_kind']}`",
+                f"- audit_json: `work/audit_result.json`",
+                "",
+            ]
+            if audit_doc:
+                cnt = audit_doc.get("counts") or {}
+                lines.append("## Counts")
+                lines.append("")
+                lines.append(f"- claims_total: {cnt.get('claims_total')}")
+                lines.append(f"- claims_with_valid_evidence: {cnt.get('claims_with_valid_evidence')}")
+                lines.append(f"- final_checklist_questions: {cnt.get('final_checklist_questions')}")
+                lines.append(f"- draft_placeholders: {cnt.get('draft_placeholders')}")
+                lines.append("")
+                if audit_doc.get("errors"):
+                    lines.append("## Errors")
+                    lines.append("")
+                    for e in audit_doc["errors"]:
+                        lines.append(f"- {e}")
+                    lines.append("")
+                if audit_doc.get("warnings"):
+                    lines.append("## Warnings")
+                    lines.append("")
+                    for w in audit_doc["warnings"]:
+                        lines.append(f"- {w}")
+                    lines.append("")
+                if audit_doc.get("recommendations"):
+                    lines.append("## Recommendations")
+                    lines.append("")
+                    for r in audit_doc["recommendations"]:
+                        lines.append(f"- {r}")
+                    lines.append("")
+            audit_md.write_text("\n".join(lines), encoding="utf-8")
+            print(f"[ok] wrote audit summary: {audit_md}")
+        except Exception as e:
+            print(f"[warn] could not write audit_summary.md: {e}", file=sys.stderr)
+
+    # Fill pack?
+    if args.fill_pack:
+        from importlib import util as _importlib_util
+        _fp_writer_path = HERE / "fill_pack_writer.py"
+        _spec = _importlib_util.spec_from_file_location("fill_pack_writer", str(_fp_writer_path))
+        if _spec is None or _spec.loader is None:
+            print(f"[error] could not load fill_pack_writer from {_fp_writer_path}",
+                  file=sys.stderr)
+            return 2
+        _fp_mod = _importlib_util.module_from_spec(_spec)
+        _spec.loader.exec_module(_fp_mod)
+        fp_dir = run_dir / "fill-pack"
+        _fp_mod.write_fill_pack(
+            run_dir=run_dir,
+            work_json=work_json,
+            draft=draft,
+            out_dir=fp_dir,
+            agent_profile=args.agent_profile,
+            language=args.language,
+            max_claims=args.max_claims,
+            max_figures=args.max_figures,
+        )
+        print(f"[ok] wrote fill pack: {fp_dir}")
+
+    # Decide whether to render / publish when audit is on.
+    block_render = False
+    if args.audit and audit_status == "FAIL":
+        if not args.audit_warn_only:
+            block_render = True
+            print("[error] audit status FAIL; refusing to render. "
+                  "Fix the JSON or pass --audit-warn-only.", file=sys.stderr)
+
     # Render?
-    if args.render:
+    if args.render and not block_render:
         rc = subprocess.call([
             sys.executable, str(RENDER_SCRIPT),
             "--input", str(work_json),
@@ -555,9 +679,11 @@ def main(argv=None):
             print(f"[error] render_page.py exited {rc}", file=sys.stderr)
             return rc
         print(f"[ok] rendered: {output_dir / 'index.html'}")
+    elif args.render and block_render:
+        print("[skip] render skipped because audit FAILED.")
 
     # Publish?
-    if args.publish:
+    if args.publish and not block_render:
         cmd = [
             str(PUBLISH_SCRIPT),
             "--output", str(output_dir),
@@ -572,6 +698,8 @@ def main(argv=None):
             print(f"[error] publish_output_to_github.sh exited {rc}", file=sys.stderr)
             return rc
         print(f"[ok] published: https://github.com/{args.repo}/tree/{args.branch}")
+    elif args.publish and block_render:
+        print("[skip] publish skipped because audit FAILED.")
 
     return 0
 

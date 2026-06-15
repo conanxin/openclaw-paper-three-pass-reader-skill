@@ -249,6 +249,45 @@ The runner does **not** read the paper for you — it produces a DRAFT with `[DR
 
 ---
 
+## Agent fill pack + audit (v0.2.1-alpha)
+
+The runner now supports `--fill-pack` and `--audit`. They are designed to make the runner output directly usable by another agent (or a human) for follow-up reading work.
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "Attention Is All You Need" \
+  --input-kind paper_title \
+  --slug myrun \
+  --output-root runs/ \
+  --reading-mode partial_text \
+  --fill-pack --audit --audit-warn-only --render
+```
+
+What gets written:
+
+- `runs/myrun/work/paper_reading.json` — the draft.
+- `runs/myrun/work/audit_result.json` — full audit JSON (status, errors, warnings, recommendations).
+- `runs/myrun/reports/audit_summary.md` — markdown summary.
+- `runs/myrun/fill-pack/` — 11 markdown files (`00_README.md` … `10_quality_gate.md`) + `prompts.json` + `field_checklist.json` + `draft_status.json`.
+- `runs/myrun/paper-reading-output/index.html` — rendered page (only if audit does not FAIL).
+
+Key behaviors:
+
+- `--audit` blocks `--render` and `--publish` if audit status = FAIL (use `--audit-warn-only` to relax).
+- `--fill-pack` writes per-stage step instructions adapted to the current reading mode (weak modes carry explicit "weak-input" caveats).
+- `audit_paper_reading.py` can be used standalone for any `paper_reading.json`:
+  ```bash
+  python3 skills/paper-three-pass-reader/scripts/audit_paper_reading.py \
+    --input runs/myrun/work/paper_reading.json \
+    --json-output runs/myrun/work/audit_result.json
+  ```
+
+The audit is **structural + reading-mode discipline** only. It does not judge whether the paper is correct.
+
+See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md) and [`skills/paper-three-pass-reader/docs/AUDIT.md`](skills/paper-three-pass-reader/docs/AUDIT.md).
+
+---
+
 ## Version history
 
 | Tag | Status | Purpose |
@@ -256,7 +295,8 @@ The runner does **not** read the paper for you — it produces a DRAFT with `[DR
 | `v0.1.0-alpha` | immutable | Initial release. |
 | `v0.1.1-alpha` | immutable | Renderer hardening (loose-JSON tolerance) + multi-page publishing script. |
 | `v0.1.2-alpha` | immutable | Publish-script fix that preserves sibling page subdirectories on re-publish. |
-| `v0.2.0-alpha` | current | One-command runner for turning weak/complete inputs into a standard run layout + draft JSON + (optional) rendered/published page. |
+| `v0.2.0-alpha` | immutable | One-command runner for turning weak/complete inputs into a standard run layout + draft JSON + (optional) rendered/published page. |
+| `v0.2.1-alpha` | current | Agent Fill Pack + structural audit. Runner gained `--fill-pack`, `--audit`, `--agent-profile`, `--language`, `--max-claims`, `--max-figures`. |
 
 This project treats published tags as immutable: never force-moves an existing tag, never rewrites history.
 
@@ -266,4 +306,4 @@ This project treats published tags as immutable: never force-moves an existing t
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.1.2-alpha**.
+Version: **v0.2.1-alpha**.

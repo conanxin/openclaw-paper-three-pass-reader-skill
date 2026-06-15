@@ -1,0 +1,19 @@
+{
+  "language": "zh-CN",
+  "generated_at": "2026-06-15T04:34:06Z",
+  "input_kind": "paper_excerpt",
+  "reading_mode": "abstract_only",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "counts": {
+    "draft_fields_count": 11,
+    "missing_fields_count": 6,
+    "unavailable_due_to_reading_mode_count": 9,
+    "needs_verification_count": 20,
+    "claims_total": 1,
+    "claims_with_verification_or_uncertain": 1
+  },
+  "can_render": true,
+  "can_publish": true,
+  "recommended_next_action": "1. Run `audit_paper_reading.py` to confirm structural PASS.\n2. Fill Pass 1 (Five Cs) using only abstract + metadata. Use `[Author claim]` / `[Needs verification]` for correctness / clarity.\n3. Fill claims_evidence_map with up to `max_claims` entries, all with weak-mode labels.\n4. To upgrade to full_text: place the body text in `runs/<slug>/extracted/` and re-run the runner with `--reading-mode full_text`."
+}

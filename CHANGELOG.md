@@ -3,6 +3,22 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.1-alpha] — 2026-06-15
+
+### Added
+
+- **Agent Fill Pack** — new `--fill-pack` flag on the runner. Generates 11 markdown files (`00_README.md` through `10_quality_gate.md`) plus `prompts.json`, `field_checklist.json`, and `draft_status.json` inside `<run_dir>/fill-pack/`. Step instructions adapt to the current reading mode (weak modes carry explicit "weak-input" caveats).
+- **Structural audit** — new `skills/paper-three-pass-reader/scripts/audit_paper_reading.py`. Checks JSON shape, enum validity, reading-mode discipline (no over-claims in weak modes), claims-evidence whitelist, and final_checklist counts. Output is a JSON document + markdown summary.
+- **Runner audit integration** — `--audit` flag invokes the audit after the draft is written. If audit status is FAIL, the runner refuses to render or publish (relax with `--audit-warn-only`).
+- **Runner profile + language** — `--agent-profile` (default / strict / beginner / researcher / engineer), `--language` (zh-CN / en), `--max-claims`, `--max-figures`.
+- **Docs** — `skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`, `skills/paper-three-pass-reader/docs/AUDIT.md`. RUNNER.md / USAGE.md / OUTPUT_SCHEMA.md extended with v0.2.1 sections.
+- **Validation** — `scripts/validate.sh` extended to 108 checks across 9 steps, covering the new flags, scripts, and 3 reading-mode smoke runs (title / abstract / screenshot).
+
+### Notes
+
+- The audit is **structural + reading-mode discipline** only. It does not judge whether the paper's content is correct.
+- The fill pack is **task instructions**, not auto-filling. It does not call any external LLM API.
+
 ## [v0.2.0-alpha] — 2026-06-15
 
 ### Added

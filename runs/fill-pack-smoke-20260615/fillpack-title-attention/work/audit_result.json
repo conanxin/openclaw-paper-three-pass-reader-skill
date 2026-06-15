@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "reading_mode": "partial_text",
+  "input_kind": "paper_title",
+  "schema_version": "0.1.0",
+  "counts": {
+    "claims_total": 1,
+    "claims_with_valid_evidence": 1,
+    "final_checklist_questions": 8,
+    "draft_placeholders": 39
+  },
+  "errors": [],
+  "warnings": [],
+  "recommendations": [
+    "Document contains 39 [DRAFT] placeholders. These are normal for a freshly-generated runner draft; they should be replaced before the page is treated as a real reading."
+  ]
+}

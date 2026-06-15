@@ -268,3 +268,89 @@ If a load-bearing statement has no label, treat it as `[Needs verification]`.
 ## Versioning
 
 `schema_version` follows semantic versioning. Breaking changes bump the major version and require a new sample file. Additive changes bump the minor version and are backward-compatible.
+
+---
+
+## v0.2.1-alpha: audit + fill-pack artifacts
+
+The runner now writes two extra artifact shapes.
+
+### `audit_result.json`
+
+Output of `audit_paper_reading.py`:
+
+```json
+{
+  "status": "PASS|WARN|FAIL",
+  "reading_mode": "...",
+  "input_kind": "...",
+  "schema_version": "...",
+  "counts": {
+    "claims_total": ...,
+    "claims_with_valid_evidence": ...,
+    "final_checklist_questions": ...,
+    "draft_placeholders": ...
+  },
+  "errors": [...],
+  "warnings": [...],
+  "recommendations": [...]
+}
+```
+
+### `fill-pack/field_checklist.json`
+
+Per-field status from `fill_pack_writer.py`:
+
+```json
+{
+  "language": "zh-CN|en",
+  "reading_mode": "...",
+  "summary": {
+    "present": N,
+    "draft": N,
+    "missing": N,
+    "unavailable_due_to_reading_mode": N,
+    "needs_verification": N
+  },
+  "items": [
+    {
+      "field": "paper_metadata.title",
+      "required": true,
+      "status": "present|draft|missing|unavailable_due_to_reading_mode",
+      "needs_verification": true|false
+    }
+  ]
+}
+```
+
+### `fill-pack/draft_status.json`
+
+Aggregate:
+
+```json
+{
+  "input_kind": "...",
+  "reading_mode": "...",
+  "confidence": "high|medium|low",
+  "needs_confirmation": true|false,
+  "counts": {
+    "draft_fields_count": ...,
+    "missing_fields_count": ...,
+    "unavailable_due_to_reading_mode_count": ...,
+    "needs_verification_count": ...,
+    "claims_total": ...,
+    "claims_with_verification_or_uncertain": ...
+  },
+  "can_render": true,
+  "can_publish": true,
+  "recommended_next_action": "..."
+}
+```
+
+### `fill-pack/prompts.json`
+
+Stage-by-stage prompt guidance for downstream agents. Shape depends on language:
+
+- `zh-CN`: each stage is an object with `goal`, `allowed_inputs`, `forbidden`, `fields`, `evidence_labels`, `stop_condition`.
+- `en`: each stage is a string summary.
+

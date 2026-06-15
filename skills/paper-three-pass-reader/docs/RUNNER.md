@@ -1,6 +1,6 @@
-# Runner — paper-three-pass-reader (v0.2.0-alpha)
+# Runner — paper-three-pass-reader (v0.2.1-alpha)
 
-The `run_paper_reading.py` script is a **one-command runner** that turns a paper-shaped input into a standard run directory + draft `paper_reading.json` + (optionally) a rendered HTML page + (optionally) a published GitHub Page.
+The `run_paper_reading.py` script is a **one-command runner** that turns a paper-shaped input into a standard run directory + draft `paper_reading.json` + (optionally) an Agent Fill Pack + (optionally) an audit + (optionally) a rendered HTML page + (optionally) a published GitHub Page.
 
 It does **not** read the paper for you. It produces a **draft** that a human or an agent fills in. Its job is to enforce intake discipline, write the standard run layout, and keep the workflow repeatable.
 
@@ -27,6 +27,13 @@ python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
     [--branch gh-pages]         # branch for --publish (default gh-pages)
     [--site-path <slug>]        # site path for --publish (default = --slug)
     [--page-title <title>]      # page title for --publish
+    [--fill-pack]               # (v0.2.1) write an Agent Fill Pack to <run>/fill-pack/
+    [--audit]                   # (v0.2.1) run audit_paper_reading.py after the draft
+    [--audit-warn-only]         # (v0.2.1) treat audit WARN as PASS for render/publish
+    [--agent-profile <p>]       # (v0.2.1) default|strict|beginner|researcher|engineer
+    [--language <lang>]         # (v0.2.1) zh-CN|en
+    [--max-claims <n>]          # (v0.2.1) max claims in fill-pack (default 8)
+    [--max-figures <n>]         # (v0.2.1) max figure entries in fill-pack (default 6)
 ```
 
 `--help` shows the full list.
@@ -256,3 +263,59 @@ Smoke runs from v0.2.0-alpha validation live at:
 - `runs/runner-smoke-20260615/runner-title-attention/`
 - `runs/runner-smoke-20260615/runner-abstract-keshav/`
 - `runs/runner-smoke-20260615/runner-screenshot-keshav/`
+
+---
+
+## v0.2.1-alpha additions
+
+The runner gained three concerns:
+
+### 1. `--fill-pack`
+
+Writes `<run_dir>/fill-pack/` containing 11 markdown files (00_README through 10_quality_gate) plus `prompts.json`, `field_checklist.json`, and `draft_status.json`. These are task instructions for an agent or human to fill in the draft JSON.
+
+See `docs/AGENT_FILL_PACK.md` for the full design.
+
+### 2. `--audit`
+
+After writing the draft JSON, the runner invokes `audit_paper_reading.py` and writes:
+
+- `<run_dir>/work/audit_result.json` — full audit JSON.
+- `<run_dir>/reports/audit_summary.md` — markdown summary.
+
+If audit status is FAIL, the runner refuses to render or publish (unless `--audit-warn-only` is set).
+
+See `docs/AUDIT.md`.
+
+### 3. Reading-mode + agent-profile tuning
+
+- `--agent-profile` (default / strict / beginner / researcher / engineer) — tunes the fill-pack tone.
+- `--language` (zh-CN / en) — fill-pack language.
+- `--max-claims` / `--max-figures` — caps for the fill-pack checklists.
+
+## Combined example
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+    --input "Attention Is All You Need" \
+    --input-kind paper_title \
+    --slug fillpack-title-attention \
+    --output-root runs/fill-pack-smoke-20260615 \
+    --reading-mode partial_text \
+    --fill-pack --audit --audit-warn-only \
+    --render
+```
+
+This produces:
+
+- `runs/fill-pack-smoke-20260615/fillpack-title-attention/work/paper_reading.json`
+- `runs/fill-pack-smoke-20260615/fillpack-title-attention/work/audit_result.json`
+- `runs/fill-pack-smoke-20260615/fillpack-title-attention/reports/audit_summary.md`
+- `runs/fill-pack-smoke-20260615/fillpack-title-attention/fill-pack/` (11 md + 3 json)
+- `runs/fill-pack-smoke-20260615/fillpack-title-attention/paper-reading-output/index.html`
+
+## Smoke runs from v0.2.1-alpha
+
+- `runs/fill-pack-smoke-20260615/fillpack-title-attention/`
+- `runs/fill-pack-smoke-20260615/fillpack-abstract-keshav/`
+- `runs/fill-pack-smoke-20260615/fillpack-screenshot-keshav/`

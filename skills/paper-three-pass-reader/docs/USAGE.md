@@ -219,3 +219,49 @@ The skill is designed so an AI agent can fill `paper_reading.json` stage by stag
 5. When all passes are done, run `render_page.py` to produce `index.html`.
 
 Every interpretive statement in the JSON should carry an evidence label so the human can audit the agent's reading at a glance.
+
+---
+
+## v0.2.1-alpha: fill pack + audit
+
+The runner now supports `--fill-pack` and `--audit`. Use these when you want another agent (or a human) to fill in the draft JSON in a guided way.
+
+### Generate draft + fill pack + audit + render (one command)
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+    --input "Attention Is All You Need" \
+    --input-kind paper_title \
+    --slug myrun \
+    --output-root runs/ \
+    --reading-mode partial_text \
+    --fill-pack --audit --audit-warn-only --render
+```
+
+### Audit only
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/audit_paper_reading.py \
+    --input runs/myrun/work/paper_reading.json \
+    --json-output runs/myrun/work/audit_result.json
+```
+
+### Fill pack only (without render)
+
+```bash
+python3 skills/paper_reading.py \
+    --input "How to Read a Paper" \
+    --input-kind paper_title \
+    --slug myrun \
+    --output-root runs/ \
+    --fill-pack
+```
+
+The fill pack lands at `runs/myrun/fill-pack/` with 11 markdown files and 3 JSON files.
+
+### Upgrade weak → full
+
+1. Place the body text at `runs/myrun/extracted/full_body.txt`.
+2. Re-run with `--reading-mode full_text` (overrides the kind-forced mode).
+3. Re-run audit; claims can now carry `[Paper evidence]` / `[Figure/Table evidence]`.
+
