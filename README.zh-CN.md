@@ -187,10 +187,24 @@ bash scripts/validate.sh
 
 页面会被复制到 `gh-pages/attention-is-all-you-need/`,repo 根变成一个简洁的索引页(`index.html` + `published_pages.json`),列出所有已发布的论文。每次调用新增/更新一条,其它论文保留。脚本会校验 slug,只允许 `[A-Za-z0-9._-]+`。
 
+> **v0.1.2-alpha 备注:** 多页清理步骤已加固——重新发布一篇论文时,不会删除 `gh-pages` 上的其它论文子目录。已发布的论文保持完整。
+
+---
+
+## 版本历史
+
+| Tag | 状态 | 说明 |
+|---|---|---|
+| `v0.1.0-alpha` | 不可变 | 初始发布。 |
+| `v0.1.1-alpha` | 不可变 | 渲染器加固(松 JSON 容忍)+ 多页发布脚本。 |
+| `v0.1.2-alpha` | 当前 | 发布脚本修复,保证多页之间互不删除。 |
+
+本项目把已发布的 tag 视为不可变——绝不移动、绝不重写历史。
+
 ---
 
 ## License
 
 MIT — 见 [`LICENSE`](LICENSE)。
 
-版本:**v0.1.1-alpha**。
+版本:**v0.1.2-alpha**。

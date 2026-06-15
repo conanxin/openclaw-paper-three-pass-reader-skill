@@ -226,10 +226,24 @@ To publish several papers into one GitHub Pages repo, use the slug mode:
 
 The page is copied into `gh-pages/attention-is-all-you-need/` and the repo root becomes a tiny index (`index.html` + `published_pages.json`) that lists every published page. Each call adds (or updates) one entry; other pages are preserved. The script validates the slug and refuses anything outside `[A-Za-z0-9._-]+`.
 
+> **v0.1.2-alpha note:** the multi-page cleanup step was hardened so that re-publishing one paper never deletes another paper's subdirectory on `gh-pages`. Already-published pages survive intact.
+
+---
+
+## Version history
+
+| Tag | Status | Purpose |
+|---|---|---|
+| `v0.1.0-alpha` | immutable | Initial release. |
+| `v0.1.1-alpha` | immutable | Renderer hardening (loose-JSON tolerance) + multi-page publishing script. |
+| `v0.1.2-alpha` | current | Publish-script fix that preserves sibling page subdirectories on re-publish. |
+
+This project treats published tags as immutable: never force-moves an existing tag, never rewrites history.
+
 ---
 
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.1.1-alpha**.
+Version: **v0.1.2-alpha**.

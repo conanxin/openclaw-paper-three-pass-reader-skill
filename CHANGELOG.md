@@ -3,6 +3,36 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.1.2-alpha] — 2026-06-15
+
+### Fixed
+
+- **`publish_output_to_github.sh` in multi-page index mode.** The cleanup step that runs when both `--site-path` and `--page-title` are passed previously used a `find … -exec rm` pattern that wiped **all** non-infrastructure root entries — including sibling per-page subdirectories. After this fix, the cleanup only removes known-stale files left over from prior single-page deploys (`README.md`, `data/`, `reports/`, `index.html.bak`, `README.zh-CN.md`). Other published-page subdirectories are preserved across re-publishes.
+
+### Why a new release, not a tag rewrite
+
+- `v0.1.1-alpha` was already published (annotated tag `f30f21b` → commit `00ba84f`). The fix commit (`ffa3fd4`) landed on `main` after that release.
+- This project treats published tags as immutable: no force-move, no force-push, no history rewrite.
+- The fix is therefore released as `v0.1.2-alpha` (annotated tag → current `main` HEAD). `v0.1.1-alpha` remains exactly where it was.
+
+### No changes to
+
+- The three-pass reading design.
+- The page layout / 19 sections.
+- The `paper_reading.schema.json` shape.
+- The `v0.1.0-alpha` tag or release.
+- The `v0.1.1-alpha` tag or release (kept untouched).
+
+### Verified live after release
+
+- `https://conanxin.github.io/paper-reading-pages/` — root index, HTTP 200, 1044 bytes.
+- `https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/` — slug page, HTTP 200, 44 439 bytes.
+- `https://conanxin.github.io/paper-reading-pages/published_pages.json` — manifest, HTTP 200, 237 bytes.
+
+### Validation
+
+`scripts/validate.sh` still PASSes 68 / 0 (no change to validation suite for v0.1.2).
+
 ## [v0.1.1-alpha] — 2026-06-15
 
 ### Changed (hardening)
