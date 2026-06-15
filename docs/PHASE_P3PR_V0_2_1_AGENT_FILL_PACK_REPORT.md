@@ -129,19 +129,19 @@ v0.2.1-alpha
 
 ## COMMIT
 
-See git log post-tag-fill-in.
+`6d370ab` (initial) → `e2a8914` (annotated tag target). Both on `main` of `https://github.com/conanxin/openclaw-paper-three-pass-reader-skill`.
 
 ## PUSH
 
-See git log post-tag-fill-in.
+Pushed: `85c0e7c..6d370ab main -> main` on origin. 68 files changed (3 modified M + 8 modified M + 57 added A).
 
 ## TAG
 
-`v0.2.1-alpha` (annotated).
+`v0.2.1-alpha` (annotated, message: "v0.2.1-alpha: Agent Fill Pack + structural audit") pointing at commit `e2a8914`.
 
 ## RELEASE
 
-GitHub release `v0.2.1-alpha` created via `gh release create` with notes from `docs/RELEASE_NOTES_v0.2.1-alpha.md`.
+GitHub release `v0.2.1-alpha` created via `gh release create` with notes from `docs/RELEASE_NOTES_v0.2.1-alpha.md`. Marked "Latest" automatically (most recent). URL: `https://github.com/conanxin/openclaw-paper-three-pass-reader-skill/releases/tag/v0.2.1-alpha`.
 
 ## LIMITATIONS
 
