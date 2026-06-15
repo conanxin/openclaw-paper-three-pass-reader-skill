@@ -495,8 +495,11 @@ def write_reports(out: Path, data: dict):
     refs = p2.get('key_references', []) or []
     write_text(r / "pass2_key_references.md",
         "# Pass 2 — Key References\n\n" +
-        "\n".join(f"- **{r.get('title','')}** — {', '.join(r.get('authors', []) or [])} ({r.get('year','')}). _{r.get('why','')}_"
-                  for r in refs) + "\n")
+        "\n".join(
+            (lambda d: f"- **{d.get('title','')}** — {', '.join(d.get('authors', []) or [])} ({d.get('year','')}). _{d.get('why','')}_")
+            (r if isinstance(r, dict) else {"title": str(r), "authors": [], "year": "", "why": ""})
+            for r in refs
+        ) + "\n")
 
     # Pass 3
     p3 = data.get("pass3", {})
