@@ -1,0 +1,46 @@
+[
+  {
+    "term": "BERT",
+    "definition": "Bidirectional Encoder Representations from Transformers. A pre-trained Transformer encoder that learns deep bidirectional representations via masked language modeling and next-sentence prediction."
+  },
+  {
+    "term": "Masked Language Modeling (MLM)",
+    "definition": "Pre-training objective where 15% of input tokens are masked and the model is trained to predict them from the surrounding context."
+  },
+  {
+    "term": "Next-Sentence Prediction (NSP)",
+    "definition": "Pre-training objective where the model predicts whether sentence B follows sentence A in the original text."
+  },
+  {
+    "term": "WordPiece tokenisation",
+    "definition": "Sub-word tokenisation used by BERT with a 30 000 token vocabulary; cased for BERT_BASE_CASED, uncased for BERT_BASE_UNCASED."
+  },
+  {
+    "term": "[CLS] token",
+    "definition": "Special token prepended to every BERT input; its final hidden state is used as the aggregate sequence representation for classification."
+  },
+  {
+    "term": "[SEP] token",
+    "definition": "Special token separating sentence pairs (A, B) in BERT inputs."
+  },
+  {
+    "term": "Segment embedding",
+    "definition": "Learned embedding indicating whether a token belongs to sentence A or sentence B; added to token + position embeddings."
+  },
+  {
+    "term": "Fine-tuning",
+    "definition": "Replacing BERT's pre-training heads with task-specific heads and training all parameters on the downstream task for 2–3 epochs."
+  },
+  {
+    "term": "Feature-based use",
+    "definition": "Using BERT's hidden states as features for a downstream model; ELMo-style. Less common than fine-tuning but useful when fine-tuning data is scarce."
+  },
+  {
+    "term": "GLUE",
+    "definition": "General Language Understanding Evaluation — a benchmark suite of nine NLP tasks (CoLA, SST-2, MRPC, STS-B, QQP, MNLI-m, MNLI-mm, QNLI, RTE) used to evaluate language understanding models."
+  },
+  {
+    "term": "SQuAD",
+    "definition": "Stanford Question Answering Dataset — a reading-comprehension benchmark where the model must extract an answer span from a passage. v1.1 has unanswerable questions allowed; v2.0 explicitly adds unanswerable questions."
+  }
+]

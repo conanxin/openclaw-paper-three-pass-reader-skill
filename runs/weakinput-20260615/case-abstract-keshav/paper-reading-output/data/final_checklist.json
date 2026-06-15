@@ -1,0 +1,34 @@
+[
+  {
+    "question": "Did I read the full paper or only the abstract?",
+    "answerable": true
+  },
+  {
+    "question": "Am I clear about the reading mode in the hero badge?",
+    "answerable": true
+  },
+  {
+    "question": "Have I marked every interpretive claim with an evidence label?",
+    "answerable": true
+  },
+  {
+    "question": "Did I avoid pretending that I read Pass 2 / Pass 3 content?",
+    "answerable": true
+  },
+  {
+    "question": "Did I record the missing fields explicitly (full_body, references, figures)?",
+    "answerable": true
+  },
+  {
+    "question": "Do I know what I would need to do to upgrade this page to full_text mode?",
+    "answerable": true
+  },
+  {
+    "question": "Have I avoided using [Paper evidence] for content beyond the abstract?",
+    "answerable": true
+  },
+  {
+    "question": "Did I record the abstract-only decision (SEEK_FULL_TEXT) and a rationale?",
+    "answerable": true
+  }
+]

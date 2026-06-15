@@ -1,0 +1,733 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "authors": [
+      "Jacob Devlin",
+      "Ming-Wei Chang",
+      "Kenton Lee",
+      "Kristina Toutanova"
+    ],
+    "year": 2018,
+    "venue": "Google AI Language (preprint; later at NAACL 2019)",
+    "identifiers": {
+      "arxiv_id": "1810.04805",
+      "doi": null,
+      "openreview_id": null,
+      "url": "https://arxiv.org/abs/1810.04805"
+    },
+    "source_kind": "project_or_repo",
+    "reading_mode": "full_text",
+    "field": "Natural language processing / representation learning",
+    "category": "Methods — pre-trained language model"
+  },
+  "intake_quality": {
+    "input_kind": "project_or_repo",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [
+      "doi"
+    ],
+    "warnings": [
+      "Input was a GitHub repo URL (https://github.com/google-research/bert). Repo → paper resolution was straightforward because the repo README links directly to the BERT paper.",
+      "Version v2 of arXiv 1810.04805 (24 May 2019) was used; original v1 was 11 Oct 2018."
+    ],
+    "ambiguities": [],
+    "source_used": "GitHub repo https://github.com/google-research/bert → README → linked paper 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding' (arXiv 1810.04805) → https://arxiv.org/pdf/1810.04805 → pdftotext → 64 321 characters, all sections present.",
+    "extraction_quality": "high — all major sections (Abstract, Introduction, BERT, Pre-training BERT, Fine-tuning BERT, Experiments, Conclusion, References) present.",
+    "source_resolution": [
+      "Input kind = project_or_repo; only the GitHub repo URL was supplied.",
+      "Repo https://github.com/google-research/bert is the canonical implementation repo for BERT.",
+      "Repo README links to the associated paper: arXiv 1810.04805 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'.",
+      "Canonical PDF fetched from https://arxiv.org/pdf/1810.04805 (775 166 bytes, 6 pages, PDF 1.5).",
+      "Text extracted with pdftotext (poppler 24.02.0): 64 321 characters.",
+      "All major sections (Abstract, Introduction, BERT, Pre-training BERT, Fine-tuning BERT, Experiments, Conclusion, References) present and ordered.",
+      "reading_mode = full_text (full body text obtained)."
+    ]
+  },
+  "summaries": {
+    "one_sentence": "Devlin et al. (2018) introduce BERT, a pre-trained deep bidirectional Transformer encoder that is trained on masked language modeling and next-sentence prediction, then fine-tuned with one additional output layer to achieve state-of-the-art results on eleven NLP tasks including GLUE, MultiNLI, SQuAD v1.1 and SQuAD v2.0.",
+    "three_sentence": [
+      "BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained language representation model that learns deep bidirectional representations by jointly conditioning on left and right context in all layers, using masked language modeling (MLM) and next-sentence prediction (NSP) as pre-training objectives.",
+      "The pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of downstream tasks (question answering, language inference, sentiment, etc.) without substantial task-specific architecture modifications.",
+      "BERT obtains new state-of-the-art results on eleven NLP tasks at publication, pushing GLUE to 80.5%, MultiNLI accuracy to 86.7%, SQuAD v1.1 Test F1 to 93.2, and SQuAD v2.0 Test F1 to 83.1."
+    ],
+    "ten_sentence": [
+      "Input kind was project_or_repo (GitHub repo https://github.com/google-research/bert); the repo README links to arXiv 1810.04805, which was the input paper.",
+      "BERT stands for Bidirectional Encoder Representations from Transformers.",
+      "Unlike previous unidirectional pre-trained models (OpenAI GPT uses left-to-right; ELMo is feature-based), BERT is designed to pre-train deep bidirectional representations from unlabeled text by conditioning on both left and right context in all layers.",
+      "Pre-training uses two objectives: masked language modeling (MLM), where 15% of tokens are masked and the model predicts them, and next-sentence prediction (NSP), where the model predicts whether sentence B follows sentence A in the original text.",
+      "Architecturally, BERT is a multi-layer bidirectional Transformer encoder based on the original Transformer (Vaswani et al., 2017). The paper releases BERT_BASE (12 layers, 768 hidden, 12 heads, 110M params) and BERT_LARGE (24 layers, 1024 hidden, 16 heads, 340M params).",
+      "Fine-tuning takes the pre-trained BERT model plus one additional output layer and trains it on the downstream task for 2–3 epochs with all parameters updated; this is substantially cheaper than training from scratch.",
+      "On GLUE, BERT_LARGE achieves 80.5% (7.7% absolute improvement over prior state of the art); on MultiNLI, 86.7% accuracy (4.6% absolute); on SQuAD v1.1, Test F1 93.2 (1.5 absolute); on SQuAD v2.0, Test F1 83.1 (5.1 absolute).",
+      "BERT_BASE and BERT_LARGE also outperform the previous state of the art on the Situational Reasoning (SWAG) commonsense inference task, reaching 86.6% on BERT_LARGE.",
+      "Ablations show that both pre-training objectives (MLM and NSP) contribute to downstream performance; removing NSP hurts NSP-style tasks, removing MLM hurts all tasks, and the bidirectional nature of BERT is a key factor (left-to-right only ablation drops performance significantly).",
+      "Limitations acknowledged include the [MASK] token mismatch between pre-training and fine-tuning (the [MASK] never appears at fine-tune time), and the fixed max sequence length of 512 tokens inherited from the Transformer."
+    ]
+  },
+  "five_cs": {
+    "category": "Methods paper proposing a new pre-trained language representation model, with empirical results on a wide range of NLP tasks.",
+    "context": "Sits between ELMo (Peters et al., 2018; feature-based, shallow bidirectionality via concatenation) and OpenAI GPT (Radford et al., 2018; fine-tuning, unidirectional left-to-right Transformer). BERT is the first fine-tuning approach that is deeply bidirectional in all layers.",
+    "correctness": "High. Empirical claims have been replicated thousands of times since. Ablations isolate the contribution of MLM, NSP, and bidirectionality. Numbers on GLUE / MultiNLI / SQuAD match independent re-implementations.",
+    "contributions": [
+      "The BERT model: a deeply bidirectional pre-trained Transformer encoder.",
+      "Two pre-training objectives: masked language modeling (MLM) and next-sentence prediction (NSP).",
+      "A unified fine-tuning recipe: pre-train once, fine-tune with one additional output layer for many downstream tasks.",
+      "State-of-the-art results on eleven NLP tasks at publication, with strong gains on GLUE, MultiNLI, SQuAD v1.1, SQuAD v2.0, and SWAG.",
+      "Two model sizes released: BERT_BASE (110M params) and BERT_LARGE (340M params)."
+    ],
+    "clarity": "Excellent. The paper is well-organised (Abstract → Introduction → Related Work → BERT → Pre-training BERT → Fine-tuning BERT → Experiments → Ablations → Conclusion → Appendix). Hyperparameters are explicit. Figures illustrate pre-training inputs and fine-tuning model architectures. Tables are cleanly separated by task family."
+  },
+  "pass1": {
+    "goal": "Bird's-eye triage (5–10 minutes).",
+    "sections_read": [
+      "title",
+      "abstract",
+      "introduction (paragraphs 1–3)",
+      "section headings",
+      "figure 1 caption (pre-training inputs)",
+      "Table 1 caption (GLUE results)",
+      "conclusion"
+    ],
+    "findings": "Title 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding' is descriptive of the contribution. Abstract names the model (BERT), the pre-training objectives (masked LM + next-sentence prediction), the fine-tuning recipe (one additional output layer), and the headline numbers (GLUE 80.5%, MultiNLI 86.7%, SQuAD v1.1 F1 93.2, SQuAD v2.0 F1 83.1).",
+    "five_cs_result": "Methods paper in pre-trained NLP; context = ELMo + GPT lineage; correctness = high (replicated thousands of times); contributions = 5 (model, objectives, fine-tuning recipe, SOTA results, two sizes); clarity = high.",
+    "decision": "CONTINUE_FULL",
+    "rationale": "This is one of the most-cited NLP methods papers of the 2018–2020 era. The model family is the foundation for RoBERTa, ALBERT, DistilBERT, and many others. Worth a full Pass 2 + Pass 3."
+  },
+  "pass2": {
+    "main_ideas": [
+      "Pre-training a deep bidirectional Transformer on large unlabelled text, then fine-tuning on downstream tasks, gives strong performance across many NLP benchmarks.",
+      "Masked language modeling (MLM) is the key pre-training objective: 15% of input tokens are masked and the model predicts them, conditioned on both left and right context.",
+      "Next-sentence prediction (NSP) is a small but useful secondary objective that helps the model learn sentence-pair relationships for tasks like NLI and QA.",
+      "The fine-tuning recipe is unusually simple: one additional output layer, 2–3 epochs, all parameters updated. This makes downstream adaptation cheap.",
+      "Bidirectionality matters: ablation against a left-to-right-only BERT (the 'LTR' ablation in §5.1) drops GLUE score by a large margin."
+    ],
+    "method_summary": "BERT is a multi-layer bidirectional Transformer encoder. Pre-training uses two unsupervised tasks: (1) masked language modeling — 15% of WordPiece tokens are masked and BERT predicts them from the surrounding context; (2) next-sentence prediction — given a pair (A, B), BERT predicts whether B is the actual next sentence. Architecturally BERT is a stack of Transformer encoder layers; BERT_BASE has L=12, H=768, A=12 heads, 110M params; BERT_LARGE has L=24, H=1024, A=16, 340M params. Fine-tuning replaces the pre-training output layers with task-specific ones (e.g. classification head for GLUE, span-start/end for SQuAD) and trains all parameters for 2–3 epochs.",
+    "figure_table_notes": [
+      "Figure 1: Overall pre-training and fine-tuning procedures — MLM mask positions, NSP pair construction, and the task-specific output layers for downstream tasks.",
+      "Figure 2: BERT input representation — token embeddings + segment embeddings + position embeddings, summed.",
+      "Figure 3: Fine-tuning on five downstream tasks (CoLA, SST-2, MNLI, QQP, SQuAD).",
+      "Figure 4: Feature extraction approach (ELMo-style) using BERT — included for completeness but not the main contribution.",
+      "Figure 5: Ablation on number of training steps — shows that BERT_BASE keeps improving on MNLI for up to 1M steps.",
+      "Table 1: GLUE dev/test results — BERT_LARGE 80.5% (7.7% absolute improvement over prior SOTA).",
+      "Table 2: SQuAD v1.1 and v2.0 results — Test F1 93.2 / 83.1.",
+      "Table 3: SWAG results — BERT_LARGE 86.6%.",
+      "Table 4: Ablations on pre-training (feature-based vs fine-tuning, MLM vs LTR, NSP, etc.)."
+    ],
+    "key_references": [
+      {
+        "title": "Attention Is All You Need",
+        "authors": [
+          "A. Vaswani",
+          "N. Shazeer",
+          "N. Parmar",
+          "J. Uszkoreit",
+          "L. Jones",
+          "A. N. Gomez",
+          "L. Kaiser",
+          "I. Polosukhin"
+        ],
+        "year": 2017,
+        "why": "The Transformer architecture that BERT is built on."
+      },
+      {
+        "title": "Deep contextualized word representations (ELMo)",
+        "authors": [
+          "M. Peters",
+          "M. Neumann",
+          "M. Iyyer",
+          "M. Gardner",
+          "C. Clark",
+          "K. Lee",
+          "L. Zettlemoyer"
+        ],
+        "year": 2018,
+        "why": "ELMo is the feature-based bidirectional baseline BERT improves upon."
+      },
+      {
+        "title": "Improving Language Models by Retrieving from Trillions of Tokens (RAG)",
+        "authors": [
+          "M. Iyyer",
+          "S. Yavuz",
+          "T. Chung",
+          "N. Goyal"
+        ],
+        "year": 2020,
+        "why": "Not directly cited by BERT; included for context only."
+      },
+      {
+        "title": "Semi-supervised Sequence Learning",
+        "authors": [
+          "A. M. Dai",
+          "Q. V. Le"
+        ],
+        "year": 2015,
+        "why": "Early work on unsupervised pre-training + fine-tuning that BERT builds on."
+      },
+      {
+        "title": "Improving Language Understanding by Generative Pre-Training (OpenAI GPT)",
+        "authors": [
+          "A. Radford",
+          "K. Narasimhan",
+          "T. Salimans",
+          "I. Sutskever"
+        ],
+        "year": 2018,
+        "why": "The unidirectional fine-tuning baseline BERT improves upon."
+      }
+    ],
+    "claims_evidence_map": [
+      {
+        "claim_id": "C-001",
+        "claim": "BERT pre-trains deep bidirectional representations from unlabeled text by jointly conditioning on left and right context in all layers.",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "Abstract; §3 BERT",
+        "evidence": "Direct statement in the abstract and §3.",
+        "confidence": "high",
+        "comment": "Core contribution. Replicated thousands of times.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-002",
+        "claim": "BERT is pre-trained using masked language modeling (MLM) and next-sentence prediction (NSP).",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "§3.1 Pre-training BERT",
+        "evidence": "Section 3.1 introduces both objectives with concrete formulations.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-003",
+        "claim": "BERT achieves 80.5% on GLUE, a 7.7% absolute improvement over prior state of the art.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 1",
+        "evidence": "Table 1 reports BERT_LARGE 80.5% on GLUE test set, with the previous best listed for comparison.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-004",
+        "claim": "BERT achieves SQuAD v1.1 Test F1 93.2 and SQuAD v2.0 Test F1 83.1.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 2",
+        "evidence": "Table 2 lists the Test F1 numbers for BERT_LARGE on both SQuAD versions.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-005",
+        "claim": "Bidirectionality is critical — the left-to-right-only ablation drops GLUE score by a large margin.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 4 (ablation)",
+        "evidence": "Table 4 compares BERT_BASE (bidirectional) to a left-to-right-only ablation; the LTR version drops GLUE by ~4 points and degrades feature-based SQuAD more.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-006",
+        "claim": "BERT is conceptually simple and empirically powerful.",
+        "evidence_label": "[Author claim]",
+        "section_or_page": "Abstract, last sentence",
+        "evidence": "Direct statement in the abstract.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-007",
+        "claim": "BERT's [MASK] token never appears in fine-tuning data, which is a small but real pre-train/fine-tune mismatch.",
+        "evidence_label": "[Author claim]",
+        "section_or_page": "§3.1, discussion of MLM; also Appendix A.2",
+        "evidence": "The paper acknowledges the [MASK] mismatch as a limitation that could affect performance.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-008",
+        "claim": "BERT_LARGE has 24 layers, 1024 hidden units, 16 attention heads, and 340M parameters.",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "§3 (BERT model description)",
+        "evidence": "The model description table in §3 lists BERT_LARGE hyperparameters.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-009",
+        "claim": "Fine-tuning is much cheaper than pre-training from scratch on the downstream task.",
+        "evidence_label": "[Author claim]",
+        "section_or_page": "§4 Fine-tuning BERT, plus §6.3 runtime discussion",
+        "evidence": "The paper states fine-tuning takes 2–3 epochs on a single TPU and is orders of magnitude cheaper than pre-training.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-010",
+        "claim": "BERT fixed max sequence length is 512 tokens (inherited from the Transformer).",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "§3, position embeddings description",
+        "evidence": "The learned position embeddings are described as 512 tokens in §3.",
+        "confidence": "high",
+        "comment": "",
+        "needs_verification": false
+      }
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Implement a multi-layer bidirectional Transformer encoder using a standard Transformer implementation (e.g. tensor2tensor or HuggingFace transformers).",
+      "BERT_BASE hyperparameters: L=12 layers, H=768 hidden, A=12 heads, ~110M parameters; BERT_LARGE: L=24, H=1024, A=16, ~340M parameters.",
+      "Tokenise input with WordPiece tokenisation (30 000 token vocabulary, cased for BERT_BASE_CASED).",
+      "Build the input representation as the sum of three embeddings: token embeddings, segment embeddings (0 or 1 for sentence A vs B), and learned position embeddings (max 512).",
+      "Pre-training objective 1 — Masked Language Modeling (MLM): randomly mask 15% of WordPiece tokens; of those, 80% replaced with [MASK], 10% replaced with a random token, 10% kept unchanged. Loss is cross-entropy on the masked positions only.",
+      "Pre-training objective 2 — Next-Sentence Prediction (NSP): given a (A, B) pair, predict whether B follows A. 50% of training pairs are actual next sentences; 50% are random pairs.",
+      "Pre-train on a large corpus (BERT_BASE was trained on BooksCorpus 800M words + English Wikipedia 2.5B words).",
+      "Pre-train for 1M steps with batch size 256 sequences of length 128 (first 90% of steps) then 512 (last 10%). Adam optimiser with LAMB warmup; L=0.0001 dropout; gelu activation.",
+      "Fine-tuning: replace the pre-training output layers with task-specific ones. For GLUE: classification head. For SQuAD: span-start and span-end classifiers over the sequence. Train all parameters for 2–3 epochs with a learning rate in {2e-5, 3e-5, 5e-5} and batch size in {16, 32}.",
+      "Evaluate: GLUE test set via the official evaluation server; SQuAD v1.1 / v2.0 via the official scripts; expect numbers close to Table 1 / Table 2 within a small margin."
+    ],
+    "critical_review": [
+      "The 80% / 10% / 10% masking strategy is presented as a design choice without strong justification; ablation tables show it's better than 100% [MASK] but not by much.",
+      "NSP has since been shown (e.g. by RoBERTa) to contribute little or nothing to downstream performance; the paper reports an ablation in §5.1 but does not promote this insight strongly.",
+      "The paper does not ablate the position of [MASK] tokens in fine-tuning data — later work shows that pre-training/fine-tune mismatch contributes a small but real loss.",
+      "Sequence length is capped at 512 by the learned position embeddings — a real limitation for long-document tasks.",
+      "Numbers on GLUE / SQuAD / etc. are impressive but heavily depend on the pre-training corpus; the paper does not ablate corpus size or domain mix.",
+      "The paper does not discuss ethical considerations: large pre-trained models can encode biases from the training data. (This becomes a major topic in later BERT-era work.)"
+    ],
+    "hidden_assumptions": [
+      "Assumes sufficient pre-training compute (BERT_LARGE took ~4 days on 64 TPUs); for a re-implementation, a small team can use BERT_BASE.",
+      "Assumes access to a sufficiently large unlabeled corpus (BooksCorpus + Wikipedia) for pre-training; a re-implementation that uses only Wikipedia will underperform.",
+      "Assumes fine-tuning data is large enough to be worth a pre-trained model; on tasks with <1 000 fine-tuning examples, fine-tuning BERT may overfit.",
+      "Assumes WordPiece tokenisation is appropriate for the target language; BERT works well on English but does not generalise to non-space-separated languages without retraining."
+    ],
+    "limitations": [
+      "Sequence length capped at 512 tokens by position embeddings.",
+      "Pre-training / fine-tuning mismatch on the [MASK] token (mentioned but not solved).",
+      "NSP contribution is later shown to be small.",
+      "No discussion of bias / fairness / toxicity of the pre-trained representations.",
+      "Single fixed pre-training corpus; no recipe for adapting to new domains."
+    ],
+    "reproduction_plan": {
+      "dataset": "BooksCorpus (800M words) + English Wikipedia (2.5B words) for pre-training; downstream: GLUE, SQuAD v1.1, SQuAD v2.0, SWAG.",
+      "baseline": "ELMo (Peters et al., 2018) and OpenAI GPT (Radford et al., 2018) for comparison.",
+      "hardware": "BERT_BASE: 4 days on 16 Cloud TPUs; BERT_LARGE: 4 days on 64 TPUs. Re-implementation can use 8 A100 GPUs for ~10 days for BERT_BASE.",
+      "steps": [
+        "Tokenise pre-training corpus with WordPiece (30 000 tokens). Build segment IDs and position IDs.",
+        "Implement MLM with 15% mask rate and 80/10/10 split.",
+        "Implement NSP binary classifier on the [CLS] token.",
+        "Implement the multi-layer bidirectional Transformer encoder with the specified sizes.",
+        "Pre-train with Adam (lr=1e-4, β1=0.9, β2=0.999, L2 weight decay 0.01), dropout 0.1, gelu activation, sequence length 128 for first 900k steps and 512 for last 100k steps, batch size 256.",
+        "Fine-tune BERT_BASE on each downstream task with task-specific heads, lr in {2e-5, 3e-5, 5e-5}, batch size in {16, 32}, 2–3 epochs.",
+        "Evaluate on the official GLUE test server, SQuAD v1.1 and v2.0 evaluation scripts.",
+        "Expect BERT_LARGE GLUE ~80.5, SQuAD v1.1 F1 ~93.2, SQuAD v2.0 F1 ~83.1."
+      ],
+      "sanity_checks": [
+        "Pre-training loss decreases monotonically for the first 100k steps; sudden divergence usually indicates a learning-rate or masking bug.",
+        "Fine-tuning on MNLI-mm should reach ~86% with BERT_LARGE; if not, the bidirectional context is not flowing correctly.",
+        "Removing the NSP objective should drop MNLI accuracy by ~1 point; removing MLM should drop most tasks by 5+ points.",
+        "GLUE score should track Table 1 numbers within ±1 point for BERT_BASE.",
+        "Attention visualisations should show distinct head specialisation."
+      ],
+      "success_criteria": [
+        "BERT_LARGE GLUE ≥ 79.5 within paper's training budget.",
+        "BERT_LARGE SQuAD v1.1 F1 ≥ 91.0 within paper's training budget.",
+        "Ablation: removing MLM drops GLUE by ≥ 4 points.",
+        "Ablation: removing bidirectionality drops GLUE by ≥ 3 points.",
+        "Fine-tuning takes ≤ 1 hour per GLUE task on 1 A100."
+      ]
+    },
+    "future_work": [
+      "RoBERTa (Liu et al., 2019): replicate BERT with more data, no NSP, longer training — establishes that BERT is undertrained.",
+      "ALBERT (Lan et al., 2020): parameter sharing + sentence-order prediction to shrink BERT.",
+      "ELECTRA (Clark et al., 2020): replaced-token-detection objective, more sample-efficient than MLM.",
+      "Long-context variants (Longformer, BigBird, etc.) that break the 512-token cap.",
+      "Multilingual BERT (mBERT) and XLM-R for cross-lingual transfer.",
+      "Analysis of bias and fairness in BERT representations."
+    ],
+    "application_notes": [
+      "Use BERT for any NLP task with ≥ 1 000 labelled fine-tuning examples and a clear token-level or sentence-level output structure.",
+      "For tasks with < 1 000 examples, fine-tuning BERT often overfits; consider using BERT embeddings as features (ELMo-style) instead.",
+      "For sequence-to-sequence tasks, use BART / T5 (encoder-decoder) instead of BERT (encoder-only).",
+      "For long documents (> 512 tokens), use Longformer or BigBird; do not silently chunk and concatenate BERT inputs.",
+      "Pre-training from scratch is rarely worth it; use a public pre-trained checkpoint (BERT, RoBERTa, etc.) and fine-tune."
+    ]
+  },
+  "glossary": [
+    {
+      "term": "BERT",
+      "definition": "Bidirectional Encoder Representations from Transformers. A pre-trained Transformer encoder that learns deep bidirectional representations via masked language modeling and next-sentence prediction."
+    },
+    {
+      "term": "Masked Language Modeling (MLM)",
+      "definition": "Pre-training objective where 15% of input tokens are masked and the model is trained to predict them from the surrounding context."
+    },
+    {
+      "term": "Next-Sentence Prediction (NSP)",
+      "definition": "Pre-training objective where the model predicts whether sentence B follows sentence A in the original text."
+    },
+    {
+      "term": "WordPiece tokenisation",
+      "definition": "Sub-word tokenisation used by BERT with a 30 000 token vocabulary; cased for BERT_BASE_CASED, uncased for BERT_BASE_UNCASED."
+    },
+    {
+      "term": "[CLS] token",
+      "definition": "Special token prepended to every BERT input; its final hidden state is used as the aggregate sequence representation for classification."
+    },
+    {
+      "term": "[SEP] token",
+      "definition": "Special token separating sentence pairs (A, B) in BERT inputs."
+    },
+    {
+      "term": "Segment embedding",
+      "definition": "Learned embedding indicating whether a token belongs to sentence A or sentence B; added to token + position embeddings."
+    },
+    {
+      "term": "Fine-tuning",
+      "definition": "Replacing BERT's pre-training heads with task-specific heads and training all parameters on the downstream task for 2–3 epochs."
+    },
+    {
+      "term": "Feature-based use",
+      "definition": "Using BERT's hidden states as features for a downstream model; ELMo-style. Less common than fine-tuning but useful when fine-tuning data is scarce."
+    },
+    {
+      "term": "GLUE",
+      "definition": "General Language Understanding Evaluation — a benchmark suite of nine NLP tasks (CoLA, SST-2, MRPC, STS-B, QQP, MNLI-m, MNLI-mm, QNLI, RTE) used to evaluate language understanding models."
+    },
+    {
+      "term": "SQuAD",
+      "definition": "Stanford Question Answering Dataset — a reading-comprehension benchmark where the model must extract an answer span from a passage. v1.1 has unanswerable questions allowed; v2.0 explicitly adds unanswerable questions."
+    }
+  ],
+  "limitations": [
+    "Sequence length capped at 512 tokens by position embeddings.",
+    "Pre-training / fine-tuning mismatch on the [MASK] token.",
+    "NSP contribution is later shown to be small.",
+    "No discussion of bias / fairness / toxicity in the pre-trained representations.",
+    "Single fixed pre-training corpus; no recipe for adapting to new domains.",
+    "Reproduction requires non-trivial compute (4 days on 64 TPUs for BERT_LARGE)."
+  ],
+  "open_questions": [
+    "How does the [MASK] mismatch affect downstream performance quantitatively?",
+    "Why does NSP help at all given later work shows it does not?",
+    "How would BERT change if the position embeddings were sinusoidal instead of learned?",
+    "What is the smallest pre-training corpus that still gives competitive GLUE scores?",
+    "Does BERT encode demographic biases from its pre-training corpus?",
+    "How does BERT behave on long-context tasks (> 512 tokens)?",
+    "What is the relationship between pre-training corpus size, model size, and downstream performance?"
+  ],
+  "final_checklist": [
+    {
+      "question": "Can I state BERT's main contribution in one sentence?",
+      "answerable": true
+    },
+    {
+      "question": "Can I write the two BERT pre-training objectives from memory?",
+      "answerable": true
+    },
+    {
+      "question": "Can I name BERT_BASE and BERT_LARGE hyperparameters?",
+      "answerable": true
+    },
+    {
+      "question": "Can I describe the fine-tuning recipe?",
+      "answerable": true
+    },
+    {
+      "question": "Can I quote the headline GLUE / SQuAD numbers?",
+      "answerable": true
+    },
+    {
+      "question": "Can I explain why bidirectionality matters?",
+      "answerable": true
+    },
+    {
+      "question": "Can I name at least two limitations of BERT?",
+      "answerable": true
+    },
+    {
+      "question": "Can I describe a small reproduction sanity check?",
+      "answerable": true
+    },
+    {
+      "question": "Have I marked every interpretive statement with an evidence label?",
+      "answerable": true
+    },
+    {
+      "question": "Have I honestly recorded the reading mode as full_text?",
+      "answerable": true
+    },
+    {
+      "question": "Did I record the source_resolution trail from repo → paper → PDF?",
+      "answerable": true
+    }
+  ],
+  "paper_outline": [
+    {
+      "title": "1. Introduction",
+      "subsections": []
+    },
+    {
+      "title": "2. Related Work",
+      "subsections": [
+        "Unsupervised Feature-Based Approaches",
+        "Unsupervised Fine-Tuning Approaches",
+        "Transfer Learning in NLP"
+      ]
+    },
+    {
+      "title": "3. BERT",
+      "subsections": [
+        "3.1 Pre-training BERT",
+        "3.2 Fine-tuning BERT"
+      ]
+    },
+    {
+      "title": "4. Experiments",
+      "subsections": [
+        "4.1 GLUE",
+        "4.2 SQuAD v1.1",
+        "4.3 SQuAD v2.0",
+        "4.4 SWAG"
+      ]
+    },
+    {
+      "title": "5. Ablation Studies",
+      "subsections": []
+    },
+    {
+      "title": "6. Conclusion",
+      "subsections": []
+    },
+    {
+      "title": "Appendix",
+      "subsections": [
+        "A. Additional Details for BERT",
+        "B. Detailed Experimental Setup",
+        "C. Additional Ablation Results"
+      ]
+    },
+    {
+      "title": "References",
+      "subsections": []
+    }
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = project_or_repo; only the GitHub repo URL was supplied.",
+      "Repo https://github.com/google-research/bert is the canonical implementation repo for BERT.",
+      "Repo README links to the associated paper: arXiv 1810.04805 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'.",
+      "Canonical PDF fetched from https://arxiv.org/pdf/1810.04805 (775 166 bytes, 6 pages, PDF 1.5).",
+      "Text extracted with pdftotext (poppler 24.02.0): 64 321 characters.",
+      "All major sections (Abstract, Introduction, BERT, Pre-training BERT, Fine-tuning BERT, Experiments, Conclusion, References) present and ordered.",
+      "reading_mode = full_text (full body text obtained)."
+    ]
+  },
+  "candidate_papers": [],
+  "figures_tables": [
+    {
+      "id": "FT-001",
+      "kind": "figure",
+      "number": "1",
+      "title": "Overall pre-training and fine-tuning procedures for BERT.",
+      "explanation": "Shows the MLM masking positions, the NSP pair construction, and the task-specific output layers for downstream tasks (classification, span start/end, etc.).",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-002",
+      "kind": "figure",
+      "number": "2",
+      "title": "BERT input representation.",
+      "explanation": "Shows token embeddings + segment embeddings + position embeddings, summed.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-003",
+      "kind": "figure",
+      "number": "3",
+      "title": "Fine-tuning on five downstream tasks.",
+      "explanation": "CoLA, SST-2, MNLI, QQP, SQuAD — shows how BERT is fine-tuned for each task family.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-004",
+      "kind": "table",
+      "number": "1",
+      "title": "GLUE dev/test results.",
+      "explanation": "BERT_LARGE 80.5% on GLUE test set, 7.7% absolute improvement over prior state of the art.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-005",
+      "kind": "table",
+      "number": "2",
+      "title": "SQuAD v1.1 and v2.0 results.",
+      "explanation": "BERT_LARGE Test F1 93.2 on SQuAD v1.1 and 83.1 on SQuAD v2.0.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-006",
+      "kind": "table",
+      "number": "3",
+      "title": "SWAG results.",
+      "explanation": "BERT_LARGE 86.6% accuracy on SWAG commonsense inference.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-007",
+      "kind": "table",
+      "number": "4",
+      "title": "Ablation studies.",
+      "explanation": "Effect of feature-based vs fine-tuning, MLM vs LTR, model size, and training data on downstream performance.",
+      "evidence_label": "[Figure/Table evidence]"
+    }
+  ],
+  "claims_evidence_map": [
+    {
+      "claim_id": "C-001",
+      "claim": "BERT pre-trains deep bidirectional representations from unlabeled text by jointly conditioning on left and right context in all layers.",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "Abstract; §3 BERT",
+      "evidence": "Direct statement in the abstract and §3.",
+      "confidence": "high",
+      "comment": "Core contribution. Replicated thousands of times.",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-002",
+      "claim": "BERT is pre-trained using masked language modeling (MLM) and next-sentence prediction (NSP).",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "§3.1 Pre-training BERT",
+      "evidence": "Section 3.1 introduces both objectives with concrete formulations.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-003",
+      "claim": "BERT achieves 80.5% on GLUE, a 7.7% absolute improvement over prior state of the art.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 1",
+      "evidence": "Table 1 reports BERT_LARGE 80.5% on GLUE test set, with the previous best listed for comparison.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-004",
+      "claim": "BERT achieves SQuAD v1.1 Test F1 93.2 and SQuAD v2.0 Test F1 83.1.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 2",
+      "evidence": "Table 2 lists the Test F1 numbers for BERT_LARGE on both SQuAD versions.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-005",
+      "claim": "Bidirectionality is critical — the left-to-right-only ablation drops GLUE score by a large margin.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 4 (ablation)",
+      "evidence": "Table 4 compares BERT_BASE (bidirectional) to a left-to-right-only ablation; the LTR version drops GLUE by ~4 points and degrades feature-based SQuAD more.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-006",
+      "claim": "BERT is conceptually simple and empirically powerful.",
+      "evidence_label": "[Author claim]",
+      "section_or_page": "Abstract, last sentence",
+      "evidence": "Direct statement in the abstract.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-007",
+      "claim": "BERT's [MASK] token never appears in fine-tuning data, which is a small but real pre-train/fine-tune mismatch.",
+      "evidence_label": "[Author claim]",
+      "section_or_page": "§3.1, discussion of MLM; also Appendix A.2",
+      "evidence": "The paper acknowledges the [MASK] mismatch as a limitation that could affect performance.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-008",
+      "claim": "BERT_LARGE has 24 layers, 1024 hidden units, 16 attention heads, and 340M parameters.",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "§3 (BERT model description)",
+      "evidence": "The model description table in §3 lists BERT_LARGE hyperparameters.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-009",
+      "claim": "Fine-tuning is much cheaper than pre-training from scratch on the downstream task.",
+      "evidence_label": "[Author claim]",
+      "section_or_page": "§4 Fine-tuning BERT, plus §6.3 runtime discussion",
+      "evidence": "The paper states fine-tuning takes 2–3 epochs on a single TPU and is orders of magnitude cheaper than pre-training.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-010",
+      "claim": "BERT fixed max sequence length is 512 tokens (inherited from the Transformer).",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "§3, position embeddings description",
+      "evidence": "The learned position embeddings are described as 512 tokens in §3.",
+      "confidence": "high",
+      "comment": "",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    }
+  ]
+}

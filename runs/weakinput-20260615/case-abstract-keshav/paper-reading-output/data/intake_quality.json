@@ -1,0 +1,32 @@
+{
+  "input_kind": "paper_excerpt",
+  "reading_mode": "abstract_only",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "missing_fields": [
+    "arxiv_id",
+    "doi",
+    "openreview_id",
+    "url",
+    "full_body_text",
+    "full_references",
+    "full_figures",
+    "full_tables"
+  ],
+  "warnings": [
+    "Only the abstract / opening paragraph was provided.",
+    "Pass 2 / Pass 3 are explicitly NOT performed.",
+    "All claims are marked [Author claim] / [Uncertain] / [Needs verification] — no [Paper evidence] labels are used because the body text was not available.",
+    "If the user supplies the full PDF later, this page can be re-rendered with reading_mode = full_text."
+  ],
+  "ambiguities": [],
+  "source_used": "User-supplied abstract excerpt (see inputs/abstract-only-how-to-read-a-paper.md).",
+  "extraction_quality": "high for abstract; n/a for body (not available).",
+  "source_resolution": [
+    "Input kind = paper_excerpt; only an abstract / opening paragraph was supplied.",
+    "Title 'How to Read a Paper' + author 'S. Keshav' + venue 'SIGCOMM CCR' + year 2007 → high-confidence identification of S. Keshav, 'How to Read a Paper', SIGCOMM Computer Communication Review 37(4), 2007.",
+    "No PDF was fetched (reading_mode is abstract_only, not full_text).",
+    "All claims below are derived from the abstract / opening paragraph; the body text was not available at run time.",
+    "Next step (suggested): if the user supplies the full PDF, re-render with reading_mode = full_text."
+  ]
+}

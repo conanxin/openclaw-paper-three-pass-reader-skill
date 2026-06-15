@@ -1,0 +1,58 @@
+[
+  {
+    "id": "FT-001",
+    "kind": "figure",
+    "number": "1",
+    "title": "Overall pre-training and fine-tuning procedures for BERT.",
+    "explanation": "Shows the MLM masking positions, the NSP pair construction, and the task-specific output layers for downstream tasks (classification, span start/end, etc.).",
+    "evidence_label": "[Figure/Table evidence]"
+  },
+  {
+    "id": "FT-002",
+    "kind": "figure",
+    "number": "2",
+    "title": "BERT input representation.",
+    "explanation": "Shows token embeddings + segment embeddings + position embeddings, summed.",
+    "evidence_label": "[Figure/Table evidence]"
+  },
+  {
+    "id": "FT-003",
+    "kind": "figure",
+    "number": "3",
+    "title": "Fine-tuning on five downstream tasks.",
+    "explanation": "CoLA, SST-2, MNLI, QQP, SQuAD — shows how BERT is fine-tuned for each task family.",
+    "evidence_label": "[Figure/Table evidence]"
+  },
+  {
+    "id": "FT-004",
+    "kind": "table",
+    "number": "1",
+    "title": "GLUE dev/test results.",
+    "explanation": "BERT_LARGE 80.5% on GLUE test set, 7.7% absolute improvement over prior state of the art.",
+    "evidence_label": "[Figure/Table evidence]"
+  },
+  {
+    "id": "FT-005",
+    "kind": "table",
+    "number": "2",
+    "title": "SQuAD v1.1 and v2.0 results.",
+    "explanation": "BERT_LARGE Test F1 93.2 on SQuAD v1.1 and 83.1 on SQuAD v2.0.",
+    "evidence_label": "[Figure/Table evidence]"
+  },
+  {
+    "id": "FT-006",
+    "kind": "table",
+    "number": "3",
+    "title": "SWAG results.",
+    "explanation": "BERT_LARGE 86.6% accuracy on SWAG commonsense inference.",
+    "evidence_label": "[Figure/Table evidence]"
+  },
+  {
+    "id": "FT-007",
+    "kind": "table",
+    "number": "4",
+    "title": "Ablation studies.",
+    "explanation": "Effect of feature-based vs fine-tuning, MLM vs LTR, model size, and training data on downstream performance.",
+    "evidence_label": "[Figure/Table evidence]"
+  }
+]

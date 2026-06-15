@@ -1,0 +1,46 @@
+[
+  {
+    "term": "Transformer",
+    "definition": "The encoder–decoder architecture proposed in this paper, whose core operation is multi-head scaled dot-product self-attention. No recurrence, no convolutions."
+  },
+  {
+    "term": "self-attention",
+    "definition": "An attention mechanism in which queries, keys and values all come from the same sequence, allowing each position to attend to every other position in the same sequence."
+  },
+  {
+    "term": "scaled dot-product attention",
+    "definition": "Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. The √dₖ factor prevents the softmax from saturating when dₖ is large."
+  },
+  {
+    "term": "multi-head attention",
+    "definition": "Running h parallel attention heads with different learned projections of Q, K, V, then concatenating the outputs and projecting. Allows the model to attend to information from h different representation subspaces at the same position."
+  },
+  {
+    "term": "positional encoding",
+    "definition": "A vector added to each token embedding to inject order information into the otherwise permutation-invariant self-attention. The paper uses fixed sinusoidal encodings of dimension d_model."
+  },
+  {
+    "term": "encoder",
+    "definition": "A stack of N = 6 identical layers, each with a multi-head self-attention sub-layer and a position-wise feed-forward sub-layer, both with residual connection and layer normalisation. Maps the input sequence to a continuous representation."
+  },
+  {
+    "term": "decoder",
+    "definition": "A stack of N = 6 identical layers. Like the encoder but with a third sub-layer that performs multi-head attention over the encoder output, and with masking in the self-attention sub-layer to preserve the autoregressive property."
+  },
+  {
+    "term": "residual connection",
+    "definition": "x + Sublayer(x), a skip connection that lets gradients flow through a deep stack. Combined with layer normalisation: LayerNorm(x + Sublayer(x))."
+  },
+  {
+    "term": "layer normalization",
+    "definition": "Per-position, per-feature normalisation that subtracts the mean and divides by the standard deviation across the feature dimension, then applies a learned affine transformation. Used in every sub-layer of the Transformer."
+  },
+  {
+    "term": "BLEU",
+    "definition": "Bilingual Evaluation Understudy, a standard machine-translation metric that measures n-gram overlap between the model output and one or more reference translations, with a brevity penalty. Higher is better; the paper reports BLEU on newstest2014."
+  },
+  {
+    "term": "sequence transduction",
+    "definition": "The general task of mapping an input sequence to an output sequence, of variable length and potentially different modality. Machine translation, summarisation, and parsing are all sequence-transduction tasks."
+  }
+]

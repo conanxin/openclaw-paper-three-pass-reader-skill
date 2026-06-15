@@ -1,0 +1,34 @@
+[
+  {
+    "term": "Three-pass method",
+    "definition": "Reading procedure split into three passes (first / second / third). Visible in the screenshot section heading 'The Three-Pass Approach'."
+  },
+  {
+    "term": "First pass (Pass 1)",
+    "definition": "Bird's-eye view of the paper. Visible in the screenshot as a heading + visible fragments about 5–10 min and Five Cs."
+  },
+  {
+    "term": "Second pass (Pass 2)",
+    "definition": "Deeper read of the body. Visible in the screenshot as a fragment (~1 hour, skipping proofs)."
+  },
+  {
+    "term": "Third pass (Pass 3)",
+    "definition": "Reconstruction of the paper. Visible in the screenshot as a fragment (1–4 hours, re-implement as author)."
+  },
+  {
+    "term": "Five Cs",
+    "definition": "Visible in the screenshot: Category, Context, Correctness, Contributions, Clarity."
+  },
+  {
+    "term": "screenshot_only",
+    "definition": "This page's reading_mode. Only OCR / VLM-visible text was used. The body was not available."
+  },
+  {
+    "term": "[Uncertain]",
+    "definition": "Evidence label used in this run for claims grounded in OCR / VLM-visible fragments only."
+  },
+  {
+    "term": "[Needs verification]",
+    "definition": "Evidence label used for claims that need confirmation from the body before they can be treated as solid."
+  }
+]

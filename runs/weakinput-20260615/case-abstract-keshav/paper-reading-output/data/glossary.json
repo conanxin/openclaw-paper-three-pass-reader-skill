@@ -1,0 +1,26 @@
+[
+  {
+    "term": "Three-pass method",
+    "definition": "A reading procedure that splits one paper into three time-budgeted reads: bird's-eye, content, reconstruction. From the abstract of this paper."
+  },
+  {
+    "term": "First pass (Pass 1)",
+    "definition": "A bird's-eye view of the paper. From the abstract. Time budget is in the body (not extracted in this run)."
+  },
+  {
+    "term": "Second pass (Pass 2)",
+    "definition": "A deeper reading of the content. From the abstract. Time budget is in the body (not extracted in this run)."
+  },
+  {
+    "term": "Third pass (Pass 3)",
+    "definition": "Reconstructing the paper as if the reader were the author. From the abstract. Time budget is in the body (not extracted in this run)."
+  },
+  {
+    "term": "[Needs verification]",
+    "definition": "Evidence label used in this run for claims that are common-knowledge but not in the available text."
+  },
+  {
+    "term": "[Author claim]",
+    "definition": "Evidence label used in this run for claims grounded in the abstract / opening paragraph only."
+  }
+]

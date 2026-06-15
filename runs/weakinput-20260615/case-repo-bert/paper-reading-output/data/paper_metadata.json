@@ -1,0 +1,21 @@
+{
+  "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+  "authors": [
+    "Jacob Devlin",
+    "Ming-Wei Chang",
+    "Kenton Lee",
+    "Kristina Toutanova"
+  ],
+  "year": 2018,
+  "venue": "Google AI Language (preprint; later at NAACL 2019)",
+  "identifiers": {
+    "arxiv_id": "1810.04805",
+    "doi": null,
+    "openreview_id": null,
+    "url": "https://arxiv.org/abs/1810.04805"
+  },
+  "source_kind": "project_or_repo",
+  "reading_mode": "full_text",
+  "field": "Natural language processing / representation learning",
+  "category": "Methods — pre-trained language model"
+}
