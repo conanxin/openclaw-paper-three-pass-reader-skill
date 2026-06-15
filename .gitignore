@@ -15,6 +15,10 @@ paper-reading-output/
 .env
 .env.*
 
+# Downloaded PDFs and extracted text from real-paper runs — large, not source.
+runs/**/source/
+runs/**/extracted/
+
 # Build / distribution (we have none yet, but be ready)
 dist/
 build/

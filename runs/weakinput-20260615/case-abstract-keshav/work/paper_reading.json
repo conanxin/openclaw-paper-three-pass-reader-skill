@@ -1,0 +1,382 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "How to Read a Paper",
+    "authors": [
+      "S. Keshav"
+    ],
+    "year": 2007,
+    "venue": "SIGCOMM Computer Communication Review",
+    "identifiers": {
+      "arxiv_id": null,
+      "doi": null,
+      "openreview_id": null,
+      "url": null
+    },
+    "source_kind": "paper_excerpt",
+    "reading_mode": "abstract_only",
+    "field": "Research methodology / scientific communication",
+    "category": "Methods / how-to essay"
+  },
+  "intake_quality": {
+    "input_kind": "paper_excerpt",
+    "reading_mode": "abstract_only",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [
+      "arxiv_id",
+      "doi",
+      "openreview_id",
+      "url",
+      "full_body_text",
+      "full_references",
+      "full_figures",
+      "full_tables"
+    ],
+    "warnings": [
+      "Only the abstract / opening paragraph was provided.",
+      "Pass 2 / Pass 3 are explicitly NOT performed.",
+      "All claims are marked [Author claim] / [Uncertain] / [Needs verification] — no [Paper evidence] labels are used because the body text was not available.",
+      "If the user supplies the full PDF later, this page can be re-rendered with reading_mode = full_text."
+    ],
+    "ambiguities": [],
+    "source_used": "User-supplied abstract excerpt (see inputs/abstract-only-how-to-read-a-paper.md).",
+    "extraction_quality": "high for abstract; n/a for body (not available).",
+    "source_resolution": [
+      "Input kind = paper_excerpt; only an abstract / opening paragraph was supplied.",
+      "Title 'How to Read a Paper' + author 'S. Keshav' + venue 'SIGCOMM CCR' + year 2007 → high-confidence identification of S. Keshav, 'How to Read a Paper', SIGCOMM Computer Communication Review 37(4), 2007.",
+      "No PDF was fetched (reading_mode is abstract_only, not full_text).",
+      "All claims below are derived from the abstract / opening paragraph; the body text was not available at run time.",
+      "Next step (suggested): if the user supplies the full PDF, re-render with reading_mode = full_text."
+    ]
+  },
+  "summaries": {
+    "one_sentence": "Based only on the abstract, Keshav's 2007 essay proposes a three-pass method for reading research papers (bird's-eye, content, reconstruction) but the full paper body has not been read in this run.",
+    "three_sentence": [
+      "From the abstract alone: Keshav observes that researchers spend a great deal of time reading papers but few are taught how to read them effectively, and proposes a simple three-pass method to fill that gap.",
+      "The first pass is a quick bird's-eye view; the second pass gives a deeper understanding of the content; the third pass reconstructs the paper as if the reader were the author.",
+      "This run was performed in abstract_only mode — the full paper was not fetched, so the rest of this page is a preliminary read based only on the abstract, not a full three-pass reading."
+    ],
+    "ten_sentence": [
+      "(The full body of the paper was not available at run time; sentences below are derived only from the abstract / opening paragraph and from common knowledge of the paper's reputation in CS pedagogy.)",
+      "Input was an abstract excerpt; input_kind = paper_excerpt; reading_mode = abstract_only.",
+      "From the abstract: the paper addresses the underexplored skill of reading research papers and proposes a three-pass method.",
+      "From the abstract: pass 1 is a quick bird's-eye view; pass 2 is a deeper read; pass 3 is a reconstructive read.",
+      "From the abstract: the method is intended for graduate students and researchers in computer science (per usual scope of the genre).",
+      "Specific time budgets (5–10 minutes, ~1 hour, 1–4 hours) are NOT confirmed in this run — they appear in the body of the paper, which was not fetched.",
+      "The Five Cs checklist (Category, Context, Correctness, Contributions, Clarity) is NOT confirmed in this run — it appears in the body of the paper, which was not fetched.",
+      "Detailed claims about reproduction / future work / limitations are NOT made in this run — the body is needed to ground them.",
+      "The page below shows the Five Cs as PRELIMINARY (based on the abstract), the Claims → Evidence map as derived only from the abstract, and Pass 2 / Pass 3 as 'unavailable — full text not obtained'.",
+      "Recommended next action: feed the full PDF or full text into this skill with the same paper title, then re-render with reading_mode = full_text."
+    ]
+  },
+  "five_cs": {
+    "category": "Preliminary (abstract-only): Methods / how-to essay in CS research methodology. Body was not fetched.",
+    "context": "Preliminary (abstract-only): sits in a long tradition of 'how to do research' / 'how to read a paper' essays in SIGCOMM and adjacent communities. Body was not fetched.",
+    "correctness": "Preliminary (abstract-only): the abstract alone does not give enough evidence to assess correctness; full body was not fetched.",
+    "contributions": [
+      "(Preliminary, from abstract only) A three-pass reading method with the three passes named.",
+      "(Needs verification) The exact wording of the time budgets (5–10 min / ~1 h / 1–4 h) — not visible in the abstract; needs the body to confirm.",
+      "(Needs verification) The Five Cs checklist — not visible in the abstract; needs the body to confirm."
+    ],
+    "clarity": "Preliminary (abstract-only): the abstract itself is well-written; clarity of the body was not assessed because the body was not fetched."
+  },
+  "pass1": {
+    "goal": "Preliminary Pass 1 (abstract-only). Real Pass 1 needs the body.",
+    "sections_read": [
+      "title (visible)",
+      "abstract / opening paragraph (visible)",
+      "author block (visible)"
+    ],
+    "findings": "Paper is identifiable with high confidence (title + author + venue + year). Body not available. A real Pass 1 (5–10 minute bird's-eye read of the body) cannot be done yet.",
+    "five_cs_result": "Five Cs filled in preliminary form — every entry carries an evidence label that signals 'derived from abstract only' or 'needs the body to verify'.",
+    "decision": "SEEK_FULL_TEXT",
+    "rationale": "The paper is identifiable and worth reading deeper, but Pass 2 and Pass 3 cannot be performed honestly without the body. The skill recommends: obtain the full PDF, then re-run with reading_mode = full_text."
+  },
+  "pass2": {
+    "main_ideas": [
+      "[Author claim, from abstract] Reading research papers is a skill that is often taken for granted and rarely taught.",
+      "[Author claim, from abstract] A three-pass method can make paper reading more effective and more reproducible.",
+      "[Author claim, from abstract] Pass 1 = bird's-eye view; Pass 2 = deeper understanding; Pass 3 = reconstruction.",
+      "[Needs verification] Exact time budgets, exact Five Cs wording, exact list of references — all require the body to confirm."
+    ],
+    "method_summary": "[Author claim, from abstract] The paper describes a three-pass reading method. Detailed steps and equations are in the body, which was not available in this run.",
+    "figure_table_notes": "[Uncertain] The paper is known to contain no figures and ~6 references, but the body was not fetched in this run — not confirmed from extracted text here.",
+    "key_references": [
+      {
+        "title": "(needs body to enumerate)",
+        "authors": [],
+        "year": null,
+        "why": "[Needs verification] — the paper's reference list was not extracted in this run."
+      }
+    ],
+    "claims_evidence_map": [
+      {
+        "claim_id": "C-001",
+        "claim": "Researchers spend a great deal of time reading papers, but few are taught how to do it effectively.",
+        "evidence_label": "[Author claim]",
+        "section_or_page": "Abstract / opening paragraph",
+        "evidence": "Direct quote from the abstract / opening paragraph supplied by the user.",
+        "confidence": "high",
+        "comment": "Grounded in the abstract. Not verified against the body because the body was not fetched.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-002",
+        "claim": "A three-pass method can structure paper reading.",
+        "evidence_label": "[Author claim]",
+        "section_or_page": "Abstract / opening paragraph",
+        "evidence": "Abstract states the paper proposes a three-pass method.",
+        "confidence": "high",
+        "comment": "Grounded in the abstract. The exact wording of the three passes is in the body — not extracted here.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-003",
+        "claim": "Pass 1 = bird's-eye view (5–10 minutes).",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Body (not extracted)",
+        "evidence": "Time budget '5–10 minutes' is widely associated with this paper in CS pedagogy lore, but is NOT visible in the abstract.",
+        "confidence": "medium",
+        "comment": "Common-knowledge attribution. Needs the body to confirm exact wording.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-004",
+        "claim": "Pass 1 answers the Five Cs (Category, Context, Correctness, Contributions, Clarity).",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Body (not extracted)",
+        "evidence": "Five Cs are widely attributed to this paper in CS pedagogy lore, but are NOT visible in the abstract.",
+        "confidence": "medium",
+        "comment": "Common-knowledge attribution. Needs the body to confirm.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-005",
+        "claim": "Pass 2 takes ~1 hour; Pass 3 takes 1–4 hours.",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Body (not extracted)",
+        "evidence": "Time budgets are widely associated with this paper but not visible in the abstract.",
+        "confidence": "low",
+        "comment": "Common-knowledge attribution only.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-006",
+        "claim": "Pass 3 reconstructs the paper as if you were the author.",
+        "evidence_label": "[Author claim]",
+        "section_or_page": "Abstract / opening paragraph",
+        "evidence": "The abstract / opening paragraph describes pass 3 as reconstruction.",
+        "confidence": "high",
+        "comment": "Grounded in the abstract.",
+        "needs_verification": false
+      }
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "[unavailable — abstract-only run] Re-implementation of the three-pass method requires the full body text. Pass 3 reconstruction is NOT performed in this run.",
+      "[unavailable — abstract-only run] See the 'Next actions' section below for how to re-render with reading_mode = full_text."
+    ],
+    "critical_review": [
+      "[unavailable — abstract-only run] A real critical review requires the full body."
+    ],
+    "hidden_assumptions": [
+      "[unavailable — abstract-only run] Identifying hidden assumptions requires the full body."
+    ],
+    "limitations": [
+      "This page is an abstract-only read. Pass 2 / Pass 3 are NOT performed.",
+      "Claims beyond the abstract are marked [Uncertain] or [Needs verification].",
+      "Re-render with reading_mode = full_text to upgrade."
+    ],
+    "reproduction_plan": {
+      "dataset": "[unavailable — abstract-only run] No dataset in the paper to enumerate.",
+      "baseline": "[unavailable — abstract-only run]",
+      "hardware": "[unavailable — abstract-only run]",
+      "steps": [
+        "Obtain the full PDF of S. Keshav, 'How to Read a Paper', SIGCOMM CCR 37(4), 2007.",
+        "Re-run this skill with the same paper title / identifier, but with reading_mode upgraded to full_text after the body is obtained.",
+        "Re-render the page; Pass 2 / Pass 3 will then be available."
+      ],
+      "sanity_checks": [
+        "Re-render must show 'full_text' reading mode in the hero badge.",
+        "Five Cs entries must no longer carry the 'preliminary (abstract-only)' tag.",
+        "All claims should carry evidence labels grounded in the body."
+      ],
+      "success_criteria": [
+        "Pass 2 main ideas derived from the actual body.",
+        "Pass 3 reconstruction steps derived from the actual body.",
+        "No claim is still labelled [Needs verification] after re-render."
+      ]
+    },
+    "future_work": [
+      "[unavailable — abstract-only run]"
+    ],
+    "application_notes": [
+      "The skill's honest behaviour on abstract-only input is to NOT pretend to have read the body.",
+      "Re-rendering with the full PDF upgrades the page automatically."
+    ]
+  },
+  "glossary": [
+    {
+      "term": "Three-pass method",
+      "definition": "A reading procedure that splits one paper into three time-budgeted reads: bird's-eye, content, reconstruction. From the abstract of this paper."
+    },
+    {
+      "term": "First pass (Pass 1)",
+      "definition": "A bird's-eye view of the paper. From the abstract. Time budget is in the body (not extracted in this run)."
+    },
+    {
+      "term": "Second pass (Pass 2)",
+      "definition": "A deeper reading of the content. From the abstract. Time budget is in the body (not extracted in this run)."
+    },
+    {
+      "term": "Third pass (Pass 3)",
+      "definition": "Reconstructing the paper as if the reader were the author. From the abstract. Time budget is in the body (not extracted in this run)."
+    },
+    {
+      "term": "[Needs verification]",
+      "definition": "Evidence label used in this run for claims that are common-knowledge but not in the available text."
+    },
+    {
+      "term": "[Author claim]",
+      "definition": "Evidence label used in this run for claims grounded in the abstract / opening paragraph only."
+    }
+  ],
+  "limitations": [
+    "Abstract-only run. Body was not fetched.",
+    "Pass 2 / Pass 3 are NOT performed.",
+    "Five Cs entries are preliminary; need the body to ground them.",
+    "Time budgets (5–10 min / ~1 h / 1–4 h) are common-knowledge attributions only — not visible in the abstract.",
+    "Five Cs checklist is a common-knowledge attribution only — not visible in the abstract.",
+    "Re-render with reading_mode = full_text to upgrade."
+  ],
+  "open_questions": [
+    "What are the exact time budgets stated in the paper?",
+    "What are the exact Five Cs named in the paper?",
+    "What references does the paper cite?",
+    "Does the paper address modern reading aids (LLMs, semantic search)?",
+    "What limitations does the paper acknowledge in the body?"
+  ],
+  "final_checklist": [
+    {
+      "question": "Did I read the full paper or only the abstract?",
+      "answerable": true
+    },
+    {
+      "question": "Am I clear about the reading mode in the hero badge?",
+      "answerable": true
+    },
+    {
+      "question": "Have I marked every interpretive claim with an evidence label?",
+      "answerable": true
+    },
+    {
+      "question": "Did I avoid pretending that I read Pass 2 / Pass 3 content?",
+      "answerable": true
+    },
+    {
+      "question": "Did I record the missing fields explicitly (full_body, references, figures)?",
+      "answerable": true
+    },
+    {
+      "question": "Do I know what I would need to do to upgrade this page to full_text mode?",
+      "answerable": true
+    },
+    {
+      "question": "Have I avoided using [Paper evidence] for content beyond the abstract?",
+      "answerable": true
+    },
+    {
+      "question": "Did I record the abstract-only decision (SEEK_FULL_TEXT) and a rationale?",
+      "answerable": true
+    }
+  ],
+  "paper_outline": [
+    {
+      "title": "1. (body not extracted)",
+      "subsections": []
+    },
+    {
+      "title": "2. (body not extracted)",
+      "subsections": []
+    },
+    {
+      "title": "3. (body not extracted)",
+      "subsections": []
+    }
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_excerpt; only an abstract / opening paragraph was supplied.",
+      "Title 'How to Read a Paper' + author 'S. Keshav' + venue 'SIGCOMM CCR' + year 2007 → high-confidence identification of S. Keshav, 'How to Read a Paper', SIGCOMM Computer Communication Review 37(4), 2007.",
+      "No PDF was fetched (reading_mode is abstract_only, not full_text).",
+      "All claims below are derived from the abstract / opening paragraph; the body text was not available at run time.",
+      "Next step (suggested): if the user supplies the full PDF, re-render with reading_mode = full_text."
+    ]
+  },
+  "candidate_papers": [],
+  "figures_tables": [],
+  "claims_evidence_map": [
+    {
+      "claim_id": "C-001",
+      "claim": "Researchers spend a great deal of time reading papers, but few are taught how to do it effectively.",
+      "evidence_label": "[Author claim]",
+      "section_or_page": "Abstract / opening paragraph",
+      "evidence": "Direct quote from the abstract / opening paragraph supplied by the user.",
+      "confidence": "high",
+      "comment": "Grounded in the abstract. Not verified against the body because the body was not fetched.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-002",
+      "claim": "A three-pass method can structure paper reading.",
+      "evidence_label": "[Author claim]",
+      "section_or_page": "Abstract / opening paragraph",
+      "evidence": "Abstract states the paper proposes a three-pass method.",
+      "confidence": "high",
+      "comment": "Grounded in the abstract. The exact wording of the three passes is in the body — not extracted here.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-003",
+      "claim": "Pass 1 = bird's-eye view (5–10 minutes).",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Body (not extracted)",
+      "evidence": "Time budget '5–10 minutes' is widely associated with this paper in CS pedagogy lore, but is NOT visible in the abstract.",
+      "confidence": "medium",
+      "comment": "Common-knowledge attribution. Needs the body to confirm exact wording.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-004",
+      "claim": "Pass 1 answers the Five Cs (Category, Context, Correctness, Contributions, Clarity).",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Body (not extracted)",
+      "evidence": "Five Cs are widely attributed to this paper in CS pedagogy lore, but are NOT visible in the abstract.",
+      "confidence": "medium",
+      "comment": "Common-knowledge attribution. Needs the body to confirm.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-005",
+      "claim": "Pass 2 takes ~1 hour; Pass 3 takes 1–4 hours.",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Body (not extracted)",
+      "evidence": "Time budgets are widely associated with this paper but not visible in the abstract.",
+      "confidence": "low",
+      "comment": "Common-knowledge attribution only.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-006",
+      "claim": "Pass 3 reconstructs the paper as if you were the author.",
+      "evidence_label": "[Author claim]",
+      "section_or_page": "Abstract / opening paragraph",
+      "evidence": "The abstract / opening paragraph describes pass 3 as reconstruction.",
+      "confidence": "high",
+      "comment": "Grounded in the abstract.",
+      "needs_verification": false
+    }
+  ]
+}

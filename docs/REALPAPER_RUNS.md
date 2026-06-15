@@ -110,3 +110,7 @@ Specifically:
 - The multi-page index mode cleanup step (the one that runs when both `--site-path` and `--page-title` are passed) used to use a `find … -exec rm` pattern that wiped **all** non-infrastructure root entries — including other published pages' subdirectories. v0.1.2-alpha replaces it with an explicit list of stale-file names (`README.md`, `data/`, `reports/`, `index.html.bak`, `README.zh-CN.md`); unknown directories are now left alone, so re-publishing one paper cannot accidentally delete another paper's slug page.
 - The published tags are now treated as immutable by policy: `v0.1.0-alpha` and `v0.1.1-alpha` are not moved by any future release. New fixes ship as new tags (`v0.1.2-alpha`, …).
 - No schema, no page template, no three-pass design changes.
+
+## P3PR-WEAKINPUT-1 (pointer)
+
+See [`docs/WEAKINPUT_RUNS.md`](WEAKINPUT_RUNS.md) for the full weak-input run index. P3PR-WEAKINPUT-1 (2026-06-15) exercises four weak-input kinds (title-only, abstract-only, screenshot-only, repo-clue) on the same skill version. Two of the four cases upgrade to `full_text` after a successful PDF fetch; two stay at their partial mode and never pretend to have read more than the supplied text.
