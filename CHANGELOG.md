@@ -3,6 +3,23 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.7-alpha] — 2026-06-15
+
+### Added
+
+- **Structured `source_resolution` block** — every draft now writes a top-level `source_resolution` object that records the full resolver trail: `steps`, `hint_input`, `resolver_source`, `resolver_helper`, `resolver_status`, `resolver_match_type`, `confidence`, `matched_paper_id`, `matched_canonical_title`, `matched_arxiv_id`, `matched_alias`, `matched_repo`, `candidates`, `source_resolution_step`. Replaces the previous flat list and gives agents a single, queryable view of how a paper was resolved.
+- **CLI → runner overlay** — `p3pr` writes `work/resolver_source.json` from its own resolver result. The runner reads it via `--resolver-source` and overlays it on top of its auto-detected match, so a CLI-resolved paper id beats whatever the runner's auto-detect would otherwise produce.
+- **Runner `--resolver-source` support** — `run_paper_reading.py` accepts a JSON file path; the helper that file produces is applied to the draft's `source_resolution` block as the final step.
+- **Resolver helper degradation behaviour** — the resolver helper call is wrapped in `try/except`. On any exception the runner records `resolver_status=error`, sets `degraded=ambiguous_clue`, appends a warning to `intake_quality.warnings`, and **continues with rc=0**. A broken helper cannot fail a run.
+- **Hostile-resolver validation** — `scripts/validate.sh` step 14 includes a hostile test that forces the resolver helper to raise on every call and asserts (a) the runner exits 0, (b) `paper_reading.json` is written, (c) `source_resolution.resolver_status=error`, (d) `source_resolution.degraded=ambiguous_clue`. 14 new checks in step 14.
+- **Documentation cross-link** — `skills/paper-three-pass-reader/docs/ONE_LINE_CLI.md` Q&A "How do I add a new hint?" now points at `data/resolver_hints.json` and `docs/RESOLVER_HINTS.md`. New sections in `RESOLVER_HINTS.md` and `ONE_LINE_CLI.md` describe the structured `source_resolution` block and the degradation behaviour.
+
+### Notes
+
+- v0.2.6-alpha is **immutable**. The round-2 hardening is released as v0.2.7-alpha, not as a move of v0.2.6-alpha. Published tags are never re-pointed.
+- The legacy flat `intake_quality.source_resolution` list is preserved for back-compat with v0.2.5 smokes and pre-v0.2.7 readers.
+- Validation remains PASS at 195/0 (167 v0.2.5 baseline + 28 step 13 + 14 step 14).
+
 ## [v0.2.6-alpha] — 2026-06-15
 
 ### Added

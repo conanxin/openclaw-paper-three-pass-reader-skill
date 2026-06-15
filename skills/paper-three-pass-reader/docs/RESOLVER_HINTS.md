@@ -175,3 +175,50 @@ Step 13 of `scripts/validate.sh` covers this unification:
 - 13n: `p3pr screenshot` v0.2.6 smoke auto-detects arXiv from transcript.
 
 Total: 28 new checks in step 13. Total validation: 179/0 PASS as of v0.2.6.
+
+---
+
+## Structured `source_resolution` block (v0.2.7)
+
+As of v0.2.7, every draft writes a top-level `source_resolution` object that records
+the full resolver trail, not just a flat match. The block has these keys:
+
+| key | type | meaning |
+| --- | --- | --- |
+| `steps` | list | ordered resolver attempts (auto-detect, overlay, etc.) |
+| `hint_input` | str | the original user hint text |
+| `resolver_source` | str | which call produced the final match (e.g. `p3pr-cli`, `runner-auto`, `overlay`) |
+| `resolver_helper` | str | module path of the helper that ran |
+| `resolver_status` | str | `matched \| weak \| ambiguous_clue \| error` |
+| `resolver_match_type` | str | `title \| alias \| repo \| arxiv \| abstract \| overlay` |
+| `confidence` | float | 0.0–1.0 |
+| `matched_paper_id` | str | canonical paper id from `resolver_hints.json` |
+| `matched_canonical_title` | str | canonical title |
+| `matched_arxiv_id` | str | arXiv id, if known |
+| `matched_alias` | str | the alias that matched, if any |
+| `matched_repo` | str | the repo URL that matched, if any |
+| `candidates` | list | alternative candidates considered |
+| `source_resolution_step` | str | which step produced the final result |
+
+The CLI writes its resolver result to `work/resolver_source.json` and the runner reads
+that file via `--resolver-source`, overlaying the CLI's match on top of its own
+auto-detect. A CLI-resolved paper id always wins over a weak auto-detect.
+
+The legacy flat `intake_quality.source_resolution` list is preserved for back-compat
+with v0.2.5 smokes and pre-v0.2.7 readers.
+
+---
+
+## Resolver degradation behaviour (v0.2.7)
+
+The runner's resolver helper call is wrapped in `try/except`. If the helper raises
+on every call, the runner:
+
+1. Records `resolver_status=error` in `source_resolution`.
+2. Sets `degraded=ambiguous_clue` in `source_resolution`.
+3. Appends a warning to `intake_quality.warnings`.
+4. Continues with rc=0 and still writes `paper_reading.json`.
+
+This means a broken helper can never fail a run. A hostile-resolver test in
+`scripts/validate.sh` step 14 forces the helper to raise on every call and asserts
+all four behaviours above. The full validation remains PASS at 195/0.

@@ -300,7 +300,9 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.2.2-alpha` | immutable | Auto-fill smoke run + runner/render robustness fixes. |
 | `v0.2.3-alpha` | immutable | First-class Chinese (zh-CN) output. Runner writes `target_language` / `ui_language`; renderer localizes UI; audit checks Chinese content. |
 | `v0.2.4-alpha` | immutable | zh-CN quality gate. Goes beyond "has Chinese?" to "is the Chinese actually a reading?". Catches low CJK coverage, English carryover, shallow glossary/claims/checklist, full_text with no `[Paper evidence]`. Integrated into audit (`--quality-gate`) and runner. |
-| `v0.2.5-alpha` | current | One-line CLI `p3pr`. `./p3pr arxiv 2503.08102 --zh --full --publish` does the whole pipeline (runner + fill-pack + audit + quality gate + render + publish). 6 subcommands: arxiv / title / abstract / screenshot / repo / pdf. Enforces weak-mode / quality-gate boundaries. |
+| `v0.2.5-alpha` | immutable | One-line CLI `p3pr`. `./p3pr arxiv 2503.08102 --zh --full --publish` does the whole pipeline (runner + fill-pack + audit + quality gate + render + publish). 6 subcommands: arxiv / title / abstract / screenshot / repo / pdf. Enforces weak-mode / quality-gate boundaries. |
+| `v0.2.6-alpha` | immutable | Shared resolver hints: `data/resolver_hints.json` is now the single source of truth, with `scripts/resolver_hints.py` and `scripts/resolve_paper_hint.py` helpers. Replaces the duplicate HINTS dict in `p3pr.py` and the duplicate `RESOLVER_HINTS` in the runner. |
+| `v0.2.7-alpha` | current | v0.2.6 round-2 hardening, released as a new tag (v0.2.6-alpha is immutable, never re-pointed). Adds the structured top-level `source_resolution` block, the CLI→runner overlay via `work/resolver_source.json` + `--resolver-source`, and the resolver helper degradation behaviour (a broken helper now degrades to `ambiguous_clue` and the run still finishes rc=0). Validation 195/0 PASS. |
 
 ## Language support (zh-CN / en)
 
@@ -393,4 +395,4 @@ See [`skills/paper-three-pass-reader/docs/ONE_LINE_CLI.md`](skills/paper-three-p
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.2.5-alpha**.
+Version: **v0.2.7-alpha**. Previous: v0.2.6-alpha (immutable, kept for reproducibility).

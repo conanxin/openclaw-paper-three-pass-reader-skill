@@ -205,6 +205,24 @@ its view into `work/resolver_source.json` which the runner overlays via
 `--resolver-source`. See `docs/RESOLVER_HINTS.md` for the full design +
 how to add new paper / repo hints.
 
+**Q: Why does the runner write a structured `source_resolution` block?**
+A: So agents can see exactly how a paper was resolved. The block records
+the full trail: `steps`, `hint_input`, `resolver_source`, `resolver_helper`,
+`resolver_status`, `resolver_match_type`, `confidence`, `matched_paper_id`,
+`matched_canonical_title`, `matched_arxiv_id`, `matched_alias`, `matched_repo`,
+`candidates`, and `source_resolution_step`. The CLI overlay
+(`work/resolver_source.json`) is one of the steps. See
+[`RESOLVER_HINTS.md`](RESOLVER_HINTS.md#structured-source_resolution-block-v027).
+
+**Q: What if the resolver helper itself crashes?**
+A: It does not fail the run. The runner wraps the helper call in `try/except`.
+On any exception it records `resolver_status=error`, sets
+`degraded=ambiguous_clue`, appends a warning to `intake_quality.warnings`,
+and continues with rc=0. A broken helper is treated as `ambiguous_clue`,
+not as a fatal error. This is verified by a hostile-resolver test in
+`scripts/validate.sh` step 14. See
+[`RESOLVER_HINTS.md`](RESOLVER_HINTS.md#resolver-degradation-behaviour-v027).
+
 ## See also
 
 - `p3pr --help` — the full flag list.
