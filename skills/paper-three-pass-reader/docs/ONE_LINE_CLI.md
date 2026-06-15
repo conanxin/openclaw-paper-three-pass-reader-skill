@@ -196,9 +196,14 @@ A: Add a `handle_<name>(args)` function in `p3pr.py`, register it in
 and do not call external APIs.
 
 **Q: How do I add a new hint?**
-A: Add an entry to the `HINTS` dict at the top of `p3pr.py`, AND to
-`RESOLVER_HINTS` in `run_paper_reading.py`. The CLI keeps its own copy for
-dry-runs (so it can resolve without invoking the runner).
+|A: As of v0.2.6, there is **only one place** to add hints:
+`skills/paper-three-pass-reader/data/resolver_hints.json`. The CLI, the
+runner, the tests, and the docs all read from this single file. The runner
+auto-rebuilds its `RESOLVER_HINTS` back-compat dict from the shared JSON
+on import. The CLI delegates to `scripts/resolver_hints.py` and writes
+its view into `work/resolver_source.json` which the runner overlays via
+`--resolver-source`. See `docs/RESOLVER_HINTS.md` for the full design +
+how to add new paper / repo hints.
 
 ## See also
 

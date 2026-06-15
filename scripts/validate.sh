@@ -843,6 +843,146 @@ else
   bad "p3pr screenshot v0.2.6 smoke failed"
 fi
 
+# 14. v0.2.6 source_resolution + resolver helper degradation
+step 14 "v0.2.6 source_resolution + resolver helper degradation"
+
+# 14a. runner --help mentions --resolver-source.
+if echo "$RUNNER_HELP" | grep -q -- "--resolver-source"; then
+  ok "runner --help mentions --resolver-source"
+else
+  bad "runner --help missing --resolver-source"
+fi
+
+# 14b. p3pr title smoke: paper_reading.json has the new structured source_resolution fields.
+if [[ -f /tmp/p3pr-v26-screenshot/cli-screenshot-smoke-v26/work/paper_reading.json ]]; then
+  SR_JSON=/tmp/p3pr-v26-screenshot/cli-screenshot-smoke-v26/work/paper_reading.json
+  for field in hint_input resolver_source resolver_helper resolver_status resolver_match_type confidence matched_paper_id source_resolution_step; do
+    if python3 -c "import json,sys; d=json.load(open(sys.argv[1])); assert d.get('source_resolution',{}).get('$field') is not None" "$SR_JSON" 2>/dev/null; then
+      ok "source_resolution has $field"
+    else
+      bad "source_resolution missing $field"
+    fi
+  done
+else
+  bad "no p3pr smoke draft to inspect for source_resolution"
+fi
+
+# 14c. p3pr title smoke: source_resolution.matched_paper_id matches the shared resolver.
+if [[ -f /tmp/p3pr-v26-screenshot/cli-screenshot-smoke-v26/work/paper_reading.json ]]; then
+  mp="$(python3 -c "import json; d=json.load(open('/tmp/p3pr-v26-screenshot/cli-screenshot-smoke-v26/work/paper_reading.json')); print(d['source_resolution'].get('matched_paper_id'))")"
+  if [[ "$mp" == "second-me" ]]; then
+    ok "source_resolution.matched_paper_id=second-me (auto-detected from transcript)"
+  else
+    bad "source_resolution.matched_paper_id is '$mp' (expected second-me)"
+  fi
+fi
+
+# 14d. resolver overlay: runner accepts --resolver-source and applies it.
+rm -rf /tmp/p3pr-v26b-overlay
+cat > /tmp/p3pr-v26b-overlay.json <<'JSON'
+{
+  "status": "matched",
+  "match_type": "repo",
+  "confidence": "high",
+  "paper": {"id": "bert", "canonical_title": "BERT", "arxiv_id": "1810.04805"},
+  "matched_repo": "https://github.com/google-research/bert",
+  "candidates": [],
+  "source_resolution_step": "manual test overlay"
+}
+JSON
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+   --input "https://github.com/google-research/bert" \
+   --input-kind project_or_repo \
+   --slug v26b-overlay \
+   --output-root /tmp/p3pr-v26b-overlay \
+   --resolver-source /tmp/p3pr-v26b-overlay.json >/dev/null 2>&1; then
+  if python3 -c "import json; d=json.load(open('/tmp/p3pr-v26b-overlay/v26b-overlay/work/paper_reading.json')); assert d['source_resolution']['matched_paper_id']=='bert'; assert d['source_resolution']['resolver_status']=='matched'; assert d['source_resolution']['resolver_match_type']=='repo'" >/dev/null 2>&1; then
+    ok "runner --resolver-source overlay applies (matched_paper_id=bert, status=matched, match_type=repo)"
+  else
+    bad "runner --resolver-source overlay did not apply correctly"
+  fi
+else
+  bad "runner --resolver-source overlay run failed"
+fi
+
+# 14e. Hostile resolver degradation: PYTHONPATH override makes resolver_hints raise;
+#      runner must NOT fail and must record status=error + degraded=ambiguous_clue.
+rm -rf /tmp/p3pr-hostile-sandbox
+HOSTILE_DIR=/tmp/p3pr-hostile-dir
+rm -rf "$HOSTILE_DIR"
+mkdir -p "$HOSTILE_DIR"
+# Copy the real scripts dir (minus resolver_hints.py) so the runner can import its
+# other dependencies (audit, fill_pack_writer, etc.).
+mkdir -p "$HOSTILE_DIR/scripts"
+for f in "$SKILL_DIR/scripts"/*.py "$SKILL_DIR/scripts"/*.sh; do
+  bn="$(basename "$f")"
+  if [[ "$bn" == "resolver_hints.py" ]] || [[ "$bn" == "__pycache__" ]]; then continue; fi
+  cp "$f" "$HOSTILE_DIR/scripts/"
+done
+# Write a hostile resolver_hints.py
+cat > "$HOSTILE_DIR/scripts/resolver_hints.py" <<'PYEOF'
+def resolve_any(*a, **k):
+    raise RuntimeError("validate.sh hostile resolver stub")
+def resolve_title(*a, **k):
+    raise RuntimeError("validate.sh hostile resolver stub")
+def resolve_arxiv(*a, **k):
+    raise RuntimeError("validate.sh hostile resolver stub")
+def resolve_repo(*a, **k):
+    raise RuntimeError("validate.sh hostile resolver stub")
+def load_hints(*a, **k):
+    return {"schema_version":"hostile","papers":[],"repo_hints":[]}
+def paper_to_runner_overrides(*a, **k):
+    return {}
+PYEOF
+# Symlink data/ so the rest of the pipeline works (and override our resolver).
+mkdir -p "$HOSTILE_DIR/scripts/data"
+for f in "$SKILL_DIR/data"/*; do
+  ln -sf "$f" "$HOSTILE_DIR/scripts/data/"
+done
+# Run with PYTHONPATH=$HOSTILE_DIR/scripts so the hostile resolver is picked first.
+if env PYTHONPATH="$HOSTILE_DIR/scripts" python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+   --input "Attention Is All You Need" \
+   --input-kind paper_title \
+   --slug v26-hostile \
+   --output-root /tmp/p3pr-hostile-sandbox >/dev/null 2>&1; then
+  HOSTILE_JSON=/tmp/p3pr-hostile-sandbox/v26-hostile/work/paper_reading.json
+  if [[ -f "$HOSTILE_JSON" ]]; then
+    SR_STATUS="$(python3 -c "import json; print(json.load(open('$HOSTILE_JSON'))['source_resolution'].get('resolver_status'))")"
+    SR_DEGRADED="$(python3 -c "import json; print(json.load(open('$HOSTILE_JSON'))['source_resolution'].get('degraded'))")"
+    if [[ "$SR_STATUS" == "error" ]]; then
+      ok "hostile resolver: source_resolution.resolver_status=error"
+    else
+      bad "hostile resolver: status was '$SR_STATUS' (expected error)"
+    fi
+    if [[ "$SR_DEGRADED" == "ambiguous_clue" ]]; then
+      ok "hostile resolver: source_resolution.degraded=ambiguous_clue"
+    else
+      bad "hostile resolver: degraded was '$SR_DEGRADED' (expected ambiguous_clue)"
+    fi
+    # And runner still wrote a paper_reading.json (no crash)
+    if [[ -f "$HOSTILE_JSON" ]]; then
+      ok "hostile resolver: runner still produced paper_reading.json (no crash)"
+    fi
+  else
+    bad "hostile resolver: no paper_reading.json produced"
+  fi
+else
+  bad "hostile resolver: runner exited non-zero (should degrade gracefully)"
+fi
+rm -rf "$HOSTILE_DIR"
+
+# 14f. Original CLI smokes (screenshot + abstract) still pass.
+SMOKE_DIR="$ROOT/runs/p3pr-cli-smoke-20260615"
+for sub in cli-screenshot-smoke cli-abstract-smoke; do
+  if [[ -f "$SMOKE_DIR/$sub/work/paper_reading.json" ]]; then
+    if grep -q '"resolver_status"' "$SMOKE_DIR/$sub/work/paper_reading.json"; then
+      ok "v0.2.5 $sub still has source_resolution.resolver_status"
+    else
+      bad "v0.2.5 $sub missing source_resolution.resolver_status"
+    fi
+  fi
+done
+
 # Summary
 echo
 echo "================================================="

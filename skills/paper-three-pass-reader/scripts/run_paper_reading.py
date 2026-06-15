@@ -60,11 +60,23 @@ from pathlib import Path
 # v0.2.6: shared resolver hints live in resolver_hints.py + data/resolver_hints.json.
 # Keep RESOLVER_HINTS as a backwards-compatible alias built from the shared data so
 # downstream code that imports it (including historical tests) still works.
+# PYTHONPATH is honoured as a higher-priority override so tests can swap in a
+# hostile stub to verify graceful degradation.
 import os as _os
 import re as _re  # noqa: F401  -- keep for legacy callers
 _HERE_DIR = _os.path.dirname(_os.path.abspath(__file__))
-if _HERE_DIR not in sys.path:
-    sys.path.insert(0, _HERE_DIR)
+# Only prepend _HERE_DIR if PYTHONPATH does not already provide a resolver_hints.
+# If PYTHONPATH DOES provide one, we put it at the FRONT of sys.path so the
+# hostile/override module wins over our bundled copy. This is important for
+# test harnesses that swap in a resolver_hints.py to verify graceful degradation.
+_overrides = [p for p in sys.path if _os.path.isfile(_os.path.join(p, "resolver_hints.py")) and _os.path.abspath(p) != _HERE_DIR]
+if not _overrides:
+    if _HERE_DIR not in sys.path:
+        sys.path.insert(0, _HERE_DIR)
+else:
+    # Move the first override to the front so the hostile module wins.
+    override = _os.path.abspath(_overrides[0])
+    sys.path = [override] + [p for p in sys.path if _os.path.abspath(p) != override and _os.path.abspath(p) != _HERE_DIR]
 from resolver_hints import load_hints as _rh_load_hints  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
@@ -142,51 +154,113 @@ RESOLVER_HINTS = _build_legacy_resolver_hints()
 
 
 def _resolve_hint(text: str, requested_kind: str):
-    """Look up canonical hints. Returns (hint_dict or None, normalized_key).
+    """Look up canonical hints. Returns (hint_dict, normalized_key, resolver_result).
 
     v0.2.6: prefer the shared resolver (which supports title aliases, arXiv
     extraction, and repo URL fragment matching); fall back to the legacy
     substring matcher for backwards compatibility.
+
+    The third return value (`resolver_result`) is a dict capturing the shared
+    resolver's full output — `{status, match_type, confidence, paper, candidates,
+    source_resolution_step}` — so callers can record the resolution trail.
+    On shared-resolver exception, it returns `{"status": "error", ...}` with a
+    human-readable message; the function still degrades gracefully and does NOT
+    raise (helper errors must never block intake).
     """
     if not text:
-        return None, ""
+        return None, "", {"status": "skipped", "match_type": "none", "confidence": "low",
+                           "paper": {}, "candidates": [],
+                           "source_resolution_step": "empty input"}
+
     norm = text.strip().lower()
 
-    # Prefer shared resolver (handles aliases, arXiv, repo fragments)
+    # Prefer shared resolver (handles aliases, arXiv, repo fragments).
+    # On any helper error, log + degrade to ambiguous_clue; do NOT raise.
+    resolver_result = None
     try:
         from resolver_hints import resolve_any as _rh_resolve_any  # noqa: WPS433
         r = _rh_resolve_any(text, requested_kind or "ambiguous_clue")
-        paper = r.get("paper") or {}
-        if paper and r.get("status") in ("matched",):
-            return {
-                "title": paper.get("canonical_title"),
-                "authors": paper.get("authors") or [],
-                "year": int(paper["year"]) if str(paper.get("year", "")).isdigit() else paper.get("year"),
-                "venue": paper.get("venue"),
-                "arxiv_id": paper.get("arxiv_id"),
-                "url": paper.get("paper_url"),
-                "field": paper.get("field"),
-                "category": paper.get("field"),
-                "default_reading_mode": "full_text" if paper.get("arxiv_id") else "abstract_only",
-                "source_kind_override": "project_or_repo" if "github.com" in (text or "").lower() else None,
-            }, norm
-    except Exception:  # noqa: BLE001
-        pass
+        if isinstance(r, dict):
+            resolver_result = r
+            paper = r.get("paper") or {}
+            if paper and r.get("status") in ("matched",):
+                hint = {
+                    "title": paper.get("canonical_title"),
+                    "authors": paper.get("authors") or [],
+                    "year": int(paper["year"]) if str(paper.get("year", "")).isdigit() else paper.get("year"),
+                    "venue": paper.get("venue"),
+                    "arxiv_id": paper.get("arxiv_id"),
+                    "url": paper.get("paper_url"),
+                    "field": paper.get("field"),
+                    "category": paper.get("field"),
+                    "default_reading_mode": "full_text" if paper.get("arxiv_id") else "abstract_only",
+                    "source_kind_override": "project_or_repo" if "github.com" in (text or "").lower() else None,
+                }
+                return hint, norm, resolver_result
+            # ambiguous / not_found from shared resolver — keep resolver_result for trail
+    except Exception as e:  # noqa: BLE001
+        # helper blew up — degrade to ambiguous_clue, never raise
+        resolver_result = {
+            "status": "error",
+            "match_type": "none",
+            "confidence": "low",
+            "paper": {},
+            "candidates": [],
+            "source_resolution_step": f"shared resolver exception: {e!r}; degraded to ambiguous_clue",
+        }
+        try:
+            print(f"[warn] resolver_hints.helper raised: {e!r}; degrading to ambiguous_clue",
+                  file=sys.stderr)
+        except Exception:  # noqa: BLE001
+            pass
 
-    # Fallback: legacy substring matcher over RESOLVER_HINTS
+    # Fallback: legacy substring matcher over RESOLVER_HINTS.
+    legacy_match = None
     if norm in RESOLVER_HINTS:
-        return RESOLVER_HINTS[norm], norm
-    if text.startswith("http://") or text.startswith("https://"):
+        legacy_match = RESOLVER_HINTS[norm], norm
+    elif text.startswith("http://") or text.startswith("https://"):
         if text in RESOLVER_HINTS:
-            return RESOLVER_HINTS[text], norm
-        if text.rstrip("/") in RESOLVER_HINTS:
-            return RESOLVER_HINTS[text.rstrip("/")], norm
-    for key, hint in RESOLVER_HINTS.items():
-        if key.startswith("http"):
-            continue
-        if len(key) >= 5 and key in norm:
-            return hint, key
-    return None, norm
+            legacy_match = RESOLVER_HINTS[text], norm
+        elif text.rstrip("/") in RESOLVER_HINTS:
+            legacy_match = RESOLVER_HINTS[text.rstrip("/")], norm
+    if not legacy_match:
+        for key, hint in RESOLVER_HINTS.items():
+            if key.startswith("http"):
+                continue
+            if len(key) >= 5 and key in norm:
+                legacy_match = hint, key
+                break
+
+    # If we hit a legacy match but the shared resolver had an error, prefer legacy
+    # and note the resolver error in the resolver_result. If shared resolver was
+    # fine but said not_found/ambiguous, still prefer legacy when available.
+    if legacy_match is not None:
+        hint, key = legacy_match
+        if resolver_result is None:
+            resolver_result = {
+                "status": "matched",
+                "match_type": "legacy",
+                "confidence": "medium",
+                "paper": {"id": "(legacy)", "canonical_title": hint.get("title")},
+                "candidates": [],
+                "source_resolution_step": "legacy substring matcher (resolver returned not_found)",
+            }
+        elif resolver_result.get("status") == "error":
+            # keep the error trail; just attach a legacy-matched paper id hint
+            resolver_result["fallback_legacy"] = hint.get("title")
+        return hint, key, resolver_result
+
+    # No match at all
+    if resolver_result is None:
+        resolver_result = {
+            "status": "not_found",
+            "match_type": "none",
+            "confidence": "low",
+            "paper": {},
+            "candidates": [],
+            "source_resolution_step": "no shared or legacy match",
+        }
+    return None, norm, resolver_result
 
 
 def _now_iso() -> str:
@@ -204,8 +278,14 @@ def _slug_safe(s: str) -> str:
     return s2 or "x"
 
 
-def make_draft(args, hint) -> dict:
-    """Build a draft paper_reading.json from runner args + (optional) hint."""
+def make_draft(args, hint, resolver_result=None) -> dict:
+    """Build a draft paper_reading.json from runner args + (optional) hint.
+
+    v0.2.6: the third optional argument `resolver_result` is the shared
+    resolver's full output dict (status, match_type, confidence, paper, ...).
+    When provided, its fields are recorded into `intake_quality.source_resolution`
+    so the resolution trail is auditable.
+    """
     # Paper metadata
     if hint:
         title = args.title or hint.get("title") or args.input
@@ -315,6 +395,29 @@ def make_draft(args, hint) -> dict:
             "is upgraded to full_text."
         )
 
+    # v0.2.6: record the shared resolver's view into both intake_quality.source_resolution
+    # (legacy flat list) and the top-level source_resolution dict (structured).
+    rr = resolver_result or {}
+    rr_paper = rr.get("paper") or {}
+    rr_status = rr.get("status", "not_found")
+    rr_match_type = rr.get("match_type", "none")
+    rr_confidence = rr.get("confidence", "low")
+    rr_paper_id = rr_paper.get("id") if isinstance(rr_paper, dict) else None
+    rr_source_resolution_step = rr.get("source_resolution_step", "")
+
+    if rr_status == "error":
+        warnings.append(
+            "Shared resolver helper raised an exception. "
+            "Treated input as ambiguous_clue. "
+            f"step: {rr_source_resolution_step!r}"
+        )
+    elif rr_status == "ambiguous":
+        warnings.append(
+            f"Shared resolver returned ambiguous for {args.input!r} "
+            f"({len(rr.get('candidates') or [])} candidates). "
+            "Operator should pick one or supply more context."
+        )
+
     intake_quality = OrderedDict([
         ("input_kind", source_kind),
         ("reading_mode", reading_mode),
@@ -331,9 +434,13 @@ def make_draft(args, hint) -> dict:
         ("source_resolution", [
             f"Input kind = {source_kind}.",
             f"Input string: {args.input!r}.",
+            f"Resolver source: skills/paper-three-pass-reader/data/resolver_hints.json (shared).",
+            f"Resolver status: {rr_status}; match_type: {rr_match_type}; confidence: {rr_confidence}.",
+            f"Matched paper id: {rr_paper_id or '(none)'}.",
             (f"Matched resolver hint: {args.input!r} → {hint['title']} (arXiv {hint.get('arxiv_id')})"
              if hint else
              f"No resolver hint matched for {args.input!r}. needs_confirmation = true."),
+            f"Resolver step: {rr_source_resolution_step or '(no step recorded)'}",
             "Runner did NOT fetch the paper body. Operator must supply the body "
             "(PDF → extracted text) or upgrade reading_mode manually.",
         ]),
@@ -438,6 +545,30 @@ def make_draft(args, hint) -> dict:
     source_resolution = intake_quality["source_resolution"]
     candidate_papers = [] if hint else [{"input": args.input, "rank": 1, "rationale": "no hint matched"}]
 
+    # v0.2.6: also surface the structured resolver fields at the top level of
+    # source_resolution so downstream tools (renderer, fill-pack, audit) can
+    # read them without parsing the legacy flat-list `steps` lines.
+    rr_candidates = rr.get("candidates") or []
+    rr_top = OrderedDict([
+        ("steps", source_resolution),
+        ("hint_input", args.input),
+        ("resolver_source", "skills/paper-three-pass-reader/data/resolver_hints.json"),
+        ("resolver_helper", "skills/paper-three-pass-reader/scripts/resolver_hints.py"),
+        ("resolver_status", rr_status),
+        ("resolver_match_type", rr_match_type),
+        ("confidence", rr_confidence),
+        ("matched_paper_id", rr_paper_id),
+        ("matched_canonical_title", rr_paper.get("canonical_title") if isinstance(rr_paper, dict) else None),
+        ("matched_arxiv_id", rr_paper.get("arxiv_id") if isinstance(rr_paper, dict) else None),
+        ("matched_alias", rr.get("matched_alias")),
+        ("matched_repo", rr.get("matched_repo")),
+        ("candidates", rr_candidates),
+        ("source_resolution_step", rr_source_resolution_step),
+    ])
+    if rr_status == "error":
+        rr_top["degraded"] = "ambiguous_clue"  # type: ignore[index]
+        rr_top["fallback_legacy"] = rr.get("fallback_legacy")  # type: ignore[index]
+
     figures_tables = []
 
     draft = OrderedDict([
@@ -459,7 +590,7 @@ def make_draft(args, hint) -> dict:
         ("open_questions", open_questions),
         ("final_checklist", final_checklist),
         ("paper_outline", paper_outline),
-        ("source_resolution", OrderedDict([("steps", source_resolution)])),
+        ("source_resolution", rr_top),
         ("candidate_papers", candidate_papers),
     ])
     return draft
@@ -544,6 +675,10 @@ def main(argv=None):
     p.add_argument("--language", default="zh-CN",
                    choices=["zh-CN", "en"],
                    help="Language of fill-pack instructions. Default 'zh-CN'.")
+    p.add_argument("--resolver-source", default=None,
+                   help=("Path to a JSON file with the shared resolver's full output. "
+                         "When set, the runner overlays this on top of its own resolver "
+                         "lookup so the draft's source_resolution reflects the CLI's view."))
     p.add_argument("--max-claims", type=int, default=8,
                    help="Suggested maximum number of claims for the fill pack.")
     p.add_argument("--max-figures", type=int, default=6,
@@ -584,10 +719,27 @@ def main(argv=None):
             print(f"[error] could not read --input-file: {e}", file=sys.stderr)
             return 2
 
-    # Look up hint.
-    hint, _ = _resolve_hint(input_text, args.input_kind)
+    # Look up hint. (v0.2.6: also capture the shared-resolver result for the
+    # resolution trail. The third tuple element is the resolver's full
+    # {status, match_type, confidence, paper, candidates, source_resolution_step}.
+    # On any helper exception, the resolver result carries `status=error` and the
+    # runner still proceeds with `needs_confirmation=True` and a warning.)
+    hint, _, resolver_result = _resolve_hint(input_text, args.input_kind)
+    # CLI integration: if --resolver-source JSON was passed, overlay it on top
+    # of the auto-detected resolver_result. The CLI is the canonical caller for
+    # arxiv / title / repo / abstract / screenshot subcommands.
+    if getattr(args, "resolver_source", None):
+        try:
+            overlay = json.loads(Path(args.resolver_source).read_text(encoding="utf-8"))
+            if isinstance(overlay, dict):
+                # CLI overlay wins (it sees the user's exact input)
+                resolver_result = overlay
+        except Exception as e:  # noqa: BLE001
+            print(f"[warn] could not load --resolver-source: {e!r}", file=sys.stderr)
     if hint:
         print(f"[info] resolved hint for: {input_text!r} → {hint['title']}")
+    if resolver_result and resolver_result.get("status") == "error":
+        print(f"[warn] shared resolver errored: {resolver_result.get('source_resolution_step')}")
 
     # Create run layout.
     out_root = Path(args.output_root).resolve()
@@ -595,7 +747,7 @@ def main(argv=None):
         out_root, args.slug, args)
 
     # Write draft JSON.
-    draft = make_draft(args, hint)
+    draft = make_draft(args, hint, resolver_result=resolver_result)
     work_json = work_dir / "paper_reading.json"
     work_json.write_text(json.dumps(draft, indent=2, ensure_ascii=False) + "\n",
                          encoding="utf-8")

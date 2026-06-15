@@ -181,6 +181,55 @@ def _extract_arxiv_id_from_transcript(text: str) -> str | None:
     return m.group(1) if m else None
 
 
+def _resolver_result_for_cli(
+    resolver_status: str,
+    resolver_match_type: str,
+    canonical_title: str | None,
+    arxiv_id: str | None,
+    *,
+    hint_dict,
+    input_text: str,
+    input_kind: str,
+) -> dict:
+    """Build the resolver_result JSON we pass to the runner via --resolver-source.
+
+    The runner overlays this on top of its own auto-detected resolver result,
+    so the draft's `source_resolution` reflects the CLI's view.
+    """
+    paper = {}
+    matched_paper_id = None
+    if hint_dict and hint_dict.get("title"):
+        paper = {
+            "id": hint_dict.get("_resolver_paper_id") or "(cli-overlay)",
+            "canonical_title": hint_dict.get("title"),
+            "arxiv_id": hint_dict.get("arxiv_id"),
+            "paper_url": hint_dict.get("url"),
+        }
+        matched_paper_id = paper["id"]
+    if resolver_status == "matched" and not paper and canonical_title:
+        paper = {
+            "id": "(cli-overlay)",
+            "canonical_title": canonical_title,
+            "arxiv_id": arxiv_id or None,
+        }
+        matched_paper_id = paper["id"]
+    return {
+        "status": resolver_status or "not_found",
+        "match_type": resolver_match_type or "none",
+        "confidence": "high" if resolver_status == "matched" else "low",
+        "paper": paper,
+        "candidates": [paper] if paper else [],
+        "source_resolution_step": (
+            f"cli overlay via p3pr {input_kind} subcommand; input={input_text!r}"
+        ),
+        "matched_paper_id": matched_paper_id,
+        "matched_alias": None,
+        "matched_repo": None,
+        "_cli_hint_input": input_text,
+        "_cli_hint_kind": input_kind,
+    }
+
+
 def _print_summary(
     status: str,
     *,
@@ -240,6 +289,7 @@ def _build_runner_argv(
     quality_gate: bool,
     render: bool,
     audit_warn_only: bool,
+    resolver_source: str | None = None,
 ) -> list[str]:
     argv = [
         sys.executable, str(RUNNER),
@@ -257,6 +307,8 @@ def _build_runner_argv(
         argv += ["--arxiv-id", arxiv_id]
     if paper_url:
         argv += ["--paper-url", paper_url]
+    if resolver_source:
+        argv += ["--resolver-source", resolver_source]
     if fill_pack:
         argv += ["--fill-pack"]
     if audit:
@@ -337,6 +389,7 @@ def handle_arxiv(args) -> int:
         resolver_match_type=resolver_match_type,
         canonical_title=(hint or {}).get("title") or "",
         default_slug=slug,
+        hint=hint,
     )
 
 
@@ -389,6 +442,7 @@ def handle_title(args) -> int:
         resolver_match_type=resolver_match_type,
         canonical_title=(hint or {}).get("title") or "",
         default_slug=slug,
+        hint=hint,
     )
 
 
@@ -437,6 +491,7 @@ def handle_abstract(args) -> int:
         resolver_match_type=resolver_match_type,
         canonical_title=(hint or {}).get("title") or "",
         default_slug=slug,
+        hint=hint,
     )
 
 
@@ -491,6 +546,7 @@ def handle_screenshot(args) -> int:
         resolver_match_type=resolver_match_type,
         canonical_title=(hint or {}).get("title") or "",
         default_slug=slug,
+        hint=hint,
     )
 
 
@@ -540,6 +596,7 @@ def handle_repo(args) -> int:
         resolver_match_type=resolver_match_type,
         canonical_title=(hint or {}).get("title") or "",
         default_slug=slug,
+        hint=hint,
     )
 
 
@@ -618,6 +675,7 @@ def _finalise(
     resolver_match_type: str = "",
     canonical_title: str = "",
     default_slug: str = "",
+    hint: dict | None = None,
 ) -> int:
     print(f"[info] {extra_note}")
     print(f"[info] run dir: {run_dir}")
@@ -642,7 +700,24 @@ def _finalise(
         )
         return 0
 
-    # Build runner argv
+    # Build runner argv. v0.2.6: also write the resolver's full output to a
+    # JSON file under run_dir/work/ and pass it via --resolver-source so the
+    # runner's draft source_resolution reflects the CLI's view exactly.
+    work_dir = run_dir / "work"
+    resolver_source_path = work_dir / "resolver_source.json"
+    try:
+        work_dir.mkdir(parents=True, exist_ok=True)
+        resolver_source_path.write_text(
+            json.dumps(_resolver_result_for_cli(resolver_status, resolver_match_type,
+                                               title, arxiv_id, hint_dict=hint,
+                                               input_text=input_text, input_kind=input_kind),
+                       ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    except Exception as e:  # noqa: BLE001
+        print(f"[warn] could not write resolver_source.json: {e!r}", file=sys.stderr)
+        resolver_source_path = None  # type: ignore[assignment]
+
     runner_argv = _build_runner_argv(
         input_text=input_text,
         input_kind=input_kind,
@@ -658,6 +733,7 @@ def _finalise(
         quality_gate=args.quality_gate and args.language == "zh-CN",
         render=args.render,
         audit_warn_only=args.audit_warn_only,
+        resolver_source=str(resolver_source_path) if resolver_source_path else None,
     )
     print(f"[info] running runner: {' '.join(runner_argv)}")
     rc = subprocess.call(runner_argv)
