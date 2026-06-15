@@ -132,3 +132,24 @@ Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3P
 The Second Me Chinese run (`second-me-human-inspired-memory-cn/`) was re-checked with the new `quality_gate_zh_cn.py` script: status PASS, 75/75 CJK coverage, 0 long English blobs, 12 claims / 14 glossary / 12 checklist, 9 `[Paper evidence]` / 3 `[Author claim]`. A new bad sample at `runs/quality-gate-smoke-20260615/bad-zh-cn-draft/` was created to demonstrate the gate's FAIL path (4 errors, 4 warnings).
 
 Full details in [`docs/AUTOFILL_RUNS.md`](AUTOFILL_RUNS.md) and [`docs/PHASE_P3PR_V0_2_4_ZH_CN_QUALITY_GATE_REPORT.md`](PHASE_P3PR_V0_2_4_ZH_CN_QUALITY_GATE_REPORT.md).
+
+## P3PR-HTML-YOU-AND-YOUR-RESEARCH-1
+
+- Input: https://www.cs.virginia.edu/~robins/YouAndYourResearch.html
+- Input kind: `paper_url`
+- Reading mode: `full_text`
+- Language: `zh-CN`
+- Category: research advice talk / essay / methodology lecture
+- Page: https://conanxin.github.io/paper-reading-pages/you-and-your-research-cn/
+- Report: `docs/PHASE_P3PR_HTML_YOU_AND_YOUR_RESEARCH_REPORT.md`
+
+A full-text Chinese reading page for Richard W. Hamming's 1986 Bell Communications Research colloquium
+transcript. The HTML (82,911 bytes) was fetched with `curl -L` and parsed with `html.parser.HTMLParser`
+into 14,454 words of plain text. The runner was used to bootstrap a draft + fill-pack + audit, then
+the agent filled the draft in zh-CN (12 claims / 13 glossary / 11 final-checklist items, 18 paper-
+outline anchors, all evidence-labelled). Audit returned **PASS** and the zh-CN quality gate returned
+**WARN** (only a 1-warning long-English-blob note on the embedded Newton / Pasteur quotes, by design).
+Project-wide `scripts/validate.sh` returned **210/0 PASS**. The page was published in multi-page mode
+into the `you-and-your-research-cn/` site-path of `conanxin/paper-reading-pages` on `gh-pages`;
+`curl -I -L` against the page URL, the site root, and `published_pages.json` all return HTTP/2 200.
+No new project tag / release was created.

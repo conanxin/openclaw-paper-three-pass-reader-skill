@@ -1,0 +1,24 @@
+{
+  "structured": true,
+  "hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html",
+  "resolver_status": "matched",
+  "resolver_match_type": "url",
+  "confidence": "high",
+  "matched_canonical_title": "You and Your Research",
+  "matched_paper_id": "hamming-you-and-your-research-1986",
+  "matched_arxiv_id": null,
+  "matched_repo": null,
+  "resolver_source": "user_supplied_url",
+  "source_resolution_step": "url -> html_fetch -> text_extraction -> full_text",
+  "candidate_count": 1,
+  "fallback_legacy": false,
+  "degraded": null,
+  "candidates_top": [],
+  "extraction_chain": [
+    "Step 1: user supplied URL https://www.cs.virginia.edu/~robins/YouAndYourResearch.html",
+    "Step 2: curl -L fetched the HTML (82,911 bytes)",
+    "Step 3: HTMLParser extracted plain text (78,736 bytes, 14,454 words, 260 lines)",
+    "Step 4: full_text reading mode — entire transcript is available, including the Q&A and the biographical sketch",
+    "Step 5: document classified as research_advice / talk_essay, NOT a CS research paper"
+  ]
+}

@@ -1,0 +1,234 @@
+[
+  {
+    "id": "C01",
+    "claim": "运气只决定哪次成功，不决定是否成功。",
+    "claim_text": "运气只决定哪次成功，不决定是否成功；伟大科学家的多次命中说明“会做”是品格与准备。",
+    "evidence": "Einstein、Shannon 多次做出重要工作；Hamming 与 Shannon 在 Bell Labs 同期各自做出信息论与编码理论；Newton 与 Pasteur 的格言互证。",
+    "comment": "【运气与准备】原文有 Newton 名言：“If others would think as hard as I did, then they would get similar results.”，与 Pasteur 名言：“Luck favors the prepared mind.” 两句互证。Hamming 用这两句格言支撑“运气只决定哪一次，不决定是否成功”的主张。",
+    "comment_zh": "【运气与准备】原文有 Newton 名言：“If others would think as hard as I did, then they would get similar results.”，与 Pasteur 名言：“Luck favors the prepared mind.” 两句互证。Hamming 用这两句格言支撑“运气只决定哪一次，不决定是否成功”的主张。",
+    "evidence_label": "[Author claim]",
+    "confidence": "medium",
+    "tags": [
+      "运气",
+      "准备",
+      "科研方法"
+    ],
+    "notes": "【运气与准备】原文有 Newton 名言：“If others would think as hard as I did, then they would get similar results.”，与 Pasteur 名言：“Luck favors the prepared mind.” 两句互证。Hamming 用这两句格言支撑“运气只决定哪一次，不决定是否成功”的主张。",
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "needs_verification": true
+  },
+  {
+    "id": "C02",
+    "claim": "拥有高智商 / 大量脑力并不等于能做出伟大工作。",
+    "claim_text": "拥有高智商或大量脑力并不等于能做出伟大工作；勇气、投入与方向比天赋更关键。",
+    "evidence": "Bill Pfann 不擅数学、表达笨拙，但 zone melting 工作让他拿到几乎该领域所有奖项；Clogston 早期被认为平庸，Clogston cable 之后持续产出。",
+    "comment": "Hamming 用 Pfann 和 Clogston 两个具体人物作反例；这是讲稿中最有说服力的论据之一。",
+    "comment_zh": "Hamming 用 Pfann 和 Clogston 两个具体人物作反例；这是讲稿中最有说服力的论据之一。",
+    "evidence_label": "[Paper evidence]",
+    "confidence": "medium",
+    "tags": [
+      "脑力",
+      "勇气",
+      "case_study"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C03",
+    "claim": "年龄是领域相关的：数学 / 理论物理领域成名多在年轻时期，音乐 / 文学 / 政治的代表作往往在晚期。",
+    "claim_text": "年龄是领域相关的：数学 / 理论物理领域成名多在年轻时期，音乐 / 文学 / 政治的代表作往往在晚期。",
+    "evidence": "Einstein、量子力学诸君的“年轻成名” vs 文学与音乐的“晚期杰作”。Hamming 明确说“我不知道这如何适用于你的领域，但年龄确实有影响”。",
+    "comment": "Hamming 自己承认这一观察跨学科迁移性弱；他给的判据是经验性而非统计性。",
+    "comment_zh": "Hamming 自己承认这一观察跨学科迁移性弱；他给的判据是经验性而非统计性。",
+    "evidence_label": "[Author claim]",
+    "confidence": "low",
+    "tags": [
+      "年龄",
+      "领域相关"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C04",
+    "claim": "勇气是伟大科学家的关键特质之一；Shannon 敢于问“随机编码的平均性能”即为范例。",
+    "claim_text": "勇气是伟大科学家的关键特质之一；Shannon 敢于问“随机编码的平均性能”即为范例。",
+    "evidence": "Hamming 对 Shannon 主定理求证过程的人格分析。",
+    "comment": "这是一处“作者推断 + 案例互证”的论据，可识别、可追问，但缺少心理学量表。",
+    "comment_zh": "这是一处“作者推断 + 案例互证”的论据，可识别、可追问，但缺少心理学量表。",
+    "evidence_label": "[Agent inference]",
+    "confidence": "medium",
+    "tags": [
+      "勇气",
+      "personality"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C05",
+    "claim": "重要问题的定义是“有合理攻击路径”，不是“结果更宏大”。",
+    "claim_text": "重要问题的定义是“有合理攻击路径”，不是“结果更宏大”。",
+    "evidence": "Hamming 举例：时间旅行、瞬间传输、反重力虽然宏大但在他任期内没有攻击路径，因此不是重要问题。",
+    "comment": "这是 Hamming 全篇最可操作的处方之一。",
+    "comment_zh": "这是 Hamming 全篇最可操作的处方之一。",
+    "evidence_label": "[Author claim]",
+    "confidence": "high",
+    "tags": [
+      "问题选择",
+      "taste"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C06",
+    "claim": "应当放弃无前途的研究方向，并每 7–10 年系统性地换一次领域。",
+    "claim_text": "应当放弃无前途的研究方向，并每 7–10 年系统性地换一次领域。",
+    "evidence": "Hamming 自述从数值分析到硬件再到软件；将 Shannon 离开 Bell Labs 视为“科学事业终结”。",
+    "comment": "Hamming 用 Shannon 离开 Bell Labs 之后的产出下降作为案例。Shannon 离世后被证实仍在思考，但产出确实变少。",
+    "comment_zh": "Hamming 用 Shannon 离开 Bell Labs 之后的产出下降作为案例。Shannon 离世后被证实仍在思考，但产出确实变少。",
+    "evidence_label": "[Paper evidence]",
+    "confidence": "medium",
+    "tags": [
+      "退出",
+      "renewal"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C07",
+    "claim": "写作、正式演讲、非正式讨论是研究者的“销售”三件套，缺一不可。",
+    "claim_text": "写作、正式演讲、非正式讨论是研究者的“销售”三件套，缺一不可。",
+    "evidence": "Hamming 描述 Bell Labs“back room scientists”三周后才发报告、决策已过的失败模式。",
+    "comment": "Hamming 明确说“至少 50% 的研究时间应花在 presentation 上”。",
+    "comment_zh": "Hamming 明确说“至少 50% 的研究时间应花在 presentation 上”。",
+    "evidence_label": "[Paper evidence]",
+    "confidence": "high",
+    "tags": [
+      "销售",
+      "沟通"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C08",
+    "claim": "至少 50% 的研究时间应当花在“presentation”上。",
+    "claim_text": "至少 50% 的研究时间应当花在 presentation（写作 + 演讲 + 讨论）上。",
+    "evidence": "Hamming 个人经验。",
+    "comment": "这是一个具体的比例建议；其依据是 Hamming 自身的 40 年观察。",
+    "comment_zh": "这是一个具体的比例建议；其依据是 Hamming 自身的 40 年观察。",
+    "evidence_label": "[Author claim]",
+    "confidence": "low",
+    "tags": [
+      "销售",
+      "时间分配"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C09",
+    "claim": "研究者应当被给予尽可能小的计算机以保留思考时间；这一决策被认为是 UNIX 诞生的间接原因。",
+    "claim_text": "研究者应当被给予尽可能小的计算机以保留思考时间；这一决策被认为是 UNIX 诞生的间接原因。",
+    "evidence": "Hamming 引述 Ed David 的回应。",
+    "comment": "这是 Hamming 整篇演讲中最具体的工程类建议之一。",
+    "comment_zh": "这是 Hamming 整篇演讲中最具体的工程类建议之一。",
+    "evidence_label": "[Paper evidence]",
+    "confidence": "medium",
+    "tags": [
+      "计算机",
+      "环境"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C10",
+    "claim": "环境（同行质量）显著影响个人产出。",
+    "claim_text": "环境（同行质量）显著影响个人产出。",
+    "evidence": "Hamming 自述“当物理桌上的最好的人走了，我也走了”；并描述 Sharlie（他的秘书）最终自学了前苏联的微程序设计并独立发表论文。",
+    "comment": "这是 Hamming 演讲中环境论的核心论据。",
+    "comment_zh": "这是 Hamming 演讲中环境论的核心论据。",
+    "evidence_label": "[Paper evidence]",
+    "confidence": "high",
+    "tags": [
+      "环境",
+      "同行质量"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C11",
+    "claim": "重要问题的识别需要先做“研究品味 (research taste)”的训练：读谁、不读谁、读什么、不读什么。",
+    "claim_text": "重要问题的识别需要先做“研究品味 (research taste)”的训练：读谁、不读谁、读什么、不读什么。",
+    "evidence": "Hamming 关于“一个读了所有东西却没有任何 effect 以他命名的同事”的描述。",
+    "comment": "这是 Hamming 关于信息吸收的一条隐含处方，需要读者从案例中抽取。",
+    "comment_zh": "这是 Hamming 关于信息吸收的一条隐含处方，需要读者从案例中抽取。",
+    "evidence_label": "[Agent inference]",
+    "confidence": "medium",
+    "tags": [
+      "研究品味",
+      "信息吸收",
+      "taste"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  },
+  {
+    "id": "C12",
+    "claim": "做伟大工作的科学家倾向于聚焦在大问题上（即使短期内进展慢），并接受“暂时不出活”的代价。",
+    "claim_text": "做伟大工作的科学家倾向于聚焦在大问题上（即使短期内进展慢），并接受“暂时不出活”的代价。",
+    "evidence": "Hamming 引用 Bode 的话：“我必须成为部门主管才能实现我对数学的愿景。”",
+    "comment": "Bode 的案例与 Hamming 关于重要问题的论述相互印证。",
+    "comment_zh": "Bode 的案例与 Hamming 关于重要问题的论述相互印证。",
+    "evidence_label": "[Author claim]",
+    "confidence": "medium",
+    "tags": [
+      "重要问题",
+      "耐心",
+      "long-term"
+    ],
+    "claim_id": null,
+    "evidence_location": "",
+    "evidence_kind": "paper_text",
+    "notes": "",
+    "needs_verification": true
+  }
+]

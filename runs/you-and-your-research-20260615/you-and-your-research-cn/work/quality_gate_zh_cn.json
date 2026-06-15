@@ -1,0 +1,34 @@
+{
+  "status": "WARN",
+  "target_language": "zh-CN",
+  "ui_language": "zh-CN",
+  "reading_mode": "full_text",
+  "cjk_coverage": {
+    "checked_fields": 56,
+    "fields_with_cjk": 56,
+    "ratio": 1.0,
+    "long_english_paragraphs": 1
+  },
+  "counts": {
+    "claims": 12,
+    "glossary_terms": 13,
+    "checklist_items": 11
+  },
+  "evidence_label_distribution": {
+    "[Author claim]": 5,
+    "[Paper evidence]": 5,
+    "[Agent inference]": 2
+  },
+  "source_resolution_check": {
+    "structured": true,
+    "legacy_fallback": false,
+    "resolver_status": "matched",
+    "warnings": [],
+    "errors": []
+  },
+  "errors": [],
+  "warnings": [
+    "Found 1 interpretive field(s) with a long English blob (>=30 ASCII chars without CJK). Examples: ['claims_evidence_map[0].comment']. These may be carryover from the English draft that should be translated."
+  ],
+  "recommendations": []
+}

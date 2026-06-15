@@ -1,0 +1,80 @@
+[
+  {
+    "term": "Bell Labs",
+    "term_zh": "贝尔实验室",
+    "definition": "1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年。",
+    "definition_zh": "1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年。"
+  },
+  {
+    "term": "Bell Communications Research (Bellcore)",
+    "term_zh": "贝尔通信研究公司",
+    "definition": "1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。",
+    "definition_zh": "1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。"
+  },
+  {
+    "term": "Turing Award",
+    "term_zh": "图灵奖",
+    "definition": "ACM 颁发的计算机科学最高奖项。Hamming 1968 年获此奖。",
+    "definition_zh": "ACM 颁发的计算机科学最高奖项。Hamming 1968 年获此奖。"
+  },
+  {
+    "term": "Hamming window",
+    "term_zh": "汉明窗",
+    "definition": "信号处理中的常用窗函数，由 John Tukey 命名以表彰 Hamming 的贡献。",
+    "definition_zh": "信号处理中的常用窗函数，由 John Tukey 命名以表彰 Hamming 的贡献。"
+  },
+  {
+    "term": "Hamming code",
+    "term_zh": "汉明码",
+    "definition": "Hamming 1950 年提出的纠错码族，是其 1968 年获图灵奖的核心工作之一。",
+    "definition_zh": "Hamming 1950 年提出的纠错码族，是其 1968 年获图灵奖的核心工作之一。"
+  },
+  {
+    "term": "Zone melting",
+    "term_zh": "区熔法",
+    "definition": "材料提纯工艺，Bill Pfann 的核心贡献。Pfann 凭此拿到该领域几乎所有奖项。",
+    "definition_zh": "材料提纯工艺，Bill Pfann 的核心贡献。Pfann 凭此拿到该领域几乎所有奖项。"
+  },
+  {
+    "term": "Stooge",
+    "term_zh": "工具人",
+    "definition": "Hamming 在 Los Alamos 时期对自己的定位：为科学家操作计算机的人。隐含对自己“只是工具”的反思。",
+    "definition_zh": "Hamming 在 Los Alamos 时期对自己的定位：为科学家操作计算机的人。隐含对自己“只是工具”的反思。"
+  },
+  {
+    "term": "Sound absorber",
+    "term_zh": "声音吸收者",
+    "definition": "Hamming 用来形容只说“Yes, yes, yes”而不给反馈的同事，对创造力的对话起阻碍作用。",
+    "definition_zh": "Hamming 用来形容只说“Yes, yes, yes”而不给反馈的同事，对创造力的对话起阻碍作用。"
+  },
+  {
+    "term": "Critical mass",
+    "term_zh": "临界质量",
+    "definition": "Hamming 借物理术语形容“足以激发持续创造性对话的同事规模与质量”。",
+    "definition_zh": "Hamming 借物理术语形容“足以激发持续创造性对话的同事规模与质量”。"
+  },
+  {
+    "term": "UNIX",
+    "term_zh": "UNIX 操作系统",
+    "definition": "1970 年代起在 Bell Labs 发展起来的多用户多任务操作系统；Hamming 在讲座中将“给研究者最小机器”这一决策视为其间接起源之一。",
+    "definition_zh": "1970 年代起在 Bell Labs 发展起来的多用户多任务操作系统；Hamming 在讲座中将“给研究者最小机器”这一决策视为其间接起源之一。"
+  },
+  {
+    "term": "Information theory",
+    "term_zh": "信息论",
+    "definition": "由 Claude Shannon 1948 年奠基的通信理论，Hamming 当时与 Shannon 在 Bell Labs 同室做编码理论。",
+    "definition_zh": "由 Claude Shannon 1948 年奠基的通信理论，Hamming 当时与 Shannon 在 Bell Labs 同室做编码理论。"
+  },
+  {
+    "term": "Nobel-Prize type work",
+    "term_zh": "诺贝尔奖级别的工作",
+    "definition": "Hamming 用来指代“公认重大”的科学贡献的口语化表达；并不要求真的获诺贝尔奖。",
+    "definition_zh": "Hamming 用来指代“公认重大”的科学贡献的口语化表达；并不要求真的获诺贝尔奖。"
+  },
+  {
+    "term": "Research taste",
+    "term_zh": "研究品味",
+    "definition": "在 Hamming 隐含使用的一个概念：指研究者对“什么是重要问题 / 哪些人值得读 / 哪些方向值得做”的判断力。可被训练，但很难被显式教学。",
+    "definition_zh": "在 Hamming 隐含使用的一个概念：指研究者对“什么是重要问题 / 哪些人值得读 / 哪些方向值得做”的判断力。可被训练，但很难被显式教学。"
+  }
+]

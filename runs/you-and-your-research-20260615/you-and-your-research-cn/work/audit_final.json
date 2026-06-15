@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "reading_mode": "full_text",
+  "input_kind": "paper_url",
+  "schema_version": "0.1.0",
+  "source_resolution": {
+    "status": "matched",
+    "structured": true,
+    "legacy_fallback": false,
+    "warnings": [],
+    "errors": [],
+    "summary": {
+      "structured": true,
+      "fallback_legacy": false,
+      "resolver_status": "matched",
+      "resolver_match_type": "url",
+      "confidence": "high",
+      "confidence_numeric": 0.9,
+      "matched_paper_id": "hamming-you-and-your-research-1986",
+      "matched_canonical_title": "You and Your Research",
+      "matched_arxiv_id": null,
+      "matched_repo": null,
+      "resolver_source": "user_supplied_url",
+      "source_resolution_step": "url -> html_fetch -> text_extraction -> full_text",
+      "degraded": null,
+      "candidate_count": 0,
+      "candidates_top": [],
+      "steps_count": 0,
+      "hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html"
+    }
+  },
+  "counts": {
+    "claims_total": 12,
+    "claims_with_valid_evidence": 12,
+    "final_checklist_questions": 11,
+    "draft_placeholders": 0
+  },
+  "errors": [],
+  "warnings": [],
+  "recommendations": []
+}

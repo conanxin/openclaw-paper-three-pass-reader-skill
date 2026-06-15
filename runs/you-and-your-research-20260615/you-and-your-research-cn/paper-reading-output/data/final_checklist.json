@@ -1,0 +1,68 @@
+[
+  {
+    "item": "能用一句话向他人解释“为什么少数科学家做出重大贡献”，并列出 3 个支撑案例。",
+    "question": "能用一句话向他人解释“为什么少数科学家做出重大贡献”，并列出 3 个支撑案例。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能区分“结果宏大的著名问题”与“有合理攻击路径的重要问题”，并各举一例。",
+    "question": "能区分“结果宏大的著名问题”与“有合理攻击路径的重要问题”，并各举一例。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能说出 Hamming 给出的至少 4 个可练习习惯（勇气、野心、问题选择、退出、销售、风格）。",
+    "question": "能说出 Hamming 给出的至少 4 个可练习习惯（勇气、野心、问题选择、退出、销售、风格）。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能说明“50% 时间做销售”指的是哪三类沟通。",
+    "question": "能说明“50% 时间做销售”指的是哪三类沟通。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能说清楚“7–10 年换一次方向”的论据与风险。",
+    "question": "能说清楚“7–10 年换一次方向”的论据与风险。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能指出至少 2 条本文的局限（轶事化、时代偏见、领域偏差）。",
+    "question": "能指出至少 2 条本文的局限（轶事化、时代偏见、领域偏差）。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能在自己的当前时间表里指出 1 条可直接落地的改进。",
+    "question": "能在自己的当前时间表里指出 1 条可直接落地的改进。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能向一位 1980 年代的 Bell Labs 研究员和一位 2020 年代的 AI 研究员，分别解释 Hamming 的建议哪些仍然有效。",
+    "question": "能向一位 1980 年代的 Bell Labs 研究员和一位 2020 年代的 AI 研究员，分别解释 Hamming 的建议哪些仍然有效。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能用“sound absorber / critical mass”这对概念评估自己当前的合作环境。",
+    "question": "能用“sound absorber / critical mass”这对概念评估自己当前的合作环境。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能识别 Hamming 演讲中至少 3 个具体的“运气”案例与 3 个具体的“准备”案例。",
+    "question": "能识别 Hamming 演讲中至少 3 个具体的“运气”案例与 3 个具体的“准备”案例。",
+    "ok": true,
+    "answerable": true
+  },
+  {
+    "item": "能写出自己领域的 3 个“有名但无攻击路径”问题，与 3 个“没那么有名但有攻击路径”的问题。",
+    "question": "能写出自己领域的 3 个“有名但无攻击路径”问题，与 3 个“没那么有名但有攻击路径”的问题。",
+    "ok": true,
+    "answerable": true
+  }
+]

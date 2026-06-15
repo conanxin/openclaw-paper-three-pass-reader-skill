@@ -1,0 +1,110 @@
+[
+  {
+    "level": 1,
+    "title": "引言与 Chynoweth 介绍",
+    "anchor": "intro",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "level": 1,
+    "title": "为什么谈这个话题 / 自我审视的要求",
+    "anchor": "why",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "运气与脑力",
+    "anchor": "luck_brains",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "年龄",
+    "anchor": "age",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "野心",
+    "anchor": "ambition",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "勇气",
+    "anchor": "courage",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "level": 2,
+    "title": "退出与方向修正",
+    "anchor": "quit",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "重要问题 vs 不重要问题",
+    "anchor": "important_problem",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "投入度（Time 与 Priority）",
+    "anchor": "time",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "销售 / 沟通（写作、正式与非正式演讲）",
+    "anchor": "selling",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "风格（草图、明确表达、谦逊的反面）",
+    "anchor": "style",
+    "evidence_label": "[Agent inference]"
+  },
+  {
+    "level": 2,
+    "title": "计算机的角色",
+    "anchor": "computers",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "level": 2,
+    "title": "信息与销售（再谈）",
+    "anchor": "information",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "为什么不做第一流工作 / 该如何改变",
+    "anchor": "first_class",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "创意：种子、敌人、朋友、勇气",
+    "anchor": "creativity",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 2,
+    "title": "总结：做伟大工作的特征",
+    "anchor": "summary",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "level": 1,
+    "title": "Q&A 讨论",
+    "anchor": "qa",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "level": 1,
+    "title": "Richard Hamming 简历",
+    "anchor": "bio",
+    "evidence_label": "[Paper evidence]"
+  }
+]
