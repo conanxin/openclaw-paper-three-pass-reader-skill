@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill/schema/paper_reading.schema.json",
+  "title": "paper_reading",
+  "description": "Canonical JSON shape consumed by render_page.py. Mirrors the structure of paper-reading-output/data/paper_reading.json plus the supporting files.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "paper_metadata",
+    "intake_quality",
+    "summaries",
+    "five_cs",
+    "pass1",
+    "pass2",
+    "pass3",
+    "claims_evidence_map",
+    "figures_tables",
+    "glossary",
+    "limitations",
+    "reproduction_plan",
+    "open_questions",
+    "final_checklist"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "paper_metadata": {
+      "type": "object",
+      "required": ["title", "authors", "year"],
+      "properties": {
+        "title":       { "type": "string" },
+        "authors":     { "type": "array", "items": { "type": "string" } },
+        "year":        { "type": "integer" },
+        "venue":       { "type": ["string", "null"] },
+        "identifiers": {
+          "type": "object",
+          "properties": {
+            "arxiv_id":      { "type": ["string", "null"] },
+            "doi":           { "type": ["string", "null"] },
+            "openreview_id": { "type": ["string", "null"] },
+            "url":           { "type": ["string", "null"] }
+          }
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": ["complete_paper", "paper_url", "paper_identifier", "paper_title",
+                   "paper_metadata", "paper_excerpt", "paper_image", "paper_screenshot",
+                   "paper_topic", "project_or_repo", "ambiguous_clue"]
+        },
+        "reading_mode": {
+          "type": "string",
+          "enum": ["full_text", "partial_text", "abstract_only", "screenshot_only"]
+        }
+      }
+    },
+    "intake_quality": {
+      "type": "object",
+      "required": ["input_kind", "reading_mode", "confidence"],
+      "properties": {
+        "input_kind":         { "type": "string" },
+        "reading_mode":       { "type": "string", "enum": ["full_text", "partial_text", "abstract_only", "screenshot_only"] },
+        "confidence":         { "type": "string", "enum": ["low", "medium", "high"] },
+        "needs_confirmation": { "type": "boolean" },
+        "missing_fields":     { "type": "array", "items": { "type": "string" } },
+        "warnings":           { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summaries": {
+      "type": "object",
+      "required": ["one_sentence", "three_sentence", "ten_sentence"],
+      "properties": {
+        "one_sentence":   { "type": "string" },
+        "three_sentence": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "string" } },
+        "ten_sentence":   { "type": "array", "minItems": 8, "items": { "type": "string" } }
+      }
+    },
+    "five_cs": {
+      "type": "object",
+      "required": ["category", "context", "correctness", "contributions", "clarity"],
+      "properties": {
+        "category":      { "type": "string" },
+        "context":       { "type": "string" },
+        "correctness":   { "type": "string" },
+        "contributions": { "type": "array", "items": { "type": "string" } },
+        "clarity":       { "type": "string" }
+      }
+    },
+    "pass1": {
+      "type": "object",
+      "required": ["bird_eye_notes", "decision"],
+      "properties": {
+        "bird_eye_notes":   { "type": "string" },
+        "decision":         { "type": "string", "enum": ["CONTINUE_FULL", "CONTINUE_PARTIAL", "STOP", "SEEK_REFERENCES_FIRST"] },
+        "decision_rationale": { "type": "string" }
+      }
+    },
+    "pass2": {
+      "type": "object",
+      "required": ["main_ideas"],
+      "properties": {
+        "main_ideas":       { "type": "array", "items": { "type": "string" } },
+        "key_references":   { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "pass3": {
+      "type": "object",
+      "required": ["method_reconstruction"],
+      "properties": {
+        "method_reconstruction": { "type": "array", "items": { "type": "string" } },
+        "critical_review":       { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "claims_evidence_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "claim_text", "evidence_label", "confidence"],
+        "properties": {
+          "claim_id":           { "type": "string" },
+          "claim_text":         { "type": "string" },
+          "evidence_label":     { "type": "string",
+            "enum": ["[Paper evidence]", "[Figure/Table evidence]", "[Author claim]", "[Agent inference]", "[Uncertain]", "[Needs verification]"] },
+          "evidence_location":  { "type": "string" },
+          "evidence_kind":      { "type": "string", "enum": ["paper_text", "figure", "table", "external"] },
+          "confidence":         { "type": "string", "enum": ["high", "medium", "low"] },
+          "notes":              { "type": "string" },
+          "needs_verification": { "type": "boolean" }
+        }
+      }
+    },
+    "figures_tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "title", "explanation"],
+        "properties": {
+          "id":          { "type": "string" },
+          "kind":        { "type": "string", "enum": ["figure", "table"] },
+          "number":      { "type": "string" },
+          "title":       { "type": "string" },
+          "explanation": { "type": "string" },
+          "evidence_label": { "type": "string" }
+        }
+      }
+    },
+    "glossary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "definition"],
+        "properties": {
+          "term":       { "type": "string" },
+          "definition": { "type": "string" }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "reproduction_plan": {
+      "type": "object",
+      "required": ["steps"],
+      "properties": {
+        "dataset":   { "type": "string" },
+        "baseline":  { "type": "string" },
+        "hardware":  { "type": "string" },
+        "steps":     { "type": "array", "items": { "type": "string" } },
+        "sanity_checks": { "type": "array", "items": { "type": "string" } },
+        "success_criteria": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "final_checklist": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["question"],
+        "properties": {
+          "question":   { "type": "string" },
+          "answerable": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

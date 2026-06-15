@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "How to Read a Paper",
+    "authors": ["S. Keshav"],
+    "year": 2007,
+    "venue": "SIGCOMM Computer Communication Review",
+    "identifiers": {
+      "arxiv_id": null,
+      "doi": null,
+      "openreview_id": null,
+      "url": null
+    },
+    "source_kind": "complete_paper",
+    "reading_mode": "full_text"
+  },
+  "intake_quality": {
+    "input_kind": "complete_paper",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [],
+    "warnings": []
+  }
+}

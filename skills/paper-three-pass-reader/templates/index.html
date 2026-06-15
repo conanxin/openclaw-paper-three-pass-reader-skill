@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ paper_metadata.title }} — Three-Pass Reading</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-reading-mode="{{ paper_metadata.reading_mode }}">
+  <header class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="kicker">Three-Pass Reading · {{ paper_metadata.year }}</div>
+        <h1>{{ paper_metadata.title }}</h1>
+        <div class="byline">
+          {% for a in paper_metadata.authors %}<span>{{ a }}</span>{% if not loop.last %}, {% endif %}{% endfor %}
+          {% if paper_metadata.venue %} · <span class="venue">{{ paper_metadata.venue }}</span>{% endif %}
+        </div>
+        <div class="badges">
+          <span class="badge badge-mode" title="Reading mode">{{ paper_metadata.reading_mode }}</span>
+          <span class="badge badge-confidence badge-confidence-{{ intake_quality.confidence }}">{{ intake_quality.confidence }} confidence</span>
+          <span class="badge badge-input">{{ intake_quality.input_kind }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <details open>
+      <summary>Contents</summary>
+      <ol>
+        <li><a href="#metadata">Paper Metadata</a></li>
+        <li><a href="#intake">Intake Status</a></li>
+        <li><a href="#summary">Summaries (1 / 3 / 10)</a></li>
+        <li><a href="#paper-map">Paper Map</a></li>
+        <li><a href="#five-cs">Five Cs</a></li>
+        <li><a href="#passes">Pass 1 / 2 / 3</a></li>
+        <li><a href="#claims">Claims → Evidence Map</a></li>
+        <li><a href="#figures">Figures &amp; Tables</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+        <li><a href="#reconstruction">Method Reconstruction</a></li>
+        <li><a href="#limitations">Correctness &amp; Limitations</a></li>
+        <li><a href="#related">Related Work</a></li>
+        <li><a href="#implications">Practical Implications</a></li>
+        <li><a href="#reproduction">Reproduction Plan</a></li>
+        <li><a href="#open">Open Questions</a></li>
+        <li><a href="#checklist">Final Checklist</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <!-- 1. Hero Summary / Paper Metadata -->
+    <section id="metadata" class="card">
+      <h2>Paper Metadata</h2>
+      <dl class="kv">
+        <dt>Title</dt><dd>{{ paper_metadata.title }}</dd>
+        <dt>Authors</dt><dd>{% for a in paper_metadata.authors %}{{ a }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        <dt>Year</dt><dd>{{ paper_metadata.year }}</dd>
+        {% if paper_metadata.venue %}<dt>Venue</dt><dd>{{ paper_metadata.venue }}</dd>{% endif %}
+        {% if paper_metadata.identifiers.arxiv_id %}<dt>arXiv</dt><dd>{{ paper_metadata.identifiers.arxiv_id }}</dd>{% endif %}
+        {% if paper_metadata.identifiers.doi %}<dt>DOI</dt><dd>{{ paper_metadata.identifiers.doi }}</dd>{% endif %}
+        {% if paper_metadata.identifiers.url %}<dt>URL</dt><dd><a href="{{ paper_metadata.identifiers.url }}">{{ paper_metadata.identifiers.url }}</a></dd>{% endif %}
+        <dt>Source kind</dt><dd>{{ paper_metadata.source_kind }}</dd>
+        <dt>Reading mode</dt><dd>{{ paper_metadata.reading_mode }}</dd>
+      </dl>
+    </section>
+
+    <!-- 2. Intake Status -->
+    <section id="intake" class="card">
+      <h2>Intake Status</h2>
+      <ul class="kv-list">
+        <li><span class="label">Input kind</span> <span class="value">{{ intake_quality.input_kind }}</span></li>
+        <li><span class="label">Reading mode</span> <span class="value">{{ intake_quality.reading_mode }}</span></li>
+        <li><span class="label">Confidence</span> <span class="value badge-confidence badge-confidence-{{ intake_quality.confidence }}">{{ intake_quality.confidence }}</span></li>
+        <li><span class="label">Needs confirmation</span> <span class="value">{{ intake_quality.needs_confirmation }}</span></li>
+      </ul>
+      {% if intake_quality.warnings %}
+      <details class="warnings">
+        <summary>Warnings ({{ intake_quality.warnings|length }})</summary>
+        <ul>{% for w in intake_quality.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+      </details>
+      {% endif %}
+      {% if intake_quality.missing_fields %}
+      <details class="warnings">
+        <summary>Missing fields</summary>
+        <ul>{% for f in intake_quality.missing_fields %}<li>{{ f }}</li>{% endfor %}</ul>
+      </details>
+      {% endif %}
+    </section>
+
+    <!-- 3. Summaries -->
+    <section id="summary" class="card">
+      <h2>Summaries</h2>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">One sentence</div>
+          <p>{{ summaries.one_sentence }}</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">Three sentences</div>
+          <ol>{% for s in summaries.three_sentence %}<li>{{ s }}</li>{% endfor %}</ol>
+        </div>
+        <div class="summary-box summary-wide">
+          <div class="summary-label">Ten sentences</div>
+          <ol>{% for s in summaries.ten_sentence %}<li>{{ s }}</li>{% endfor %}</ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Paper Map -->
+    <section id="paper-map" class="card">
+      <h2>Paper Map</h2>
+      <ul class="tree">
+        {% for sec in paper_outline %}
+        <li>
+          <details><summary>{{ sec.title }}</summary>
+            {% if sec.subsections %}
+            <ul>{% for sub in sec.subsections %}<li>{{ sub }}</li>{% endfor %}</ul>
+            {% endif %}
+          </details>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- 5. Five Cs -->
+    <section id="five-cs" class="card">
+      <h2>Five Cs Dashboard</h2>
+      <div class="five-cs-grid">
+        <article class="ccard"><h3>Category</h3><p>{{ five_cs.category }}</p></article>
+        <article class="ccard"><h3>Context</h3><p>{{ five_cs.context }}</p></article>
+        <article class="ccard"><h3>Correctness</h3><p>{{ five_cs.correctness }}</p></article>
+        <article class="ccard"><h3>Contributions</h3><ul>{% for c in five_cs.contributions %}<li>{{ c }}</li>{% endfor %}</ul></article>
+        <article class="ccard"><h3>Clarity</h3><p>{{ five_cs.clarity }}</p></article>
+      </div>
+    </section>
+
+    <!-- 6. Pass 1 / Pass 2 / Pass 3 Tabs -->
+    <section id="passes" class="card">
+      <h2>Reading Passes</h2>
+      <div class="timeline">
+        <span class="dot done" title="Pass 1">1</span>
+        <span class="dot {% if pass2.main_ideas %}done{% endif %}" title="Pass 2">2</span>
+        <span class="dot {% if pass3.method_reconstruction %}done{% endif %}" title="Pass 3">3</span>
+      </div>
+      <div class="tabs">
+        <div class="tab-buttons" role="tablist">
+          <button class="tab-btn active" data-tab="p1" role="tab">Pass 1 · Bird's-eye</button>
+          <button class="tab-btn" data-tab="p2" role="tab">Pass 2 · Understand</button>
+          <button class="tab-btn" data-tab="p3" role="tab">Pass 3 · Reconstruct</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="p1">
+          <h3>Pass 1 — Bird's-eye view</h3>
+          <p class="evidence-line">[Author claim] / [Paper evidence] depending on source.</p>
+          <p>{{ pass1.bird_eye_notes }}</p>
+          <div class="callout">
+            <strong>Decision:</strong> <code>{{ pass1.decision }}</code>
+            <p>{{ pass1.decision_rationale }}</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="p2">
+          <h3>Pass 2 — Understanding</h3>
+          <h4>Main ideas</h4>
+          <ol>{% for m in pass2.main_ideas %}<li>{{ m }}</li>{% endfor %}</ol>
+          {% if pass2.key_references %}
+          <h4>Key references</h4>
+          <ul class="refs">{% for r in pass2.key_references %}<li><strong>{{ r.title }}</strong>{% if r.authors %} — {{ r.authors }}{% endif %}{% if r.year %} ({{ r.year }}){% endif %}{% if r.why %} — <em>{{ r.why }}</em>{% endif %}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+
+        <div class="tab-panel" data-panel="p3">
+          <h3>Pass 3 — Reconstruction</h3>
+          <h4>Method reconstruction</h4>
+          <ol>{% for s in pass3.method_reconstruction %}<li>{{ s }}</li>{% endfor %}</ol>
+          {% if pass3.critical_review %}
+          <h4>Critical review highlights</h4>
+          <ul>{% for c in pass3.critical_review %}<li>{{ c }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Claims-Evidence Map -->
+    <section id="claims" class="card">
+      <h2>Claims → Evidence Map</h2>
+      <div class="filters">
+        <label>Filter confidence:
+          <select id="filter-confidence">
+            <option value="">all</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </label>
+        <label>Filter label:
+          <select id="filter-label">
+            <option value="">all</option>
+            <option>[Paper evidence]</option>
+            <option>[Figure/Table evidence]</option>
+            <option>[Author claim]</option>
+            <option>[Agent inference]</option>
+            <option>[Uncertain]</option>
+            <option>[Needs verification]</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="filter-needs" checked /> only needs-verification</label>
+      </div>
+      <table class="claims-table">
+        <thead>
+          <tr><th>ID</th><th>Claim</th><th>Evidence</th><th>Location</th><th>Conf.</th></tr>
+        </thead>
+        <tbody>
+          {% for c in claims_evidence_map %}
+          <tr data-confidence="{{ c.confidence }}" data-label="{{ c.evidence_label }}" data-needs="{{ c.needs_verification }}">
+            <td><code>{{ c.claim_id }}</code></td>
+            <td>{{ c.claim_text }}</td>
+            <td><span class="ev-label ev-{{ c.evidence_label|slug }}">{{ c.evidence_label }}</span></td>
+            <td>{{ c.evidence_location }}</td>
+            <td><span class="conf conf-{{ c.confidence }}">{{ c.confidence }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Figures and Tables Explanation -->
+    <section id="figures" class="card">
+      <h2>Figures &amp; Tables</h2>
+      <div class="accordion">
+        {% for f in figures_tables %}
+        <details>
+          <summary>
+            <span class="fig-kind fig-{{ f.kind }}">{{ f.kind }}</span>
+            {% if f.number %}<span class="fig-num">{{ f.number }}</span>{% endif %}
+            {{ f.title }}
+          </summary>
+          <p>{{ f.explanation }}</p>
+          {% if f.evidence_label %}<p class="evidence-line">{{ f.evidence_label }}</p>{% endif %}
+        </details>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 9. Key Terms Glossary -->
+    <section id="glossary" class="card">
+      <h2>Key Terms Glossary</h2>
+      <div class="chips">
+        {% for g in glossary %}
+        <details class="chip"><summary>{{ g.term }}</summary>{{ g.definition }}</details>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 10. Method Reconstruction -->
+    <section id="reconstruction" class="card">
+      <h2>Method Reconstruction (deep)</h2>
+      <ol>{% for s in pass3.method_reconstruction %}<li>{{ s }}</li>{% endfor %}</ol>
+    </section>
+
+    <!-- 11. Correctness and Limitations -->
+    <section id="limitations" class="card">
+      <h2>Correctness &amp; Limitations</h2>
+      <ul>{% for l in limitations %}<li>{{ l }}</li>{% endfor %}</ul>
+    </section>
+
+    <!-- 12. Related Work Map -->
+    <section id="related" class="card">
+      <h2>Related Work</h2>
+      {% if pass2.key_references %}
+      <ul class="refs">{% for r in pass2.key_references %}<li><strong>{{ r.title }}</strong>{% if r.authors %} — {{ r.authors }}{% endif %}{% if r.year %} ({{ r.year }}){% endif %}{% if r.why %} — <em>{{ r.why }}</em>{% endif %}</li>{% endfor %}</ul>
+      {% else %}
+      <p><em>No key references recorded.</em></p>
+      {% endif %}
+    </section>
+
+    <!-- 13. Practical Implications -->
+    <section id="implications" class="card">
+      <h2>Practical Implications</h2>
+      <ul>
+        {% for c in five_cs.contributions %}<li><strong>Contribution:</strong> {{ c }}</li>{% endfor %}
+        {% if limitations %}<li><strong>Where it does <em>not</em> apply:</strong> {{ limitations|first }}</li>{% endif %}
+      </ul>
+    </section>
+
+    <!-- 14. Reproduction Plan -->
+    <section id="reproduction" class="card">
+      <h2>Reproduction Plan</h2>
+      <dl class="kv">
+        {% if reproduction_plan.dataset %}<dt>Dataset</dt><dd>{{ reproduction_plan.dataset }}</dd>{% endif %}
+        {% if reproduction_plan.baseline %}<dt>Baseline</dt><dd>{{ reproduction_plan.baseline }}</dd>{% endif %}
+        {% if reproduction_plan.hardware %}<dt>Hardware</dt><dd>{{ reproduction_plan.hardware }}</dd>{% endif %}
+      </dl>
+      <h4>Steps</h4>
+      <ol>{% for s in reproduction_plan.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+      {% if reproduction_plan.sanity_checks %}
+      <h4>Sanity checks</h4>
+      <ul>{% for s in reproduction_plan.sanity_checks %}<li>{{ s }}</li>{% endfor %}</ul>
+      {% endif %}
+      {% if reproduction_plan.success_criteria %}
+      <h4>Success criteria</h4>
+      <ul>{% for s in reproduction_plan.success_criteria %}<li>{{ s }}</li>{% endfor %}</ul>
+      {% endif %}
+    </section>
+
+    <!-- 15. Open Questions -->
+    <section id="open" class="card">
+      <h2>Open Questions</h2>
+      <ul>{% for q in open_questions %}<li>{{ q }}</li>{% endfor %}</ul>
+    </section>
+
+    <!-- 16. Final Checklist -->
+    <section id="checklist" class="card">
+      <h2>"Do I understand this paper?" Checklist</h2>
+      <ol class="checklist">
+        {% for c in final_checklist %}
+        <li><label><input type="checkbox" /> {{ c.question }}{% if c.answerable is defined %} <span class="muted">[<em>answerable</em>]</span>{% endif %}</label></li>
+        {% endfor %}
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Generated by <strong>paper-three-pass-reader v0.1.0-alpha</strong> · MIT · offline · no backend.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

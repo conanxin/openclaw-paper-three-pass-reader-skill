@@ -1,0 +1,26 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.pyc
+__pycache__/
+*.log
+
+# Local artifacts that should never be committed
+paper-reading-output/
+.env
+.env.*
+
+# Build / distribution (we have none yet, but be ready)
+dist/
+build/
+*.egg-info/
+.venv/
+venv/
+
+# gh CLI scratch
+.gh-pages-staging/

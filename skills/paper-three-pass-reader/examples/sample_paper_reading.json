@@ -1,0 +1,276 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "How to Read a Paper",
+    "authors": ["S. Keshav"],
+    "year": 2007,
+    "venue": "SIGCOMM Computer Communication Review",
+    "identifiers": {
+      "arxiv_id": null,
+      "doi": null,
+      "openreview_id": null,
+      "url": null
+    },
+    "source_kind": "complete_paper",
+    "reading_mode": "full_text"
+  },
+  "intake_quality": {
+    "input_kind": "complete_paper",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [],
+    "warnings": []
+  },
+  "summaries": {
+    "one_sentence": "Keshav's 2007 essay proposes a three-pass method for reading research papers — bird's-eye, content, and reconstruction — that turns a pile of PDFs into a reproducible habit and a personal literature review.",
+    "three_sentence": [
+      "First read the title, abstract, intro, section headings, conclusion and references in five to ten minutes to classify the paper and decide whether to read deeper.",
+      "Second read the body with care, skipping proofs, to understand the main ideas, claims and figures, ideally within an hour.",
+      "Third read the paper as if you were its author — virtualising the system, identifying implicit assumptions, criticising the evidence — to internalise the work and to be able to reproduce it."
+    ],
+    "ten_sentence": [
+      "Keshav opens by observing that reading a paper is a different activity at five minutes, one hour, and four hours, and proposes the three-pass method as a way to honour that difference deliberately.",
+      "The first pass is a 5–10 minute bird's-eye read that answers five questions called the Five Cs: Category, Context, Correctness, Contributions, Clarity.",
+      "The first pass is explicitly a triage step: its output is a decision to continue to Pass 2, to seek references first, or to stop.",
+      "Pass 2 is a roughly one-hour deeper read that focuses on the main ideas, claims, figures and tables, deliberately skipping proofs.",
+      "Pass 3 is a 1–4 hour reconstructive read in which the reader plays the role of the author, virtualises the system, identifies hidden assumptions, and writes a critique.",
+      "The method is designed for graduate students but applies to anyone who reads papers regularly and wants to convert reading into understanding.",
+      "Keshav frames the cost–benefit calculus: a first pass costs little and is high-value; a third pass is only worth it for foundational papers.",
+      "He recommends keeping a simple logbook of papers read with one-sentence summaries, which compounds into a literature review over time.",
+      "The essay is short, opinionated, and deliberately minimal — its value is the workflow, not the framework's completeness.",
+      "Its weakness is that it does not address modern reading aids (LLMs, OCR, semantic search) and assumes a single-author reader; a 2026 update would need to extend it."
+    ]
+  },
+  "five_cs": {
+    "category": "Methods / how-to essay in computer science research methodology — not original research, but a meta-paper proposing a paper-reading workflow.",
+    "context": "Builds on a long tradition of advice-for-grad-students essays in SIGCOMM and adjacent communities; complementary to Bird & Wadge's Introduction to Programming, Hennessy & Patterson's architecture textbooks, and earlier 'how to do research' guides from the 1980s and 1990s.",
+    "correctness": "The five-question framework is plausible and self-consistent; the time estimates (5–10 min, ~1 h, 1–4 h) are reasonable for the assumed reader (CS graduate student, English-speaking) but not validated empirically. [Author claim].",
+    "contributions": [
+      "A three-pass reading procedure with explicit per-pass goals and time budgets.",
+      "The Five Cs checklist (Category, Context, Correctness, Contributions, Clarity) as a portable Pass-1 artifact.",
+      "A logbook discipline (one-sentence summaries per paper) that converts ad-hoc reading into a personal literature review over time."
+    ],
+    "clarity": "Exceptionally clear. The essay is three pages, plain prose, no jargon, with explicit advice for each pass. It is a model of the genre."
+  },
+  "pass1": {
+    "bird_eye_notes": "Title, abstract, intro and headings signal a three-pass reading method. No figures. No equations. Six short references. The whole paper is roughly three pages of SIGCOMM CCR — it reads more like an op-ed than a research article.",
+    "decision": "CONTINUE_FULL",
+    "decision_rationale": "Even though the paper is short, it is widely cited and foundational in the genre; Pass 3 (reconstruction) is warranted to extract a personal workflow."
+  },
+  "pass2": {
+    "main_ideas": [
+      "Reading a paper is a different activity at 5 min, 1 h, and 4 h; design for that.",
+      "Pass 1 is a bird's-eye triage that produces a continue-or-stop decision, not a summary.",
+      "Pass 1's deliverable is the Five Cs — five short answers, not a paragraph of prose.",
+      "Pass 2 reads the body with care but skips proofs; its goal is to understand the main ideas, not to verify them.",
+      "Pass 3 reconstructs the paper as if the reader were the author; the artifact is a critique and a virtualised system, not a summary.",
+      "A logbook of one-sentence summaries compounds into a literature review over months and years."
+    ],
+    "key_references": [
+      {"title": "Introduction to Programming",        "authors": ["R. Bird", "P. Wadge"], "year": 1986, "why": "cited as exemplar of Pass-2 reading: read code as well as prose"},
+      {"title": "Computer Architecture: A Quantitative Approach", "authors": ["J. Hennessy", "D. Patterson"], "year": 1990, "why": "cited as a book that benefits from Pass-3 reconstruction"},
+      {"title": "How to Do Research (AIC essay)",    "authors": ["F. Brooks"],           "year": 1995, "why": "earlier essay in the same advice-for-grad-students genre"},
+      {"title": "The Craft of Research",             "authors": ["W. Booth", "G. Colomb", "J. Williams"], "year": 1995, "why": "broader research-method book that the logbook habit complements"}
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Define three time-budgeted passes: Pass 1 = 5–10 min, Pass 2 = ~1 h, Pass 3 = 1–4 h. The budgets are non-negotiable.",
+      "Pass 1 reads in this order: title, abstract, intro, section headings, conclusion, references, and glances at figures and math. No deep reading.",
+      "Pass 1 produces the Five Cs: Category, Context, Correctness, Contributions, Clarity. Each is one to three sentences.",
+      "Pass 1's terminal artifact is a continue-or-stop decision (CONTINUE_FULL / CONTINUE_PARTIAL / SEEK_REFERENCES_FIRST / STOP).",
+      "Pass 2 reads the body in detail, but skips proofs. Its artifacts are main ideas (3–7), figures/tables (one paragraph each), and key references (5–15).",
+      "Pass 2's load-bearing artifact is a Claims → Evidence map: every main claim paired with the figure/table/section that grounds it.",
+      "Pass 3 reads the paper as if the reader were its author: virtualise the system, name hidden assumptions, find the failure modes, write a critique.",
+      "Pass 3's terminal artifact is a reproduction plan: dataset, baseline, hardware, steps, sanity checks, success criteria.",
+      "Maintain a logbook. Every paper read gets a one-sentence summary plus its Five Cs. Review monthly; promote survivors to a literature-review draft.",
+      "Repeat. The skill is a habit, not a one-off. After 50–100 papers the logbook becomes the first draft of a survey."
+    ],
+    "critical_review": [
+      "Time budgets (5–10 min / ~1 h / 1–4 h) are asserted, not measured. A modern reader with semantic-search tooling will probably spend less time on Pass 1, more on Pass 2.",
+      "The method assumes the reader is a CS graduate student reading in English. It does not adapt to interdisciplinary reading, slow-language readers, or visually impaired readers.",
+      "The Five Cs are useful but incomplete: they do not include Reproducibility, Societal Impact, or Open Science as first-class Cs.",
+      "No mention of modern reading aids: LLMs, semantic search, citation graphs, or active reading tools. A 2026 update should integrate these explicitly.",
+      "The logbook habit is good advice but the essay does not say how to keep the logbook (Markdown vs spreadsheet vs notebook) or how to handle multi-author papers.",
+      "The Pass 3 reconstruction is the most valuable and least taught part of the method; the essay under-explains how to virtualise a system."
+    ]
+  },
+  "claims_evidence_map": [
+    {
+      "claim_id": "C-001",
+      "claim_text": "Reading a paper is a different activity at 5 min, 1 h, and 4 h.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "Introduction, paragraph 1",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Foundational framing for the three-pass structure.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-002",
+      "claim_text": "Pass 1 takes 5–10 minutes and produces the Five Cs.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "Section 'The first pass'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Direct quote of the method's first-pass spec.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-003",
+      "claim_text": "Pass 1's output is a continue-or-stop decision, not a summary.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "Section 'The first pass'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Explicit framing in the essay.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-004",
+      "claim_text": "Pass 2 should skip proofs.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "Section 'The second pass'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-005",
+      "claim_text": "Pass 3 should virtualise the system the paper describes.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "Section 'The third pass'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Distinctive part of the method.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-006",
+      "claim_text": "A logbook of one-sentence summaries compounds into a literature review.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "Section 'Doing a literature survey'",
+      "evidence_kind": "paper_text",
+      "confidence": "medium",
+      "notes": "Plausible and widely repeated, but no empirical evidence cited.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-007",
+      "claim_text": "The Five Cs are: Category, Context, Correctness, Contributions, Clarity.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "Section 'The first pass'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Direct enumeration in the essay.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-008",
+      "claim_text": "The method is for graduate students and researchers in computer science.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "Introduction",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Scope claim; agent-inferred applicability to other fields.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-009",
+      "claim_text": "Three pages of SIGCOMM CCR is the right length for a how-to essay.",
+      "evidence_label": "[Agent inference]",
+      "evidence_location": "n/a",
+      "evidence_kind": "external",
+      "confidence": "medium",
+      "notes": "Format judgement, not in the paper.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-010",
+      "claim_text": "The method is widely cited and influential in CS pedagogy.",
+      "evidence_label": "[Agent inference]",
+      "evidence_location": "n/a",
+      "evidence_kind": "external",
+      "confidence": "medium",
+      "notes": "Citation count not checked.",
+      "needs_verification": true
+    }
+  ],
+  "figures_tables": [],
+  "glossary": [
+    {"term": "Three-pass method",       "definition": "A reading procedure that splits one paper into three time-budgeted reads: bird's-eye, content, reconstruction."},
+    {"term": "Five Cs",                 "definition": "Pass 1's five-question checklist: Category, Context, Correctness, Contributions, Clarity."},
+    {"term": "Logbook",                 "definition": "A running personal record of papers read, with one-sentence summary and Five Cs per entry."},
+    {"term": "Virtualise a system",     "definition": "In Pass 3, mentally re-implement the paper's system from scratch as if you were the author."},
+    {"term": "Foundational paper",      "definition": "A paper whose ideas you must internalise before reading the rest of its sub-field; warrants Pass 3."},
+    {"term": "Continue-or-stop",        "definition": "Pass 1's terminal decision: continue (Pass 2/3), seek references first, or stop."}
+  ],
+  "limitations": [
+    "Time budgets are asserted, not measured.",
+    "Scope is CS graduate students in English; interdisciplinary reading is unaddressed.",
+    "Five Cs do not include Reproducibility, Societal Impact, or Open Science.",
+    "No integration with modern reading aids (LLMs, semantic search, citation graphs).",
+    "Logbook advice is good but the essay does not say how to keep the logbook.",
+    "Pass 3 is the most valuable and least taught step; virtualisation is under-explained."
+  ],
+  "reproduction_plan": {
+    "dataset": "n/a — method paper. To reproduce the *experience* of the method, the dataset is the set of 50 papers the reader chooses to read in a semester.",
+    "baseline": "Read-all-papers-linearly with no time budget and no logbook.",
+    "hardware": "A laptop and a Markdown editor. No GPU, no cloud.",
+    "steps": [
+      "Read 10 papers using the three-pass method and write a logbook entry per paper.",
+      "Read 10 papers linearly (no time budget, no logbook) as a control.",
+      "After two weeks, score each set on: comprehension (self-test), recall (one-month delayed), ability to summarise in one sentence.",
+      "Compare the two distributions; expect the three-pass set to outperform on comprehension and recall."
+    ],
+    "sanity_checks": [
+      "Each Pass 1 finishes within 10 minutes (timer on).",
+      "Each logbook entry has a one-sentence summary and the Five Cs filled in.",
+      "Pass 3 includes a virtualisation step, not just a critique."
+    ],
+    "success_criteria": [
+      "50 papers read, 50 logbook entries, all with Five Cs.",
+      "One-month-delayed recall ≥ 70% on a self-test for the three-pass cohort.",
+      "A literature-review draft can be assembled from the logbook in ≤ 1 day."
+    ]
+  },
+  "open_questions": [
+    "How should the three-pass method adapt when LLMs can summarise or extract claims automatically?",
+    "How does the method scale to interdisciplinary reading where the Five Cs may not transfer cleanly?",
+    "Is the logbook discipline still the right meta-habit in a world of citation graphs and semantic search?",
+    "How do you teach Pass 3 to a reader who has never implemented a system?",
+    "Should Reproducibility be promoted from a hidden concern to a sixth C?"
+  ],
+  "final_checklist": [
+    {"question": "Can I state the paper's main contribution in one sentence?", "answerable": true},
+    {"question": "Can I name the three passes and their time budgets?", "answerable": true},
+    {"question": "Can I name the Five Cs without looking?", "answerable": true},
+    {"question": "Can I describe what 'virtualise a system' means in Pass 3?", "answerable": true},
+    {"question": "Can I explain why a logbook compounds into a literature review?", "answerable": true},
+    {"question": "Can I name two limitations of the method?", "answerable": true},
+    {"question": "Can I describe a small experiment that would test whether the method works?", "answerable": true},
+    {"question": "Can I name two ways the method would change if it were rewritten in 2026?", "answerable": true},
+    {"question": "Have I marked every interpretive statement with an evidence label?", "answerable": true},
+    {"question": "Have I honestly recorded the reading mode as full_text?", "answerable": true}
+  ],
+  "paper_outline": [
+    {"title": "1. Introduction", "subsections": []},
+    {"title": "2. The first pass", "subsections": ["The Five Cs (Category, Context, Correctness, Contributions, Clarity)"]},
+    {"title": "3. The second pass", "subsections": []},
+    {"title": "4. The third pass", "subsections": ["Virtualising the system", "Critique"]},
+    {"title": "5. Doing a literature survey", "subsections": ["The logbook discipline"]},
+    {"title": "6. References", "subsections": []}
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = complete_paper (essay, 3 pages, SIGCOMM CCR).",
+      "Title and author identified directly from the essay's header.",
+      "Year (2007) and venue (SIGCOMM Computer Communication Review) confirmed from the essay's masthead.",
+      "No DOI / arXiv / OpenReview ID — method paper from a community magazine.",
+      "Reading mode = full_text (the whole essay was read)."
+    ]
+  },
+  "candidate_papers": []
+}
