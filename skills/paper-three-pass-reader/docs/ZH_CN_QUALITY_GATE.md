@@ -138,3 +138,15 @@ These are useful for short papers, position papers, or non-research blog-style i
 - [`docs/ZH_CN_QUALITY_GATE.md`](../../docs/ZH_CN_QUALITY_GATE.md) — the original doc was at this path; this file mirrors it.
 - The fill-pack step `11_zh_cn_quality_gate.md` explains the same rules to the agent.
 - The runner / audit / renderer code: `run_paper_reading.py` (search `--quality-gate`), `audit_paper_reading.py` (search `--quality-gate`), `quality_gate_zh_cn.py`.
+
+## v0.2.5 — `p3pr` one-line CLI integration
+
+The CLI (`p3pr.py` at `skills/paper-three-pass-reader/scripts/p3pr.py`) wraps the runner + audit + quality gate + render + publish. It enables / disables the quality gate based on:
+
+- `--language zh-CN` (default) → quality gate runs
+- `--language en` → quality gate is silently skipped
+- `--no-quality-gate` → never runs the quality gate
+- `--publish` + quality-gate FAIL → BLOCKED (CLI prints `P3PR_STATUS: BLOCKED`)
+- `--publish` + `--allow-draft-publish` + quality-gate FAIL → publishes anyway (status `WARN`)
+
+When the CLI's quality gate is the failure, the printed `P3PR_NEXT_ACTION` is the recipe from this doc's "How to fix common failures" table.

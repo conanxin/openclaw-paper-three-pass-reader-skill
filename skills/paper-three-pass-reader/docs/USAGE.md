@@ -344,3 +344,21 @@ python3 skills/paper-three-pass-reader/scripts/audit_paper_reading.py \
   --input runs/myrun/work/paper_reading.json \
   --quality-gate
 ```
+
+### One-line CLI (v0.2.5+)
+
+For the common case, use the `p3pr` shell shim:
+
+```bash
+./p3pr arxiv 2503.08102 --zh --full --publish
+```
+
+The CLI chains everything in this doc:
+
+1. Builds a run layout under `runs/p3pr-cli-YYYYMMDD/<slug>/`.
+2. Invokes `run_paper_reading.py` to write `work/paper_reading.json` + fill-pack.
+3. Runs `audit_paper_reading.py` (with `--quality-gate` for zh-CN).
+4. Runs `render_page.py`.
+5. Runs `publish_output_to_github.sh`.
+
+Every run ends with a fixed-format `P3PR_*` summary. See [`ONE_LINE_CLI.md`](ONE_LINE_CLI.md).

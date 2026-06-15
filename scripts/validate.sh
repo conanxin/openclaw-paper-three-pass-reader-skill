@@ -596,6 +596,106 @@ else
   bad "audit did not show --quality-gate hint on zh-CN run"
 fi
 
+# 12. v0.2.5 P3PR one-line CLI
+step 12 "v0.2.5 P3PR one-line CLI"
+
+# 12a. p3pr shim exists and is executable.
+if [[ -x "$ROOT/p3pr" ]]; then
+  ok "p3pr shim exists and is executable"
+else
+  bad "p3pr shim missing or not executable"
+fi
+
+# 12b. p3pr --help runs.
+if "$ROOT/p3pr" --help >/dev/null 2>&1; then
+  ok "p3pr --help exits 0"
+else
+  bad "p3pr --help failed"
+fi
+
+# 12c. p3pr.py --help runs.
+if python3 "$SKILL_DIR/scripts/p3pr.py" --help >/dev/null 2>&1; then
+  ok "p3pr.py --help exits 0"
+else
+  bad "p3pr.py --help failed"
+fi
+
+# 12d. p3pr subcommands work.
+for sub in arxiv title abstract screenshot repo pdf; do
+  if "$ROOT/p3pr" "$sub" --help >/dev/null 2>&1; then
+    ok "p3pr $sub --help works"
+  else
+    bad "p3pr $sub --help failed"
+  fi
+done
+
+# 12e. arxiv dry-run prints expected fields.
+DRY_OUT="$("$ROOT/p3pr" arxiv 2503.08102 --zh --full --publish --dry-run 2>&1 || true)"
+for needle in "P3PR_STATUS" "P3PR_INPUT_KIND" "P3PR_READING_MODE" "P3PR_RUN_DIR"; do
+  if echo "$DRY_OUT" | grep -q "$needle"; then
+    ok "arxiv dry-run prints: $needle"
+  else
+    bad "arxiv dry-run missing: $needle"
+  fi
+done
+if echo "$DRY_OUT" | grep -q "P3PR_READING_MODE: full_text"; then
+  ok "arxiv dry-run says reading_mode=full_text"
+else
+  bad "arxiv dry-run reading_mode not full_text"
+fi
+if echo "$DRY_OUT" | grep -q "P3PR_INPUT_KIND: paper_identifier"; then
+  ok "arxiv dry-run says input_kind=paper_identifier"
+else
+  bad "arxiv dry-run input_kind wrong"
+fi
+
+# 12f. title dry-run does not crash.
+if "$ROOT/p3pr" title "Attention Is All You Need" --zh --full --publish --dry-run >/dev/null 2>&1; then
+  ok "title dry-run exits 0"
+else
+  bad "title dry-run failed"
+fi
+
+# 12g. repo dry-run does not crash.
+if "$ROOT/p3pr" repo https://github.com/google-research/bert --zh --full --publish --dry-run >/dev/null 2>&1; then
+  ok "repo dry-run (BERT) exits 0"
+else
+  bad "repo dry-run (BERT) failed"
+fi
+
+# 12h. screenshot smoke run produced work/paper_reading.json + fill-pack + page.
+SMOKE_DIR="$ROOT/runs/p3pr-cli-smoke-20260615/cli-screenshot-smoke"
+if [[ -f "$SMOKE_DIR/work/paper_reading.json" ]]; then
+  ok "CLI screenshot smoke: work/paper_reading.json exists"
+else
+  bad "CLI screenshot smoke: work/paper_reading.json missing"
+fi
+if [[ -d "$SMOKE_DIR/fill-pack" ]]; then
+  ok "CLI screenshot smoke: fill-pack exists"
+else
+  bad "CLI screenshot smoke: fill-pack missing"
+fi
+
+# 12i. abstract smoke run has correct reading_mode.
+ABS_JSON="$ROOT/runs/p3pr-cli-smoke-20260615/cli-abstract-smoke/work/paper_reading.json"
+if [[ -f "$ABS_JSON" ]] && grep -q '"reading_mode": "abstract_only"' "$ABS_JSON"; then
+  ok "CLI abstract smoke: reading_mode = abstract_only"
+else
+  bad "CLI abstract smoke: reading_mode not abstract_only"
+fi
+
+# 12j. CLI smoke runs do not pretend full_text on weak inputs.
+for weak_slug in cli-screenshot-smoke cli-abstract-smoke; do
+  weak_json="$ROOT/runs/p3pr-cli-smoke-20260615/${weak_slug}/work/paper_reading.json"
+  if [[ -f "$weak_json" ]]; then
+    if grep -q '"reading_mode": "full_text"' "$weak_json"; then
+      bad "CLI ${weak_slug} pretends full_text (should be weak mode)"
+    else
+      ok "CLI ${weak_slug} does not pretend full_text"
+    fi
+  fi
+done
+
 # Summary
 echo
 echo "================================================="

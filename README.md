@@ -299,7 +299,8 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.2.1-alpha` | immutable | Agent Fill Pack + structural audit. Runner gained `--fill-pack`, `--audit`, `--agent-profile`, `--language`, `--max-claims`, `--max-figures`. |
 | `v0.2.2-alpha` | immutable | Auto-fill smoke run + runner/render robustness fixes. |
 | `v0.2.3-alpha` | immutable | First-class Chinese (zh-CN) output. Runner writes `target_language` / `ui_language`; renderer localizes UI; audit checks Chinese content. |
-| `v0.2.4-alpha` | current | zh-CN quality gate. Goes beyond "has Chinese?" to "is the Chinese actually a reading?". Catches low CJK coverage, English carryover, shallow glossary/claims/checklist, full_text with no `[Paper evidence]`. Integrated into audit (`--quality-gate`) and runner. |
+| `v0.2.4-alpha` | immutable | zh-CN quality gate. Goes beyond "has Chinese?" to "is the Chinese actually a reading?". Catches low CJK coverage, English carryover, shallow glossary/claims/checklist, full_text with no `[Paper evidence]`. Integrated into audit (`--quality-gate`) and runner. |
+| `v0.2.5-alpha` | current | One-line CLI `p3pr`. `./p3pr arxiv 2503.08102 --zh --full --publish` does the whole pipeline (runner + fill-pack + audit + quality gate + render + publish). 6 subcommands: arxiv / title / abstract / screenshot / repo / pdf. Enforces weak-mode / quality-gate boundaries. |
 
 ## Language support (zh-CN / en)
 
@@ -355,10 +356,41 @@ python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
 
 See [`skills/paper-three-pass-reader/docs/ZH_CN_QUALITY_GATE.md`](skills/paper-three-pass-reader/docs/ZH_CN_QUALITY_GATE.md).
 
+## One-line CLI (v0.2.5+)
+
+You can run the whole pipeline (runner + fill-pack + audit + zh-CN quality gate + render + publish) with a single command:
+
+```bash
+./p3pr arxiv 2503.08102 --zh --full --publish
+./p3pr title "Attention Is All You Need" --zh --full --publish
+./p3pr abstract path/to/abstract.md --zh --publish
+./p3pr screenshot path/to/transcript.md --zh --publish
+./p3pr repo https://github.com/google-research/bert --zh --full --publish
+./p3pr pdf path/to/paper.pdf --zh --full --publish
+```
+
+The CLI is a thin shim — it does not call external LLM APIs and does not auto-fill the draft. It just chains the existing scripts. The fill-pack is the task description; the agent / human fills it.
+
+Every run ends with a fixed-format summary:
+
+```
+P3PR_STATUS: PASS|WARN|BLOCKED|DRY_RUN
+P3PR_INPUT_KIND: paper_identifier|...
+P3PR_READING_MODE: full_text|abstract_only|...
+P3PR_RUN_DIR: ...
+P3PR_JSON: ...
+P3PR_FILL_PACK: ...
+P3PR_LOCAL_PAGE: ...
+P3PR_PAGE_URL: ...
+P3PR_NEXT_ACTION: ...
+```
+
+See [`skills/paper-three-pass-reader/docs/ONE_LINE_CLI.md`](skills/paper-three-pass-reader/docs/ONE_LINE_CLI.md) for the full flag list, the dry-run behaviour, and the `--publish` / `--allow-draft-publish` distinction.
+
 ---
 
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.2.4-alpha**.
+Version: **v0.2.5-alpha**.

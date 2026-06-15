@@ -15,6 +15,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Chinese page published** — `https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/` (HTTP 200).
 - **Validation extended** — `scripts/validate.sh` now has 120 checks (was 108). New step 10 covers: runner `--language` flag, zh-CN draft `target_language` / `ui_language`, Chinese fill-pack content, Chinese UI label presence, audit Chinese-content warning, Second Me zh-CN real run audit, Second Me zh-CN page label check.
 
+### Notes
+
+- Evidence labels remain **fixed English enums** (`[Paper evidence]`, `[Figure/Table evidence]`, `[Author claim]`, `[Agent inference]`, `[Uncertain]`, `[Needs verification]`) regardless of UI language. They are intentionally untranslatable so the audit can match them.
+- Paper titles, method names, benchmark names, and author names remain in their original form (English or Chinese as the author wrote them).
+- Re-rendering an `en` draft still produces an English page; the locale only kicks in when the JSON explicitly says `ui_language = "zh-CN"`.
+
 ## [v0.2.4-alpha] — 2026-06-15
 
 ### Added
@@ -32,6 +38,31 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The quality gate is **structural + bilingual-discipline**, not LLM-truth-judging. It catches specific failure modes that "audit alone" misses but does not score translation quality subjectively.
 - Evidence labels remain fixed English enums for audit compatibility. Explanatory text around them is Chinese.
 - The default zh-CN thresholds (8 claims, 10 glossary, 8 checklist, 50% CJK ratio) are tuned for full_text real-paper readings, not weak-mode drafts. For weak-mode drafts, the quality gate should be run with `--warn-only`.
+
+## [v0.2.5-alpha] — 2026-06-15
+
+### Added
+
+- **One-line CLI** — `p3pr` (shell shim at repo root) wraps `skills/paper-three-pass-reader/scripts/p3pr.py` (stdlib-only Python). The CLI orchestrates the existing runner / fill-pack / audit / zh-CN quality gate / renderer / publisher into a single command:
+  - `./p3pr arxiv 2503.08102 --zh --full --publish`
+  - `./p3pr title "Attention Is All You Need" --zh --full --publish`
+  - `./p3pr abstract path/to/abstract.md --zh --publish`
+  - `./p3pr screenshot path/to/transcript.md --zh --publish`
+  - `./p3pr repo https://github.com/google-research/bert --zh --full --publish`
+  - `./p3pr pdf path/to/paper.pdf --zh --full --publish`
+- **Defaults**: `language = zh-CN`, `fill_pack = true`, `audit = true`, `quality_gate = true` (only when `language == zh-CN`), `render = true`, `publish = false`, `repo = conanxin/paper-reading-pages`, `branch = gh-pages`.
+- **Boundaries enforced**: weak-mode drafts (screenshot_only / abstract_only) do NOT pretend full_text. `--publish` is BLOCKED on quality-gate FAIL unless `--allow-draft-publish` is set. `--dry-run` skips downloads / extraction.
+- **Fixed-format summary** at end of every CLI run:
+  `P3PR_STATUS` / `P3PR_INPUT_KIND` / `P3PR_READING_MODE` / `P3PR_RUN_DIR` / `P3PR_JSON` / `P3PR_FILL_PACK` / `P3PR_LOCAL_PAGE` / `P3PR_PAGE_URL` / `P3PR_NEXT_ACTION`.
+- **CLI smoke runs** — `runs/p3pr-cli-smoke-20260615/` has 2 local smoke runs (screenshot + abstract) and 4 dry-runs (arxiv / title / repo / pdf). CLI smoke runs do not pretend full_text on weak inputs.
+- **Validation extended** — `scripts/validate.sh` now has 151 checks (was 129). New step 12 covers: p3pr shim executable, p3pr help, all 6 subcommands, arxiv dry-run summary, title / repo dry-runs, screenshot smoke JSON + fill-pack, abstract smoke reading_mode, weak-input not pretending full_text.
+- **Documentation** — new `skills/paper-three-pass-reader/docs/ONE_LINE_CLI.md`. `README.md`, `CHANGELOG.md`, `RUNNER.md`, `USAGE.md`, `ZH_CN_QUALITY_GATE.md` updated. Release notes and phase report.
+
+### Design notes
+
+- The CLI is a **thin wrapper**; it does NOT call external LLM APIs and does NOT do any deep reading. The reading is the fill-pack job.
+- Subcommands share the same flag set (forwarded from parent argparse) so users can put flags before or after the subcommand.
+- The CLI keeps its own copy of the resolver hints (`HINTS` dict) so dry-runs can resolve without invoking the runner.
 
 ### Changed
 

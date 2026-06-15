@@ -378,3 +378,20 @@ When `--quality-gate` is set and `--language == zh-CN`:
 3. If the quality gate returns PASS or WARN (under `--warn-only`), the runner proceeds as usual.
 
 The quality gate checks: language fields, CJK coverage, English-blob carryover, glossary / claims / checklist counts, full_text `[Paper evidence]` discipline, Pass 2/3 presence. See [`ZH_CN_QUALITY_GATE.md`](ZH_CN_QUALITY_GATE.md) for the full spec.
+
+## v0.2.5 — `p3pr` one-line CLI
+
+The runner is still the underlying engine, but v0.2.5 added a thin shell shim that chains runner + fill-pack + audit + quality-gate + render + publish into one command.
+
+```bash
+./p3pr arxiv 2503.08102 --zh --full --publish
+./p3pr title "Attention Is All You Need" --zh --full --publish
+./p3pr abstract path/to/abstract.md --zh --publish
+./p3pr screenshot path/to/transcript.md --zh --publish
+./p3pr repo https://github.com/google-research/bert --zh --full --publish
+./p3pr pdf path/to/paper.pdf --zh --full --publish
+```
+
+See [`ONE_LINE_CLI.md`](ONE_LINE_CLI.md) for the full flag list. The CLI does NOT do any deep reading itself — the fill-pack is the task description for the agent / human.
+
+The CLI is implemented in `skills/paper-three-pass-reader/scripts/p3pr.py` and shells out to `run_paper_reading.py` (this file) internally. So everything in this document applies to the CLI's runner step too.

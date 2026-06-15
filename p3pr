@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# p3pr — paper-three-pass-reader one-line CLI (v0.2.5-alpha)
+#
+# Thin shell shim that exec's the Python CLI. Keep the heavy logic in
+# skills/paper-three-pass-reader/scripts/p3pr.py.
+
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec python3 "$DIR/skills/paper-three-pass-reader/scripts/p3pr.py" "$@"
