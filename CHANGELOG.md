@@ -3,6 +3,28 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.6-alpha] — 2026-06-15
+
+### Added
+
+- **Shared resolver hints data source** — new `skills/paper-three-pass-reader/data/resolver_hints.json` is now the single source of truth for paper / repo / arXiv resolution. Replaces the duplicate HINTS dict that used to live in `p3pr.py` and the duplicate `RESOLVER_HINTS` dict that used to live in `run_paper_reading.py`. New hints can be added in one place and the runner + CLI + tests + docs all pick them up.
+- **Resolver helper module** — new `skills/paper-three-pass-reader/scripts/resolver_hints.py` (stdlib-only). Public API: `load_hints()`, `normalize_text()`, `resolve_title()`, `resolve_arxiv()`, `resolve_repo()`, `resolve_any()`, `paper_to_runner_overrides()`. Each resolver returns `{status, match_type, confidence, paper, candidates, source_resolution_step}` so callers can distinguish `matched` / `ambiguous` / `not_found`.
+- **Standalone resolver CLI** — `skills/paper-three-pass-reader/scripts/resolve_paper_hint.py {title|arxiv|repo|any} <value>` prints the resolver's JSON output. Useful for tests, docs, and humans debugging a hint.
+- **Unified anchor papers** — `resolver_hints.json` ships with 5 anchor papers: Attention Is All You Need (1706.03762), BERT (1810.04805), How to Read a Paper (Keshav, 2007), Second Me (2503.08102), and the paper-three-pass-reader-skill repo itself. Each paper has canonical title, aliases, authors, year, venue, arXiv id, paper URL, default slug, field, and notes. Aliases match case-insensitively (e.g. `transformers` → Attention, `second me` → Second Me).
+- **Backwards-compatible runner API** — `run_paper_reading.RESOLVER_HINTS` is now auto-built from `resolver_hints.json` so any historical code path that imports the dict still works. The runner's `_resolve_hint()` now prefers the shared resolver and falls back to the legacy substring matcher.
+- **CLI auto-resolution of canonical metadata** — when you pass a recognizable title / repo / arXiv id to `p3pr`, the CLI now auto-fills `title`, `arxiv_id`, `paper_url`, and `default_slug` from the shared resolver, and shows the resolver's diagnostic in the run summary:
+  `P3PR_RESOLVER_STATUS` / `P3PR_RESOLVER_MATCH_TYPE` / `P3PR_CANONICAL_TITLE` / `P3PR_ARXIV_ID` / `P3PR_DEFAULT_SLUG`.
+- **CLI screenshot/abstract smart auto-derivation** — `p3pr screenshot` and `p3pr abstract` now run the resolver against the first 400 chars of the input file. If the transcript contains a known paper (e.g. a Second Me screenshot transcript), the CLI auto-derives the arXiv id, switches the slug prefix from `screenshot-` to `arxiv-`, and pulls canonical title — without pretending the input is a full paper.
+- **Unknown hint handling** — when no hint matches, the CLI does NOT fail. It logs `P3PR_RESOLVER_STATUS: not_found`, keeps the weak-mode default, and shows the user how to proceed (edit work/paper_reading.json, follow fill-pack, re-run).
+- **Validation extended** — `scripts/validate.sh` now has 179 checks (was 151). New step 13 covers: resolver_hints.json exists + valid + has 5 anchor papers; resolver_hints.py loads; resolve_paper_hint CLI works for title / arxiv / repo / any; unknown input returns not_found; aliases work; p3pr.py no longer has local HINTS; p3pr.py + run_paper_reading.py import from resolver_hints; runner RESOLVER_HINTS back-compat dict has 26 keys; historical keys still resolve; p3pr dry-run shows resolver details; title and repo auto-resolve; screenshot smoke auto-detects arXiv from transcript.
+- **Documentation** — new `skills/paper-three-pass-reader/docs/RESOLVER_HINTS.md` explains the single source of truth, the resolver API, and how to add new hints.
+
+### Notes
+
+- This is a refactor. No user-facing CLI behavior changes for v0.2.5 commands.
+- `RESOLVER_HINTS` in the runner is now derived data, not authoritative. To add a new paper, edit `data/resolver_hints.json`.
+- Aliases are case-insensitive. Whitespace and surrounding quotes / parens are stripped. arXiv id matching works inside arXiv URLs or bare ids. Repo matching handles GitHub URLs, owner/repo fragments, and case-insensitive URL substrings.
+
 ## [v0.2.3-alpha] — 2026-06-15
 
 ### Added

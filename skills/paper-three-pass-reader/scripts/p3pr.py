@@ -69,32 +69,50 @@ PUBLISH_SH = HERE / "publish_output_to_github.sh"
 DEFAULT_REPO = "conanxin/paper-reading-pages"
 DEFAULT_BRANCH = "gh-pages"
 
-# --- Built-in resolver hints (mirror of run_paper_reading.RESOLVER_HINTS) -----
-# Kept here so the CLI can resolve without invoking the runner for dry-runs.
+# --- Resolver hints -----------------------------------------------------------
+# v0.2.6: all hint data lives in skills/paper-three-pass-reader/data/resolver_hints.json
+# and is loaded through resolver_hints.py. Do NOT add a separate HINTS dict here.
+sys.path.insert(0, str(HERE))
+from resolver_hints import (  # noqa: E402  -- import after sys.path tweak
+    load_hints as _load_hints,
+    resolve_title as _resolver_resolve_title,
+    resolve_arxiv as _resolver_resolve_arxiv,
+    resolve_repo as _resolver_resolve_repo,
+    resolve_any as _resolver_resolve_any,
+    paper_to_runner_overrides as _resolver_overrides,
+)
 
-HINTS = {
-    "attention is all you need": {
-        "title": "Attention Is All You Need", "arxiv_id": "1706.03762",
-        "url": "https://arxiv.org/abs/1706.03762",
-        "default_reading_mode": "full_text", "year": 2017,
-    },
-    "how to read a paper": {
-        "title": "How to Read a Paper", "arxiv_id": None,
-        "url": None, "default_reading_mode": "abstract_only", "year": 2007,
-    },
-    "bert": {
-        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-        "arxiv_id": "1810.04805",
-        "url": "https://arxiv.org/abs/1810.04805",
-        "default_reading_mode": "full_text", "year": 2018,
-    },
-    "https://github.com/google-research/bert": {
-        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-        "arxiv_id": "1810.04805",
-        "url": "https://arxiv.org/abs/1810.04805",
-        "default_reading_mode": "full_text", "year": 2018,
-    },
-}
+
+def _resolve_hint(text: str):
+    """Compatibility wrapper: returns a runner-style hint dict from the shared resolver.
+
+    Returns None when the shared resolver has no match. The shape is intentionally
+    compatible with the historical p3pr HINTS dict so downstream callers do not change.
+    """
+    if not text:
+        return None
+    res = _resolver_resolve_any(text, "ambiguous_clue")
+    paper = res.get("paper") or {}
+    if not paper:
+        return None
+    # Build a runner-style hint dict
+    out = {
+        "title": paper.get("canonical_title"),
+        "arxiv_id": paper.get("arxiv_id"),
+        "url": paper.get("paper_url"),
+        "default_reading_mode": "full_text" if paper.get("arxiv_id") else "abstract_only",
+        "year": int(paper["year"]) if str(paper.get("year", "")).isdigit() else paper.get("year"),
+        "authors": paper.get("authors") or [],
+        "venue": paper.get("venue"),
+        "field": paper.get("field"),
+        "category": paper.get("field"),  # the historical category key aliased to field
+        "source_kind_override": "project_or_repo" if "github.com" in (text or "").lower() else None,
+        "_resolver_status": res.get("status"),
+        "_resolver_match_type": res.get("match_type"),
+        "_resolver_confidence": res.get("confidence"),
+        "_resolver_paper_id": paper.get("id"),
+    }
+    return out
 
 
 # --- Helpers ------------------------------------------------------------------
@@ -118,18 +136,6 @@ def _slugify(s: str, prefix: str = "", max_len: int = 60) -> str:
     if prefix and not s.startswith(prefix):
         s = f"{prefix}{s}" if s else prefix.rstrip("-")
     return s[:max_len] or "x"
-
-
-def _resolve_hint(text: str):
-    if not text:
-        return None
-    norm = text.strip().lower().rstrip("/")
-    if norm in HINTS:
-        return HINTS[norm]
-    for k, v in HINTS.items():
-        if k in norm or norm in k:
-            return v
-    return None
 
 
 def _download(url: str, dest: Path) -> tuple[bool, str]:
@@ -186,6 +192,11 @@ def _print_summary(
     local_page: str,
     page_url: str,
     next_action: str,
+    resolver_status: str = "",
+    resolver_match_type: str = "",
+    canonical_title: str = "",
+    arxiv_id: str = "",
+    default_slug: str = "",
 ) -> None:
     print()
     print("=" * 60)
@@ -197,6 +208,16 @@ def _print_summary(
     print(f"P3PR_FILL_PACK: {fill_pack}")
     print(f"P3PR_LOCAL_PAGE: {local_page}")
     print(f"P3PR_PAGE_URL: {page_url}")
+    if resolver_status:
+        print(f"P3PR_RESOLVER_STATUS: {resolver_status}")
+    if resolver_match_type:
+        print(f"P3PR_RESOLVER_MATCH_TYPE: {resolver_match_type}")
+    if canonical_title:
+        print(f"P3PR_CANONICAL_TITLE: {canonical_title}")
+    if arxiv_id:
+        print(f"P3PR_ARXIV_ID: {arxiv_id}")
+    if default_slug:
+        print(f"P3PR_DEFAULT_SLUG: {default_slug}")
     print(f"P3PR_NEXT_ACTION: {next_action}")
     print("=" * 60)
 
@@ -263,10 +284,19 @@ def handle_arxiv(args) -> int:
     arxiv_id = _extract_id(raw) or raw
     abs_url = f"https://arxiv.org/abs/{arxiv_id}"
     pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
-    slug = args.slug or _slugify(f"arxiv-{arxiv_id}", prefix="arxiv-")
+    # v0.2.6: also try the shared resolver for canonical title / arxiv id
+    hint = _resolve_hint(raw) or _resolve_hint(arxiv_id)
+    resolver_status = (hint or {}).get("_resolver_status", "not_found")
+    resolver_match_type = (hint or {}).get("_resolver_match_type", "none")
+    if args.slug:
+        slug = args.slug
+    elif hint and hint.get("arxiv_id"):
+        slug = _slugify(f"arxiv-{hint['arxiv_id']}", prefix="arxiv-")
+    else:
+        slug = _slugify(f"arxiv-{arxiv_id}", prefix="arxiv-")
     root = _make_run_dir(output_root=args.output_root, slug=slug)
     (root / "input" / "input.md").write_text(
-        f"# arXiv input\n\n- arg: `{raw}`\n- arXiv id: `{arxiv_id}`\n- abs: {abs_url}\n- pdf: {pdf_url}\n",
+        f"# arXiv input\n\n- arg: `{raw}`\n- arXiv id: `{arxiv_id}`\n- abs: {abs_url}\n- pdf: {pdf_url}\n- resolver_status: `{resolver_status}`\n- resolver_match_type: `{resolver_match_type}`\n",
         encoding="utf-8",
     )
 
@@ -299,20 +329,35 @@ def handle_arxiv(args) -> int:
         reading_mode=reading_mode,
         slug=slug,
         run_dir=root,
-        title=args.title or arxiv_id,
-        arxiv_id=arxiv_id,
-        paper_url=abs_url,
+        title=args.title or (hint or {}).get("title") or arxiv_id,
+        arxiv_id=(hint or {}).get("arxiv_id") or arxiv_id,
+        paper_url=(hint or {}).get("url") or abs_url,
         extra_note=extraction_status,
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=(hint or {}).get("title") or "",
+        default_slug=slug,
     )
 
 
 def handle_title(args) -> int:
     title = args.arg
     hint = _resolve_hint(title)
-    slug = args.slug or _slugify(title, prefix="title-")
+    resolver_status = (hint or {}).get("_resolver_status", "not_found")
+    resolver_match_type = (hint or {}).get("_resolver_match_type", "none")
+    # Prefer hint's default_slug when user did not pass --slug
+    if args.slug:
+        slug = args.slug
+    else:
+        if hint and hint.get("arxiv_id"):
+            slug = _slugify(f"arxiv-{hint['arxiv_id']}", prefix="arxiv-")
+        elif hint and (hint or {}).get("_resolver_paper_id"):
+            slug = hint["_resolver_paper_id"]
+        else:
+            slug = _slugify(title, prefix="title-")
     root = _make_run_dir(output_root=args.output_root, slug=slug)
     (root / "input" / "input.md").write_text(
-        f"# title input\n\n- title: `{title}`\n- hint matched: `{bool(hint)}`\n",
+        f"# title input\n\n- title: `{title}`\n- hint matched: `{bool(hint)}`\n- resolver_status: `{resolver_status}`\n- resolver_match_type: `{resolver_match_type}`\n",
         encoding="utf-8",
     )
 
@@ -336,7 +381,14 @@ def handle_title(args) -> int:
         title=args.title or (hint or {}).get("title") or title,
         arxiv_id=arxiv_id,
         paper_url=paper_url,
-        extra_note=f"hint matched: {bool(hint)}",
+        extra_note=(
+            f"hint matched: {bool(hint)}; resolver_status={resolver_status}; "
+            f"match_type={resolver_match_type}; canonical_title={(hint or {}).get('title')}"
+        ),
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=(hint or {}).get("title") or "",
+        default_slug=slug,
     )
 
 
@@ -346,10 +398,19 @@ def handle_abstract(args) -> int:
         print(f"[error] abstract file does not exist: {path}", file=sys.stderr)
         return 2
     text = path.read_text(encoding="utf-8", errors="replace")
-    slug = args.slug or _slugify(f"abstract-{path.stem}", prefix="abstract-")
+    # v0.2.6: also try the shared resolver against the abstract text
+    hint = _resolve_hint(text[:400])
+    resolver_status = (hint or {}).get("_resolver_status", "not_found")
+    resolver_match_type = (hint or {}).get("_resolver_match_type", "none")
+    if args.slug:
+        slug = args.slug
+    elif hint and hint.get("arxiv_id"):
+        slug = _slugify(f"arxiv-{hint['arxiv_id']}", prefix="arxiv-")
+    else:
+        slug = _slugify(f"abstract-{path.stem}", prefix="abstract-")
     root = _make_run_dir(output_root=args.output_root, slug=slug)
     (root / "input" / "input.md").write_text(
-        f"# abstract input\n\n- source: `{path}`\n- bytes: {path.stat().st_size}\n- excerpt (first 400 chars):\n\n```\n{text[:400]}\n```\n",
+        f"# abstract input\n\n- source: `{path}`\n- bytes: {path.stat().st_size}\n- excerpt (first 400 chars):\n\n```\n{text[:400]}\n```\n- resolver_status: `{resolver_status}`\n- resolver_match_type: `{resolver_match_type}`\n",
         encoding="utf-8",
     )
 
@@ -359,8 +420,8 @@ def handle_abstract(args) -> int:
     elif args.partial:
         reading_mode = "partial_text"
 
-    arxiv_id = _extract_arxiv_id_from_transcript(text)
-    paper_url = f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else None
+    arxiv_id = (hint or {}).get("arxiv_id") or _extract_arxiv_id_from_transcript(text)
+    paper_url = (hint or {}).get("url") or (f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else None)
     return _finalise(
         args,
         input_text=f"abstract excerpt of {path.name}",
@@ -368,10 +429,14 @@ def handle_abstract(args) -> int:
         reading_mode=reading_mode,
         slug=slug,
         run_dir=root,
-        title=args.title or (f"arXiv:{arxiv_id}" if arxiv_id else path.stem),
+        title=args.title or (hint or {}).get("title") or (f"arXiv:{arxiv_id}" if arxiv_id else path.stem),
         arxiv_id=arxiv_id,
         paper_url=paper_url,
         extra_note="abstract-only by default; Pass 2/3 will not be auto-filled",
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=(hint or {}).get("title") or "",
+        default_slug=slug,
     )
 
 
@@ -381,10 +446,19 @@ def handle_screenshot(args) -> int:
         print(f"[error] screenshot transcript does not exist: {path}", file=sys.stderr)
         return 2
     text = path.read_text(encoding="utf-8", errors="replace")
-    slug = args.slug or _slugify(f"screenshot-{path.stem}", prefix="screenshot-")
+    # v0.2.6: also try the shared resolver against the transcript
+    hint = _resolve_hint(text[:400])
+    resolver_status = (hint or {}).get("_resolver_status", "not_found")
+    resolver_match_type = (hint or {}).get("_resolver_match_type", "none")
+    if args.slug:
+        slug = args.slug
+    elif hint and hint.get("arxiv_id"):
+        slug = _slugify(f"arxiv-{hint['arxiv_id']}", prefix="arxiv-")
+    else:
+        slug = _slugify(f"screenshot-{path.stem}", prefix="screenshot-")
     root = _make_run_dir(output_root=args.output_root, slug=slug)
     (root / "input" / "input.md").write_text(
-        f"# screenshot transcript input\n\n- source: `{path}`\n- bytes: {path.stat().st_size}\n- first 400 chars:\n\n```\n{text[:400]}\n```\n",
+        f"# screenshot transcript input\n\n- source: `{path}`\n- bytes: {path.stat().st_size}\n- first 400 chars:\n\n```\n{text[:400]}\n```\n- resolver_status: `{resolver_status}`\n- resolver_match_type: `{resolver_match_type}`\n",
         encoding="utf-8",
     )
 
@@ -396,8 +470,8 @@ def handle_screenshot(args) -> int:
     elif args.abstract_only:
         reading_mode = "abstract_only"
 
-    arxiv_id = _extract_arxiv_id_from_transcript(text)
-    paper_url = f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else None
+    arxiv_id = (hint or {}).get("arxiv_id") or _extract_arxiv_id_from_transcript(text)
+    paper_url = (hint or {}).get("url") or (f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else None)
     note = (
         f"transcript length: {len(text)} chars; "
         + (f"detected arXiv id: {arxiv_id}. Re-run with `./p3pr arxiv {arxiv_id} --full` to get a full reading." if arxiv_id else "no arXiv id detected in transcript")
@@ -409,20 +483,34 @@ def handle_screenshot(args) -> int:
         reading_mode=reading_mode,
         slug=slug,
         run_dir=root,
-        title=args.title or (f"arXiv:{arxiv_id}" if arxiv_id else path.stem),
+        title=args.title or (hint or {}).get("title") or (f"arXiv:{arxiv_id}" if arxiv_id else path.stem),
         arxiv_id=arxiv_id,
         paper_url=paper_url,
         extra_note=note,
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=(hint or {}).get("title") or "",
+        default_slug=slug,
     )
 
 
 def handle_repo(args) -> int:
     url = args.arg
     hint = _resolve_hint(url)
-    slug = args.slug or _slugify(f"repo-{url.rsplit('/', 1)[-1]}", prefix="repo-")
+    resolver_status = (hint or {}).get("_resolver_status", "not_found")
+    resolver_match_type = (hint or {}).get("_resolver_match_type", "none")
+    if args.slug:
+        slug = args.slug
+    else:
+        if hint and hint.get("arxiv_id"):
+            slug = _slugify(f"arxiv-{hint['arxiv_id']}", prefix="arxiv-")
+        elif hint and (hint or {}).get("_resolver_paper_id"):
+            slug = hint["_resolver_paper_id"]
+        else:
+            slug = _slugify(f"repo-{url.rsplit('/', 1)[-1]}", prefix="repo-")
     root = _make_run_dir(output_root=args.output_root, slug=slug)
     (root / "input" / "input.md").write_text(
-        f"# repo input\n\n- url: `{url}`\n- hint matched: `{bool(hint)}`\n",
+        f"# repo input\n\n- url: `{url}`\n- hint matched: `{bool(hint)}`\n- resolver_status: `{resolver_status}`\n- resolver_match_type: `{resolver_match_type}`\n",
         encoding="utf-8",
     )
 
@@ -444,7 +532,14 @@ def handle_repo(args) -> int:
         title=args.title or (hint or {}).get("title") or url,
         arxiv_id=arxiv_id,
         paper_url=paper_url,
-        extra_note=f"hint matched: {bool(hint)}",
+        extra_note=(
+            f"hint matched: {bool(hint)}; resolver_status={resolver_status}; "
+            f"match_type={resolver_match_type}; canonical_title={(hint or {}).get('title')}"
+        ),
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=(hint or {}).get("title") or "",
+        default_slug=slug,
     )
 
 
@@ -519,6 +614,10 @@ def _finalise(
     arxiv_id: str | None,
     paper_url: str | None,
     extra_note: str,
+    resolver_status: str = "",
+    resolver_match_type: str = "",
+    canonical_title: str = "",
+    default_slug: str = "",
 ) -> int:
     print(f"[info] {extra_note}")
     print(f"[info] run dir: {run_dir}")
@@ -535,6 +634,11 @@ def _finalise(
             local_page=str(run_dir / "paper-reading-output" / "index.html"),
             page_url="(publish skipped in --dry-run)",
             next_action="remove --dry-run to actually run the pipeline",
+            resolver_status=resolver_status,
+            resolver_match_type=resolver_match_type,
+            canonical_title=canonical_title or (title or ""),
+            arxiv_id=arxiv_id or "",
+            default_slug=default_slug or slug,
         )
         return 0
 
@@ -569,6 +673,11 @@ def _finalise(
             local_page="",
             page_url="",
             next_action=f"runner exited {rc}; check fill-pack and re-run",
+            resolver_status=resolver_status,
+            resolver_match_type=resolver_match_type,
+            canonical_title=canonical_title or (title or ""),
+            arxiv_id=arxiv_id or "",
+            default_slug=default_slug or slug,
         )
         return rc if rc in (1, 2) else 1
 
@@ -604,6 +713,11 @@ def _finalise(
                 local_page=str(page_path),
                 page_url="",
                 next_action="Fill the draft (follow fill-pack), rerun `./p3pr ... --no-publish` until quality gate passes, then re-publish. Or pass --allow-draft-publish to publish the draft as-is.",
+                resolver_status=resolver_status,
+                resolver_match_type=resolver_match_type,
+                canonical_title=canonical_title or (title or ""),
+                arxiv_id=arxiv_id or "",
+                default_slug=slug,
             )
             return 1
         # Build publish argv
@@ -631,6 +745,11 @@ def _finalise(
                 local_page=str(page_path),
                 page_url="",
                 next_action="publish failed; check gh login / network / branch protection",
+                resolver_status=resolver_status,
+                resolver_match_type=resolver_match_type,
+                canonical_title=canonical_title or (title or ""),
+                arxiv_id=arxiv_id or "",
+                default_slug=slug,
             )
             return 3
         page_url = f"https://{args.repo.split('/')[0]}.github.io/{args.repo.split('/')[1]}/{slug}/"
@@ -658,6 +777,11 @@ def _finalise(
         local_page=str(page_path) if page_path.exists() else "",
         page_url=page_url,
         next_action=next_action,
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=canonical_title or (title or ""),
+        arxiv_id=arxiv_id or "",
+        default_slug=slug,
     )
     return 0 if status in ("PASS", "WARN") else 1
 

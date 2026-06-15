@@ -1,0 +1,140 @@
+{
+  "schema_version": "0.2.6",
+  "description": "Shared resolver hints for paper-three-pass-reader. Used by p3pr CLI, runner, tests, and docs. Single source of truth — do NOT duplicate these hints elsewhere.",
+  "papers": [
+    {
+      "id": "attention-is-all-you-need",
+      "canonical_title": "Attention Is All You Need",
+      "aliases": [
+        "attention is all you need",
+        "transformer paper",
+        "transformers"
+      ],
+      "authors": ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar", "Jakob Uszkoreit", "Llion Jones", "Aidan N. Gomez", "Lukasz Kaiser", "Illia Polosukhin"],
+      "year": "2017",
+      "venue": "NeurIPS 2017",
+      "arxiv_id": "1706.03762",
+      "paper_url": "https://arxiv.org/abs/1706.03762",
+      "pdf_url": "https://arxiv.org/pdf/1706.03762",
+      "repo_urls": [],
+      "default_slug": "attention-is-all-you-need",
+      "field": "NLP / sequence transduction",
+      "notes": "Introduced the Transformer architecture based solely on attention mechanisms."
+    },
+    {
+      "id": "bert",
+      "canonical_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "aliases": [
+        "bert",
+        "bert pretraining",
+        "bidirectional encoder representations from transformers"
+      ],
+      "authors": ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
+      "year": "2018",
+      "venue": "NAACL 2019",
+      "arxiv_id": "1810.04805",
+      "paper_url": "https://arxiv.org/abs/1810.04805",
+      "pdf_url": "https://arxiv.org/pdf/1810.04805",
+      "repo_urls": [
+        "https://github.com/google-research/bert"
+      ],
+      "default_slug": "bert",
+      "field": "NLP / pre-trained language models",
+      "notes": "Bidirectional Encoder Representations from Transformers (BERT) pre-training paper."
+    },
+    {
+      "id": "how-to-read-a-paper",
+      "canonical_title": "How to Read a Paper",
+      "aliases": [
+        "how to read a paper",
+        "keshav how to read a paper",
+        "s keshav reading paper",
+        "three pass method"
+      ],
+      "authors": ["S. Keshav"],
+      "year": "2007",
+      "venue": "ACM SIGCOMM Computer Communication Review",
+      "arxiv_id": null,
+      "paper_url": null,
+      "pdf_url": null,
+      "repo_urls": [],
+      "default_slug": "how-to-read-a-paper",
+      "field": "Research methodology / paper reading",
+      "notes": "S. Keshav's foundational three-pass paper reading method. This paper is the inspiration for the three-pass reading skill itself; the sample example in the skill is hand-curated, not auto-fetched.",
+      "synthesized_only": true
+    },
+    {
+      "id": "second-me",
+      "canonical_title": "AI-native Memory 2.0: Second Me",
+      "aliases": [
+        "second me",
+        "ai native memory 2.0",
+        "ai-native memory",
+        "secondme",
+        "mindhive second me",
+        "wei second me"
+      ],
+      "authors": ["Jiale Wei", "Xiang Ying", "Tao Gao", "Fangyi Bao", "Felix Tao", "Jingbo Shang"],
+      "year": "2025",
+      "venue": "Preprint (under review)",
+      "arxiv_id": "2503.08102",
+      "paper_url": "https://arxiv.org/abs/2503.08102",
+      "pdf_url": "https://arxiv.org/pdf/2503.08102",
+      "repo_urls": [
+        "https://github.com/mindhive-project/Second-Me"
+      ],
+      "default_slug": "second-me-2503-08102",
+      "field": "LLM agents / personalized memory",
+      "notes": "Mindverse second-me paper with L0/L1/L2 hierarchical memory architecture."
+    },
+    {
+      "id": "paper-three-pass-reader-skill",
+      "canonical_title": "paper-three-pass-reader skill",
+      "aliases": [
+        "paper three pass reader skill",
+        "p3pr",
+        "paper three pass reader",
+        "three pass reader skill"
+      ],
+      "authors": ["Conan Xin"],
+      "year": "2026",
+      "venue": "GitHub repository",
+      "arxiv_id": null,
+      "paper_url": "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill",
+      "pdf_url": null,
+      "repo_urls": [
+        "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill"
+      ],
+      "default_slug": "paper-three-pass-reader-skill",
+      "field": "Research tooling / paper reading skills",
+      "notes": "The paper-three-pass-reader skill repository itself. This is the self-referential hint that allows the skill to be invoked from its own GitHub URL."
+    }
+  ],
+  "repo_hints": [
+    {
+      "repo_url": "https://github.com/google-research/bert",
+      "paper_id": "bert",
+      "match_patterns": [
+        "google-research/bert",
+        "github.com/google-research/bert"
+      ]
+    },
+    {
+      "repo_url": "https://github.com/mindhive-project/Second-Me",
+      "paper_id": "second-me",
+      "match_patterns": [
+        "mindhive-project/Second-Me",
+        "mindhive-project/second-me",
+        "github.com/mindhive-project/Second-Me"
+      ]
+    },
+    {
+      "repo_url": "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill",
+      "paper_id": "paper-three-pass-reader-skill",
+      "match_patterns": [
+        "conanxin/openclaw-paper-three-pass-reader-skill",
+        "github.com/conanxin/openclaw-paper-three-pass-reader-skill"
+      ]
+    }
+  ]
+}

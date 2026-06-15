@@ -57,6 +57,16 @@ from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 
+# v0.2.6: shared resolver hints live in resolver_hints.py + data/resolver_hints.json.
+# Keep RESOLVER_HINTS as a backwards-compatible alias built from the shared data so
+# downstream code that imports it (including historical tests) still works.
+import os as _os
+import re as _re  # noqa: F401  -- keep for legacy callers
+_HERE_DIR = _os.path.dirname(_os.path.abspath(__file__))
+if _HERE_DIR not in sys.path:
+    sys.path.insert(0, _HERE_DIR)
+from resolver_hints import load_hints as _rh_load_hints  # noqa: E402
+
 HERE = Path(__file__).resolve().parent
 SKILL_ROOT = HERE.parent
 RENDER_SCRIPT = HERE / "render_page.py"
@@ -70,82 +80,107 @@ VALID_INPUT_KINDS = {
 VALID_READING_MODES = {"full_text", "partial_text", "abstract_only", "screenshot_only"}
 VALID_DECISIONS = {"CONTINUE_FULL", "CONTINUE_PARTIAL", "STOP", "SEEK_REFERENCES_FIRST"}
 
-# Built-in resolver hints — small, hand-curated. NO network search.
-RESOLVER_HINTS = {
-    "attention is all you need": {
-        "title": "Attention Is All You Need",
-        "authors": ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar", "Jakob Uszkoreit",
-                    "Llion Jones", "Aidan N. Gomez", "Lukasz Kaiser", "Illia Polosukhin"],
-        "year": 2017,
-        "venue": "31st Conference on Neural Information Processing Systems (NIPS 2017)",
-        "arxiv_id": "1706.03762",
-        "url": "https://arxiv.org/abs/1706.03762",
-        "field": "Machine learning / natural language processing",
-        "category": "Methods — sequence transduction architecture",
-        "default_reading_mode": "full_text",
-    },
-    "how to read a paper": {
-        "title": "How to Read a Paper",
-        "authors": ["S. Keshav"],
-        "year": 2007,
-        "venue": "SIGCOMM Computer Communication Review",
-        "arxiv_id": None,
-        "url": None,
-        "field": "Research methodology / scientific communication",
-        "category": "Methods / how-to essay",
-        "default_reading_mode": "abstract_only",
-    },
-    "bert: pre-training of deep bidirectional transformers for language understanding": {
-        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-        "authors": ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
-        "year": 2018,
-        "venue": "Google AI Language (preprint; later at NAACL 2019)",
-        "arxiv_id": "1810.04805",
-        "url": "https://arxiv.org/abs/1810.04805",
-        "field": "Natural language processing / representation learning",
-        "category": "Methods — pre-trained language model",
-        "default_reading_mode": "full_text",
-    },
-    "https://github.com/google-research/bert": {
-        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-        "authors": ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
-        "year": 2018,
-        "venue": "Google AI Language (preprint; later at NAACL 2019)",
-        "arxiv_id": "1810.04805",
-        "url": "https://arxiv.org/abs/1810.04805",
-        "field": "Natural language processing / representation learning",
-        "category": "Methods — pre-trained language model",
-        "default_reading_mode": "full_text",
-        "source_kind_override": "project_or_repo",
-    },
-    "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill": {
-        "title": "paper-three-pass-reader skill (this repo)",
-        "authors": ["Conan Xin"],
-        "year": 2026,
-        "venue": "GitHub (open-source skill)",
-        "arxiv_id": None,
-        "url": "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill",
-        "field": "Tools / research methodology",
-        "category": "Methods — paper-reading skill",
-        "default_reading_mode": "abstract_only",
-        "source_kind_override": "project_or_repo",
-    },
-}
+# Built-in resolver hints — v0.2.6 unified into data/resolver_hints.json.
+# Backwards-compatible: we now build the historical RESOLVER_HINTS dict from the
+# shared JSON, so existing code paths keep working but the source of truth is the
+# shared file. New code should use resolver_hints.resolve_any() directly.
+def _build_legacy_resolver_hints() -> "dict":
+    h = _rh_load_hints()
+    out: "dict" = {}
+    for p in h.get("papers", []):
+        if not isinstance(p, dict):
+            continue
+        canonical = p.get("canonical_title")
+        if not canonical:
+            continue
+        hint = {
+            "title": canonical,
+            "authors": p.get("authors") or [],
+            "year": int(p["year"]) if str(p.get("year", "")).isdigit() else p.get("year"),
+            "venue": p.get("venue"),
+            "arxiv_id": p.get("arxiv_id"),
+            "url": p.get("paper_url"),
+            "field": p.get("field"),
+            "category": p.get("field"),  # historical alias
+            "default_reading_mode": "full_text" if p.get("arxiv_id") else "abstract_only",
+        }
+        # Index by canonical title (lowercased)
+        out[canonical.lower()] = hint
+        # Index by alias (lowercased) so historical keys keep matching
+        for alias in p.get("aliases") or []:
+            if alias and alias.lower() not in out:
+                out[alias.lower()] = dict(hint)
+    # Add repo hints: key is the GitHub URL itself
+    for rh in h.get("repo_hints", []):
+        url = rh.get("repo_url")
+        pid = rh.get("paper_id")
+        if not url or not pid:
+            continue
+        # Find the paper for this repo
+        paper = next(
+            (p for p in h.get("papers", []) if isinstance(p, dict) and p.get("id") == pid),
+            None,
+        )
+        if not paper:
+            continue
+        out[url] = {
+            "title": paper.get("canonical_title"),
+            "authors": paper.get("authors") or [],
+            "year": int(paper["year"]) if str(paper.get("year", "")).isdigit() else paper.get("year"),
+            "venue": paper.get("venue"),
+            "arxiv_id": paper.get("arxiv_id"),
+            "url": paper.get("paper_url"),
+            "field": paper.get("field"),
+            "category": paper.get("field"),
+            "default_reading_mode": "full_text" if paper.get("arxiv_id") else "abstract_only",
+            "source_kind_override": "project_or_repo",
+        }
+    return out
+
+
+RESOLVER_HINTS = _build_legacy_resolver_hints()
 
 
 def _resolve_hint(text: str, requested_kind: str):
-    """Look up canonical hints. Returns (hint_dict or None, normalized_key)."""
+    """Look up canonical hints. Returns (hint_dict or None, normalized_key).
+
+    v0.2.6: prefer the shared resolver (which supports title aliases, arXiv
+    extraction, and repo URL fragment matching); fall back to the legacy
+    substring matcher for backwards compatibility.
+    """
+    if not text:
+        return None, ""
     norm = text.strip().lower()
-    # Direct lookup
+
+    # Prefer shared resolver (handles aliases, arXiv, repo fragments)
+    try:
+        from resolver_hints import resolve_any as _rh_resolve_any  # noqa: WPS433
+        r = _rh_resolve_any(text, requested_kind or "ambiguous_clue")
+        paper = r.get("paper") or {}
+        if paper and r.get("status") in ("matched",):
+            return {
+                "title": paper.get("canonical_title"),
+                "authors": paper.get("authors") or [],
+                "year": int(paper["year"]) if str(paper.get("year", "")).isdigit() else paper.get("year"),
+                "venue": paper.get("venue"),
+                "arxiv_id": paper.get("arxiv_id"),
+                "url": paper.get("paper_url"),
+                "field": paper.get("field"),
+                "category": paper.get("field"),
+                "default_reading_mode": "full_text" if paper.get("arxiv_id") else "abstract_only",
+                "source_kind_override": "project_or_repo" if "github.com" in (text or "").lower() else None,
+            }, norm
+    except Exception:  # noqa: BLE001
+        pass
+
+    # Fallback: legacy substring matcher over RESOLVER_HINTS
     if norm in RESOLVER_HINTS:
         return RESOLVER_HINTS[norm], norm
-    # URL lookup
     if text.startswith("http://") or text.startswith("https://"):
         if text in RESOLVER_HINTS:
             return RESOLVER_HINTS[text], norm
         if text.rstrip("/") in RESOLVER_HINTS:
             return RESOLVER_HINTS[text.rstrip("/")], norm
-    # Substring / word overlap for titles (e.g. "BERT" → BERT hint)
     for key, hint in RESOLVER_HINTS.items():
         if key.startswith("http"):
             continue

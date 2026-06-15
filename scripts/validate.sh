@@ -696,6 +696,153 @@ for weak_slug in cli-screenshot-smoke cli-abstract-smoke; do
   fi
 done
 
+# 13. v0.2.6 shared resolver hints unification
+step 13 "v0.2.6 shared resolver hints"
+
+# 13a. resolver_hints.json exists, is valid JSON, and includes the 4 anchor papers.
+HINTS_JSON="$SKILL_DIR/data/resolver_hints.json"
+if [[ -f "$HINTS_JSON" ]]; then
+  ok "resolver_hints.json exists"
+else
+  bad "resolver_hints.json missing: ${HINTS_JSON#$ROOT/}"
+fi
+if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$HINTS_JSON" >/dev/null 2>&1; then
+  ok "resolver_hints.json parses"
+else
+  bad "resolver_hints.json invalid JSON"
+fi
+for pid in attention-is-all-you-need bert how-to-read-a-paper second-me paper-three-pass-reader-skill; do
+  if python3 -c "import json,sys; d=json.load(open(sys.argv[1])); ids=[p.get('id') for p in d.get('papers',[])]; sys.exit(0 if '$pid' in ids else 1)" "$HINTS_JSON" >/dev/null 2>&1; then
+    ok "resolver_hints.json has paper: $pid"
+  else
+    bad "resolver_hints.json missing paper: $pid"
+  fi
+done
+
+# 13b. resolver_hints.py exists and loads.
+if [[ -f "$SKILL_DIR/scripts/resolver_hints.py" ]]; then
+  ok "resolver_hints.py exists"
+else
+  bad "resolver_hints.py missing"
+fi
+if python3 -c "import sys; sys.path.insert(0,'$SKILL_DIR/scripts'); import resolver_hints; rh=resolver_hints.load_hints(); assert rh.get('papers'), 'no papers'" >/dev/null 2>&1; then
+  ok "resolver_hints.load_hints() returns papers"
+else
+  bad "resolver_hints.load_hints() broken"
+fi
+
+# 13c. resolve_paper_hint.py CLI works for title/arxiv/repo.
+for case in \
+    "title|Attention Is All You Need|attention-is-all-you-need" \
+    "repo|https://github.com/google-research/bert|bert" \
+    "arxiv|2503.08102|second-me" \
+    "any|second me|second-me" \
+    ; do
+  IFS="|" read -r kind val expect <<<"$case"
+  out="$(python3 "$SKILL_DIR/scripts/resolve_paper_hint.py" "$kind" "$val" 2>/dev/null || true)"
+  pid="$(printf '%s' "$out" | python3 -c "import json,sys; d=json.load(sys.stdin); print((d.get('paper') or {}).get('id',''))" 2>/dev/null || true)"
+  if [[ "$pid" == "$expect" ]]; then
+    ok "resolve_paper_hint $kind '$val' -> $pid"
+  else
+    bad "resolve_paper_hint $kind '$val' -> '$pid' (expected $expect)"
+  fi
+done
+
+# 13d. Unknown input returns not_found / ambiguous without crashing.
+UNK_OUT="$(python3 "$SKILL_DIR/scripts/resolve_paper_hint.py" title "completely unknown paper xyz" 2>&1 || true)"
+if echo "$UNK_OUT" | grep -q '"status": "not_found"'; then
+  ok "resolve_paper_hint unknown -> not_found"
+else
+  bad "resolve_paper_hint unknown did not return not_found"
+fi
+
+# 13e. Aliases work (transformers / Second Me case-insensitive).
+ALIAS_OUT="$(python3 "$SKILL_DIR/scripts/resolve_paper_hint.py" title "transformers" 2>&1 || true)"
+if echo "$ALIAS_OUT" | grep -q '"id": "attention-is-all-you-need"'; then
+  ok "resolver_hints alias 'transformers' -> attention-is-all-you-need"
+else
+  bad "resolver_hints alias 'transformers' did not match"
+fi
+
+# 13f. p3pr.py no longer has a local HINTS dict.
+if ! grep -q '^HINTS = {' "$SKILL_DIR/scripts/p3pr.py"; then
+  ok "p3pr.py no longer has local HINTS dict"
+else
+  bad "p3pr.py still has local HINTS dict"
+fi
+
+# 13g. p3pr.py imports from resolver_hints.
+if grep -q 'from resolver_hints import' "$SKILL_DIR/scripts/p3pr.py"; then
+  ok "p3pr.py imports from resolver_hints"
+else
+  bad "p3pr.py does not import from resolver_hints"
+fi
+
+# 13h. run_paper_reading.py imports from resolver_hints.
+if grep -q 'from resolver_hints import' "$SKILL_DIR/scripts/run_paper_reading.py"; then
+  ok "run_paper_reading.py imports from resolver_hints"
+else
+  bad "run_paper_reading.py does not import from resolver_hints"
+fi
+
+# 13i. runner RESOLVER_HINTS dict still has the historical keys (back-compat).
+RH_LEN="$(python3 -c "import sys; sys.path.insert(0,'$SKILL_DIR/scripts'); import run_paper_reading as r; print(len(r.RESOLVER_HINTS))")"
+if [[ "$RH_LEN" -ge 8 ]]; then
+  ok "runner RESOLVER_HINTS back-compat dict has $RH_LEN keys (>=8)"
+else
+  bad "runner RESOLVER_HINTS back-compat dict too small: $RH_LEN"
+fi
+
+# 13j. runner RESOLVER_HINTS resolves historical keys.
+if python3 -c "import sys; sys.path.insert(0,'$SKILL_DIR/scripts'); import run_paper_reading as r; assert r.RESOLVER_HINTS['attention is all you need']['arxiv_id']=='1706.03762'; assert r.RESOLVER_HINTS['https://github.com/google-research/bert']['arxiv_id']=='1810.04805'; assert r.RESOLVER_HINTS['how to read a paper']['default_reading_mode']=='abstract_only'" >/dev/null 2>&1; then
+  ok "runner historical RESOLVER_HINTS keys still resolve correctly"
+else
+  bad "runner historical RESOLVER_HINTS keys do not resolve correctly"
+fi
+
+# 13k. p3pr dry-run summary now includes resolver details.
+DRY_V26="$(cd "$ROOT" && ./p3pr arxiv 2503.08102 --zh --full --publish --dry-run 2>&1 || true)"
+for needle in "P3PR_RESOLVER_STATUS" "P3PR_RESOLVER_MATCH_TYPE" "P3PR_CANONICAL_TITLE" "P3PR_ARXIV_ID" "P3PR_DEFAULT_SLUG"; do
+  if echo "$DRY_V26" | grep -q "$needle"; then
+    ok "p3pr dry-run prints: $needle"
+  else
+    bad "p3pr dry-run missing: $needle"
+  fi
+done
+
+# 13l. p3pr title dry-run auto-derives canonical title from hint.
+DRY_V26_TITLE="$(cd "$ROOT" && ./p3pr title "Attention Is All You Need" --zh --full --publish --dry-run 2>&1 || true)"
+if echo "$DRY_V26_TITLE" | grep -q "P3PR_RESOLVER_MATCH_TYPE: title" \
+   && echo "$DRY_V26_TITLE" | grep -q "P3PR_ARXIV_ID: 1706.03762"; then
+  ok "p3pr title dry-run auto-resolves to arxiv 1706.03762"
+else
+  bad "p3pr title dry-run did not auto-resolve"
+fi
+
+# 13m. p3pr repo dry-run auto-resolves BERT hint.
+DRY_V26_REPO="$(cd "$ROOT" && ./p3pr repo https://github.com/google-research/bert --zh --full --publish --dry-run 2>&1 || true)"
+if echo "$DRY_V26_REPO" | grep -q "P3PR_RESOLVER_MATCH_TYPE: repo" \
+   && echo "$DRY_V26_REPO" | grep -q "P3PR_ARXIV_ID: 1810.04805"; then
+  ok "p3pr repo dry-run auto-resolves BERT to arxiv 1810.04805"
+else
+  bad "p3pr repo dry-run did not auto-resolve BERT"
+fi
+
+# 13n. p3pr screenshot smoke re-run still works (auto-detects arXiv from transcript).
+rm -rf /tmp/p3pr-v26-screenshot
+if cd "$ROOT" && ./p3pr screenshot runs/p3pr-cli-smoke-20260615/input/screenshot.md \
+    --zh --screenshot-only --slug cli-screenshot-smoke-v26 \
+    --output-root /tmp/p3pr-v26-screenshot --no-publish >/dev/null 2>&1; then
+  if grep -q "arxiv_id" /tmp/p3pr-v26-screenshot/cli-screenshot-smoke-v26/work/paper_reading.json 2>/dev/null \
+     && grep -q '"2503.08102"' /tmp/p3pr-v26-screenshot/cli-screenshot-smoke-v26/work/paper_reading.json; then
+    ok "p3pr screenshot v0.2.6 smoke auto-detected arXiv 2503.08102"
+  else
+    bad "p3pr screenshot v0.2.6 smoke did not auto-detect arXiv"
+  fi
+else
+  bad "p3pr screenshot v0.2.6 smoke failed"
+fi
+
 # Summary
 echo
 echo "================================================="
