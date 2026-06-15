@@ -150,3 +150,9 @@ The CLI (`p3pr.py` at `skills/paper-three-pass-reader/scripts/p3pr.py`) wraps th
 - `--publish` + `--allow-draft-publish` + quality-gate FAIL → publishes anyway (status `WARN`)
 
 When the CLI's quality gate is the failure, the printed `P3PR_NEXT_ACTION` is the recipe from this doc's "How to fix common failures" table.
+
+
+## Cross-links
+
+- Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
+- Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.

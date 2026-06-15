@@ -362,3 +362,9 @@ The CLI chains everything in this doc:
 5. Runs `publish_output_to_github.sh`.
 
 Every run ends with a fixed-format `P3PR_*` summary. See [`ONE_LINE_CLI.md`](ONE_LINE_CLI.md).
+
+
+## Cross-links
+
+- Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
+- Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.

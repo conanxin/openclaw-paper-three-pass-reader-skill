@@ -169,3 +169,9 @@ The audit gained a `--quality-gate` flag. When set on a `zh-CN` draft, the audit
 The structural audit and quality gate are independent — both can run, both can pass, both can fail. The combined exit code is the OR of the two.
 
 When the draft is `en`, the `--quality-gate` flag is silently ignored.
+
+
+## Cross-links
+
+- Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
+- Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.

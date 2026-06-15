@@ -1,0 +1,242 @@
+{
+  "language": "en",
+  "reading_mode": "partial_text",
+  "generated_at": "2026-06-15T09:17:48Z",
+  "summary": {
+    "present": 31,
+    "draft": 0,
+    "missing": 7,
+    "unavailable_due_to_reading_mode": 0,
+    "needs_verification": 0
+  },
+  "items": [
+    {
+      "field": "paper_metadata.title",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "paper_metadata.authors",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "paper_metadata.year",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "paper_metadata.identifiers.arxiv_id",
+      "required": false,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "paper_metadata.reading_mode",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "intake_quality.confidence",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "intake_quality.source_resolution",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "summaries.one_sentence",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "summaries.three_sentence",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "summaries.ten_sentence",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "five_cs.category",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "five_cs.context",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "five_cs.correctness",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "five_cs.contributions",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "five_cs.clarity",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass1.bird_eye_notes",
+      "required": false,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "pass1.decision",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass2.main_ideas",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass2.method_summary",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass2.figure_table_notes",
+      "required": false,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "pass2.key_references",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "claims_evidence_map",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "figures_tables",
+      "required": false,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "pass3.method_reconstruction",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass3.critical_review",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass3.hidden_assumptions",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "pass3.limitations",
+      "required": true,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "pass3.future_work",
+      "required": false,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "pass3.application_notes",
+      "required": false,
+      "status": "missing",
+      "needs_verification": false
+    },
+    {
+      "field": "reproduction_plan.dataset",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "reproduction_plan.baseline",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "reproduction_plan.hardware",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "reproduction_plan.steps",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "reproduction_plan.sanity_checks",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "reproduction_plan.success_criteria",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "glossary",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "open_questions",
+      "required": false,
+      "status": "present",
+      "needs_verification": false
+    },
+    {
+      "field": "final_checklist",
+      "required": true,
+      "status": "present",
+      "needs_verification": false
+    }
+  ]
+}

@@ -43,6 +43,13 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
+# v0.2.8 — pull structured source_resolution from the shared utility
+sys.path.insert(0, str(Path(__file__).parent))
+from source_resolution_utils import (  # type: ignore[import-not-found]
+    is_structured_source_resolution as _is_structured_sr,
+    summarize_source_resolution as _summarize_sr,
+)
+
 VALID_EVIDENCE_LABELS = {
     "[Paper evidence]",
     "[Figure/Table evidence]",
@@ -336,6 +343,54 @@ def run_quality_gate(doc: dict, args) -> dict:
     else:
         status = "PASS"
 
+    # 10. v0.2.8 — source_resolution check (zh-CN target).
+    #    Sits at WARN level and never overwrites content quality
+    #    errors; the gate status is set by section 9 above, this block
+    #    only appends source_resolution_check to the result and a
+    #    recommendation if the user should re-confirm the paper.
+    sr_check: "OrderedDict[str, object]" = OrderedDict()
+    sr_check["structured"] = False
+    sr_check["legacy_fallback"] = False
+    sr_check["resolver_status"] = None
+    sr_check["warnings"] = []
+    sr_check["errors"] = []
+    top = doc.get("source_resolution")
+    sr_check["structured"] = bool(_is_structured_sr(top))
+    if not sr_check["structured"]:
+        iq0 = doc.get("intake_quality") or {}
+        sr_check["legacy_fallback"] = bool(iq0.get("source_resolution"))
+        if sr_check["legacy_fallback"]:
+            sr_check["warnings"].append(
+                "legacy intake_quality.source_resolution detected; "
+                "top-level structured source_resolution recommended"
+            )
+        else:
+            sr_check["warnings"].append(
+                "source_resolution is missing; top-level structured block recommended"
+            )
+    else:
+        s = _summarize_sr(doc)
+        sr_check["resolver_status"] = s.get("resolver_status")
+        if s.get("resolver_status") in ("error", "ambiguous_clue"):
+            sr_check["warnings"].append(
+                f"source_resolution.resolver_status={s.get('resolver_status')}; "
+                "ask the user to confirm the paper identity before publishing"
+            )
+        if s.get("resolver_status") == "error" and s.get("degraded"):
+            sr_check["warnings"].append(
+                f"source_resolution.degraded={s.get('degraded')}; "
+                "the run finished but the paper identity is not confirmed"
+            )
+        if not (s.get("matched_canonical_title") or s.get("matched_arxiv_id")):
+            sr_check["warnings"].append(
+                "source_resolution.matched_canonical_title and "
+                "matched_arxiv_id are both empty; please verify the paper"
+            )
+    # Source-resolution warnings must NOT fail the gate. They surface as
+    # recommendations, which do not affect status.
+    for w in sr_check["warnings"]:
+        recommendations.append(f"source_resolution_check: {w}")
+
     return OrderedDict([
         ("status", status),
         ("target_language", target_lang),
@@ -353,6 +408,7 @@ def run_quality_gate(doc: dict, args) -> dict:
             ("checklist_items", fc_count),
         ])),
         ("evidence_label_distribution", label_counts),
+        ("source_resolution_check", sr_check),
         ("errors", errors),
         ("warnings", warnings),
         ("recommendations", recommendations),

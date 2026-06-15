@@ -3,6 +3,23 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.8-alpha] — 2026-06-15
+
+### Added
+
+- **Source-resolution utility** — new `skills/paper-three-pass-reader/scripts/source_resolution_utils.py` is the single shared helper for consumers of the structured top-level `source_resolution` block. Exposes `is_structured_source_resolution`, `get_source_resolution`, `legacy_source_resolution_to_structured`, `summarize_source_resolution`, `validate_source_resolution`. stdlib-only.
+- **Renderer Resolver Trail section** — `templates/index.html` adds a new `#resolver-trail` card. Renders Resolver status, Match type, Confidence, Matched paper / id, Matched arXiv ID, Matched repo, Resolver source, Source resolution step, Candidate count, Top 3 candidates, a "Degraded fallback" badge and an error callout. Fully localised for zh-CN.
+- **Audit source-resolution validation** — `audit_paper_reading.audit` adds a `source_resolution` field to the OrderedDict result with `status / structured / legacy_fallback / warnings / errors / summary`. WARNs on legacy-only, WARNs on missing block (non-weak modes), WARNs on `matched` without identity, WARNs on missing confidence, FAILs on `error` with no degraded / warning marker.
+- **Fill-pack source-resolution checklist** — `fill-pack/00_README.md` (zh-CN and en) embeds a Source Resolution 摘要 block plus a Source Resolution Checklist the agent must tick off before Stage 0 closes.
+- **zh-CN quality gate source_resolution_check** — `quality_gate_zh_cn.run_quality_gate` adds a `source_resolution_check` field; warnings surface as recommendations and never fail the gate on their own.
+- **Documentation** — new `skills/paper-three-pass-reader/docs/SOURCE_RESOLUTION.md` is the canonical reference for the structured block, its consumers, and the helper API.
+
+### Notes
+
+- The top-level structured `source_resolution` block is canonical. The legacy `intake_quality.source_resolution` list is **kept** for back-compat with v0.2.5 samples; the shared utility upgrades it on the fly.
+- v0.2.7-alpha stays immutable; this release lands as v0.2.8-alpha.
+- Validation: 210/0 PASS (167 v0.2.5 baseline + 28 step 13 + 15 step 14 + 15 step 15 new checks).
+
 ## [v0.2.7-alpha] — 2026-06-15
 
 ### Added

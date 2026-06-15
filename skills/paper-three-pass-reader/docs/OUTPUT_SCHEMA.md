@@ -354,3 +354,9 @@ Stage-by-stage prompt guidance for downstream agents. Shape depends on language:
 - `zh-CN`: each stage is an object with `goal`, `allowed_inputs`, `forbidden`, `fields`, `evidence_labels`, `stop_condition`.
 - `en`: each stage is a string summary.
 
+
+
+## Cross-links
+
+- Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
+- Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.

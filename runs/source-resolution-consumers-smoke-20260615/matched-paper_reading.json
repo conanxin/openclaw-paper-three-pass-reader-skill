@@ -1,0 +1,208 @@
+{
+  "_about": "v0.2.8 — structured source_resolution matched sample. Mirrors the p3pr title smoke. Designed so render_page, audit, fill-pack, and quality_gate all see a structured top-level source_resolution block with resolver_status=matched.",
+  "schema_version": "0.1.0",
+  "target_language": "en",
+  "ui_language": "en",
+  "paper_metadata": {
+    "title": "Attention Is All You Need",
+    "authors": ["Vaswani", "Shazeer", "Parmar", "Uszkoreit", "Jones", "Gomez", "Kaiser", "Polosukhin"],
+    "year": 2017,
+    "venue": "NeurIPS",
+    "identifiers": {
+      "arxiv_id": "1706.03762",
+      "doi": null,
+      "paper_url": "https://arxiv.org/abs/1706.03762"
+    },
+    "slug": "attention-is-all-you-need-matched",
+    "reading_mode": "full_text",
+    "source_kind": "paper_title",
+    "default_slug": "attention-is-all-you-need"
+  },
+  "intake_quality": {
+    "input_kind": "paper_title",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [],
+    "ambiguities": [],
+    "warnings": [],
+    "source_resolution": [
+      "legacy list kept for back-compat with v0.2.5 samples"
+    ]
+  },
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_title.",
+      "Input string: 'Attention Is All You Need'.",
+      "Resolver source: skills/paper-three-pass-reader/data/resolver_hints.json (shared).",
+      "Resolver status: matched; match_type: title; confidence: high.",
+      "Matched paper id: attention-is-all-you-need.",
+      "Matched resolver hint: 'Attention Is All You Need' → Attention Is All You Need (arXiv 1706.03762)",
+      "Resolver step: cli overlay via p3pr paper_title subcommand."
+    ],
+    "hint_input": "Attention Is All You Need",
+    "resolver_source": "skills/paper-three-pass-reader/data/resolver_hints.json",
+    "resolver_helper": "skills/paper-three-pass-reader/scripts/resolver_hints.py",
+    "resolver_status": "matched",
+    "resolver_match_type": "title",
+    "confidence": "high",
+    "matched_paper_id": "attention-is-all-you-need",
+    "matched_canonical_title": "Attention Is All You Need",
+    "matched_arxiv_id": "1706.03762",
+    "matched_alias": null,
+    "matched_repo": null,
+    "candidates": [
+      {
+        "id": "attention-is-all-you-need",
+        "title": "Attention Is All You Need",
+        "arxiv": "1706.03762",
+        "confidence": "high"
+      }
+    ],
+    "source_resolution_step": "cli overlay via p3pr paper_title subcommand"
+  },
+  "candidate_papers": [
+    {
+      "id": "attention-is-all-you-need",
+      "title": "Attention Is All You Need",
+      "arxiv": "1706.03762"
+    }
+  ],
+  "summaries": {
+    "one_sentence": "Attention Is All You Need introduces the Transformer, a sequence model that relies entirely on self-attention and removes recurrence and convolutions.",
+    "three_sentence": [
+      "The Transformer uses multi-head scaled dot-product self-attention to model token relationships in parallel.",
+      "It removes recurrence and convolutions, enabling much faster training and better long-range modelling on translation and other tasks.",
+      "On WMT 2014 En-De and En-Fr translation the Transformer surpasses prior encoder-decoder baselines while using a fraction of the training compute."
+    ],
+    "ten_sentence": [
+      "The paper proposes the Transformer, a new sequence transduction architecture.",
+      "The core building block is multi-head scaled dot-product self-attention.",
+      "Self-attention allows every position to attend to every other position in O(1) sequential steps.",
+      "Encoder and decoder are stacks of identical layers with attention and position-wise feed-forward sub-layers.",
+      "Sinusoidal positional encodings inject order information.",
+      "Training uses Adam with a warmup-then-decay learning rate schedule.",
+      "Label smoothing is applied to the output projection.",
+      "On WMT 2014 En-De the base model reaches 27.5 BLEU and the big model 28.4 BLEU.",
+      "On WMT 2014 En-Fr the big model reaches 41.8 BLEU, a single-model state of the art at the time.",
+      "The architecture has since become the foundation of most large language models."
+    ]
+  },
+  "five_cs": {
+    "category": "Deep Learning / Sequence Modeling",
+    "context": "Sequence transduction before this work was dominated by RNN/LSTM encoder-decoders with attention; training was slow and long-range dependencies were hard to learn.",
+    "correctness": "The mathematics of scaled dot-product attention is correct; the paper's experimental claims about training cost and BLEU are reproducible on standard WMT data.",
+    "contributions": [
+      "Introduces the Transformer architecture based purely on attention.",
+      "Introduces multi-head attention as a way to attend to different representation subspaces jointly.",
+      "Demonstrates large BLEU gains on WMT 2014 translation at a fraction of training cost."
+    ],
+    "clarity": "The paper is clearly written with strong diagrams and a tight empirical section."
+  },
+  "pass1": {
+    "category": "Deep Learning / Sequence Modeling",
+    "context": "Pre-2017 sequence-to-sequence work used recurrent and convolutional encoder-decoders; this paper proposes an attention-only alternative.",
+    "correctness": "Math and experiments are sound; results have been reproduced widely.",
+    "contributions": ["Transformer", "multi-head attention", "scaled dot-product attention"],
+    "clarity": "Excellent.",
+    "decision": "Worth deep-reading as a foundational paper."
+  },
+  "pass2": {
+    "main_ideas": [
+      "Replace recurrence/convolutions with self-attention.",
+      "Use multiple attention heads in parallel.",
+      "Use sinusoidal positional encodings.",
+      "Train with Adam + warmup + label smoothing."
+    ],
+    "method_summary": "Encoder-decoder with stacked self-attention and feed-forward layers, residual connections, layer norm, sinusoidal positional encodings, multi-head attention with d_model=512, 8 heads in the base model.",
+    "figures_tables": [
+      "Table 1: maximum path length comparisons across layer types.",
+      "Table 2: WMT 2014 BLEU and training cost.",
+      "Figure 1: Transformer architecture overview."
+    ],
+    "key_references": [
+      {"title": "Neural Machine Translation by Jointly Learning to Align and Translate", "authors": "Bahdanau, Cho, Bengio", "year": 2014, "why": "Original additive attention."},
+      {"title": "Sequence to Sequence Learning with Neural Networks", "authors": "Sutskever, Vinyals, Le", "year": 2014, "why": "Encoder-decoder baseline."}
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Tokenize input and embed with d_model=512.",
+      "Add sinusoidal positional encoding.",
+      "Apply N=6 encoder layers; each layer is multi-head self-attention + position-wise FFN with residual + LayerNorm.",
+      "Decoder is similar with masked self-attention and encoder-decoder attention.",
+      "Linear + softmax projection to vocabulary, label smoothing 0.1.",
+      "Adam with warmup-then-decay LR, dropout 0.1."
+    ],
+    "critical_review": [
+      "Quadratic memory in sequence length is the main scaling concern.",
+      "Sinusoidal positions were later replaced by RoPE / ALiBi in many follow-ups.",
+      "Label smoothing slightly hurts perplexity but improves BLEU and calibration."
+    ],
+    "hidden_assumptions": [
+      "Sequence length ≤ ~1024 in practice.",
+      "GPU/TPU memory large enough for full-sequence softmax."
+    ]
+  },
+  "claims_evidence_map": [
+    {
+      "claim": "Self-attention is competitive with recurrence on translation.",
+      "evidence": "[Paper evidence] Table 2 shows 28.4 BLEU on WMT 2014 En-De with the big Transformer.",
+      "label": "[Paper evidence]"
+    },
+    {
+      "claim": "Multi-head attention outperforms single-head attention.",
+      "evidence": "[Paper evidence] Table 3, row 1 vs row 4.",
+      "label": "[Paper evidence]"
+    },
+    {
+      "claim": "Label smoothing improves translation quality.",
+      "evidence": "[Paper evidence] Table 3, last row.",
+      "label": "[Paper evidence]"
+    }
+  ],
+  "figures_tables": [
+    {"id": "Figure 1", "explanation": "Encoder-decoder overview: stacked attention and feed-forward blocks."},
+    {"id": "Table 1", "explanation": "Maximum path length per layer type, motivating attention."},
+    {"id": "Table 2", "explanation": "BLEU and training cost on WMT 2014."},
+    {"id": "Table 3", "explanation": "Ablations: heads, d_model, attention type, label smoothing."}
+  ],
+  "glossary": [
+    {"term": "Self-attention", "definition": "Mechanism letting every position in a sequence attend to every other position."},
+    {"term": "Multi-head attention", "definition": "Parallel application of several attention heads to capture different subspaces."},
+    {"term": "Positional encoding", "definition": "Sinusoidal vector added to token embeddings to encode order."},
+    {"term": "Label smoothing", "definition": "Regularization that softens one-hot targets with a uniform mixture."}
+  ],
+  "limitations": [
+    "Quadratic memory in sequence length.",
+    "Sinusoidal positions later outperformed by RoPE / ALiBi."
+  ],
+  "reproduction_plan": {
+    "dataset": "WMT 2014 En-De / En-Fr",
+    "baseline": "GNMT / ConvS2S",
+    "hardware": "8x P100 / TPU pod",
+    "steps": [
+      "Tokenize with BPE (shared source-target).",
+      "Train base model for 100k steps, big model for 300k steps.",
+      "Average last 5 checkpoints, beam size 4, length penalty 0.6."
+    ],
+    "sanity_checks": [
+      "Perplexity decreases smoothly.",
+      "BLEU on dev set crosses 25 within 50k steps."
+    ],
+    "success_criteria": [
+      "≥ 27 BLEU on WMT 2014 En-De with the base model."
+    ]
+  },
+  "open_questions": [
+    "Can attention replace recurrence entirely at the trillion-token scale?",
+    "What is the best positional encoding scheme for long contexts?"
+  ],
+  "final_checklist": [
+    "I can describe scaled dot-product attention in one paragraph.",
+    "I can describe multi-head attention in one paragraph.",
+    "I can list the four key design choices of the Transformer.",
+    "I can name the two main empirical results on WMT 2014.",
+    "I can articulate the quadratic-memory limitation."
+  ]
+}

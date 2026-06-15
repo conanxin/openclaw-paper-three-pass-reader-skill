@@ -229,7 +229,7 @@ def _apply_filters(value, filters, ctx):
 
 
 _VAR_RE = re.compile(r"\{\{\s*([^\}]+?)\s*\}\}")
-_TAG_RE = re.compile(r"\{%\s*(for|if|endfor|endif)\b([^%]*?)\%\}", re.DOTALL)
+_TAG_RE = re.compile(r"\{\%\s*(for|if|endfor|endif|set)\b([^%]*?)\%\}", re.DOTALL)
 
 
 def render(template: str, ctx: dict) -> str:
@@ -237,7 +237,7 @@ def render(template: str, ctx: dict) -> str:
     # Tokenise first. Two kinds of tokens:
     #   ('text', s) — literal text
     #   ('var', expr)  — {{ ... }} variable interpolation
-    #   ('tag', kind, expr) — {% ... %} control tag (for / if / endfor / endif)
+    #   ('tag', kind, expr) — {% ... %} control tag (for / if / endfor / endif / set)
     pos = 0
     tokens = []
     while pos < len(template):
@@ -281,6 +281,14 @@ def render(template: str, ctx: dict) -> str:
                     body, consumed = parse(seq[i + 1:], end_kinds={"endif"} | end_kinds)
                     out.append(("if", expr, body))
                     i += 1 + consumed
+                elif kind == "set":
+                    # {% set var = expr %}
+                    parts = t[2].split("=", 1)
+                    if len(parts) == 2:
+                        var = parts[0].strip()
+                        expr = parts[1].strip()
+                        out.append(("set", var, expr))
+                    i += 1
                 elif kind == "for":
                     parts = t[2].split("in", 1)
                     var = parts[0].strip()
@@ -348,6 +356,11 @@ def render(template: str, ctx: dict) -> str:
                     sub["__loop__"] = loop_dict
                     sub["loop"] = loop_dict
                     out.append(emit(body, sub))
+            elif n[0] == "set":
+                # Local short-hand. Mutate the scope dict in place so
+                # subsequent siblings in the same emit call see `var`.
+                var, expr = n[1], n[2]
+                scope[var] = _get(expr, scope)
         return "".join(out)
 
     return emit(nodes, ctx)
@@ -377,6 +390,36 @@ def copy_assets(out: Path):
 def render_index(out: Path, data: dict):
     tpl_path = TEMPLATE_DIR / "index.html"
     template = tpl_path.read_text(encoding="utf-8")
+    # Inject a renderer-friendly summary of the structured
+    # `source_resolution` block. We import lazily so the file is still
+    # usable on bare render runs that lack the utility (e.g. historical
+    # smokes). Failure to import must NEVER break rendering.
+    try:
+        sys.path.insert(0, str(Path(__file__).parent))
+        from source_resolution_utils import summarize_source_resolution
+        data = dict(data)  # do not mutate caller's dict
+        data["source_resolution_summary"] = summarize_source_resolution(data)
+    except Exception as _exc:  # noqa: BLE001
+        data = dict(data)
+        data["source_resolution_summary"] = {
+            "structured": False,
+            "fallback_legacy": True,
+            "resolver_status": "ambiguous_clue",
+            "resolver_match_type": None,
+            "confidence": None,
+            "confidence_numeric": None,
+            "matched_paper_id": None,
+            "matched_canonical_title": None,
+            "matched_arxiv_id": None,
+            "matched_repo": None,
+            "resolver_source": None,
+            "source_resolution_step": "summary_unavailable",
+            "degraded": None,
+            "candidate_count": 0,
+            "candidates_top": [],
+            "steps_count": 0,
+            "hint_input": None,
+        }
     html = render(template, data)
     # UI language localization (zh-CN)
     ui_lang = data.get("ui_language", "en")
@@ -460,6 +503,20 @@ _UI_ZH_CN_MAP = {
     "Pass 1": "第一遍阅读",
     "Pass 2": "第二遍阅读",
     "Pass 3": "第三遍阅读",
+    # v0.2.8 — structured source_resolution consumers
+    "Resolver Trail": "解析路径",
+    "Resolver status": "解析状态",
+    "Match type": "匹配类型",
+    "Matched paper": "匹配论文",
+    "Matched paper id": "匹配论文 ID",
+    "Matched arXiv ID": "匹配 arXiv ID",
+    "Matched repo": "匹配仓库",
+    "Resolver source": "解析来源",
+    "Source resolution step": "解析步骤",
+    "Degraded fallback": "降级回退",
+    "Legacy fallback": "兼容旧格式",
+    "Candidate count": "候选数量",
+    "Structured trail": "结构化解析路径",
 }
 
 

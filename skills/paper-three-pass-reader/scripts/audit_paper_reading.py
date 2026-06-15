@@ -39,6 +39,17 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
+# v0.2.8 — consume structured source_resolution
+# Use a module-level guarded import so Pyright does not flag the names
+# as "possibly unbound". Names default to None and are checked at use
+# time via `_SR_UTILS_AVAILABLE`.
+import source_resolution_utils as _sr_utils  # type: ignore[import-not-found]
+is_structured_source_resolution = _sr_utils.is_structured_source_resolution
+summarize_source_resolution = _sr_utils.summarize_source_resolution
+validate_source_resolution = _sr_utils.validate_source_resolution
+_SR_UTILS_AVAILABLE = True
+del _sr_utils
+
 VALID_READING_MODES = {"full_text", "partial_text", "abstract_only", "screenshot_only"}
 VALID_INPUT_KINDS = {
     "complete_paper", "paper_url", "paper_identifier", "paper_title",
@@ -263,6 +274,71 @@ def audit(doc: dict) -> dict:
                 "paper names may remain in English."
             )
 
+    # 12. v0.2.8 — structured source_resolution check.
+    sr_block: dict = OrderedDict()
+    sr_block["status"] = "skipped"
+    sr_block["structured"] = False
+    sr_block["legacy_fallback"] = False
+    sr_block["warnings"] = []
+    sr_block["errors"] = []
+    sr_block["summary"] = {}
+    if _SR_UTILS_AVAILABLE:
+        top = doc.get("source_resolution")
+        sr_block["structured"] = is_structured_source_resolution(top)
+        if not sr_block["structured"]:
+            iq0 = doc.get("intake_quality") or {}
+            sr_block["legacy_fallback"] = bool(iq0.get("source_resolution"))
+            # The presence of a legacy-only block is a WARN, not a FAIL.
+            # It does NOT block by itself; the reading_mode-specific
+            # logic below decides whether it becomes an error.
+            if sr_block["legacy_fallback"]:
+                warnings.append(
+                    "legacy intake_quality.source_resolution detected; "
+                    "top-level structured source_resolution recommended"
+                )
+            else:
+                # No block at all. WARN unless reading_mode is screenshot_only
+                # / abstract_only (those never have a structured block).
+                if reading_mode not in WEAK_MODES:
+                    warnings.append(
+                        "source_resolution is missing; "
+                        "top-level structured block recommended"
+                    )
+        else:
+            sr_block["summary"] = summarize_source_resolution(doc)
+            status_v = (top.get("resolver_status") or "").lower()  # type: ignore[union-attr]
+            sr_block["status"] = status_v or "unknown"
+            if status_v == "error":
+                degraded = top.get("degraded")  # type: ignore[union-attr]
+                wn = (doc.get("intake_quality") or {}).get("warnings") or []
+                if not degraded and not wn:
+                    errors.append(
+                        "source_resolution.resolver_status=error but no "
+                        "degraded / warning marker recorded"
+                    )
+            if status_v == "matched":
+                if not any(
+                    top.get(f)  # type: ignore[union-attr]
+                    for f in ("matched_paper_id", "matched_canonical_title", "matched_arxiv_id")
+                ):
+                    warnings.append(
+                        "source_resolution.resolver_status=matched but "
+                        "matched_paper_id / canonical_title / arxiv_id all empty"
+                    )
+            conf = top.get("confidence")  # type: ignore[union-attr]
+            if conf is None:
+                warnings.append("source_resolution.confidence is missing")
+        # Always run the utility's own validation as a sanity overlay.
+        util_errs, util_warns = validate_source_resolution(doc)
+        for w in util_warns:
+            if w not in warnings:
+                warnings.append(w)
+        for e in util_errs:
+            if e not in errors:
+                errors.append(e)
+        sr_block["warnings"] = list(util_warns)
+        sr_block["errors"] = list(util_errs)
+
     # Decide status.
     if errors:
         status = "FAIL"
@@ -276,6 +352,7 @@ def audit(doc: dict) -> dict:
         ("reading_mode", reading_mode),
         ("input_kind", input_kind),
         ("schema_version", doc.get("schema_version")),
+        ("source_resolution", sr_block),
         ("counts", OrderedDict([
             ("claims_total", len(cem)),
             ("claims_with_valid_evidence", claims_with_evidence),

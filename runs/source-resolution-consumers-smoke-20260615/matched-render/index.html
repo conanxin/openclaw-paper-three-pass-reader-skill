@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Attention Is All You Need — Three-Pass Reading</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-reading-mode="full_text">
+  <header class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="kicker">Three-Pass Reading · 2017</div>
+        <h1>Attention Is All You Need</h1>
+        <div class="byline">
+          <span>Vaswani</span>, <span>Shazeer</span>, <span>Parmar</span>, <span>Uszkoreit</span>, <span>Jones</span>, <span>Gomez</span>, <span>Kaiser</span>, <span>Polosukhin</span>
+           · <span class="venue">NeurIPS</span>
+        </div>
+        <div class="badges">
+          <span class="badge badge-mode" title="Reading mode">full_text</span>
+          <span class="badge badge-confidence badge-confidence-high">high confidence</span>
+          <span class="badge badge-input">paper_title</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <details open>
+      <summary>Contents</summary>
+      <ol>
+        <li><a href="#metadata">Paper Metadata</a></li>
+        <li><a href="#intake">Intake Status</a></li>
+        <li><a href="#summary">Summaries (1 / 3 / 10)</a></li>
+        <li><a href="#paper-map">Paper Map</a></li>
+        <li><a href="#five-cs">Five Cs</a></li>
+        <li><a href="#passes">Pass 1 / 2 / 3</a></li>
+        <li><a href="#claims">Claims → Evidence Map</a></li>
+        <li><a href="#figures">Figures &amp; Tables</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+        <li><a href="#reconstruction">Method Reconstruction</a></li>
+        <li><a href="#limitations">Correctness &amp; Limitations</a></li>
+        <li><a href="#related">Related Work</a></li>
+        <li><a href="#implications">Practical Implications</a></li>
+        <li><a href="#reproduction">Reproduction Plan</a></li>
+        <li><a href="#open">Open Questions</a></li>
+        <li><a href="#checklist">Final Checklist</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <!-- 1. Hero Summary / Paper Metadata -->
+    <section id="metadata" class="card">
+      <h2>Paper Metadata</h2>
+      <dl class="kv">
+        <dt>Title</dt><dd>Attention Is All You Need</dd>
+        <dt>Authors</dt><dd>Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, Polosukhin</dd>
+        <dt>Year</dt><dd>2017</dd>
+        <dt>Venue</dt><dd>NeurIPS</dd>
+        <dt>arXiv</dt><dd>1706.03762</dd>
+        
+        
+        <dt>Source kind</dt><dd>paper_title</dd>
+        <dt>Reading mode</dt><dd>full_text</dd>
+      </dl>
+    </section>
+
+    <!-- 2. Intake Status -->
+    <section id="intake" class="card">
+      <h2>Intake Status</h2>
+      <ul class="kv-list">
+        <li><span class="label">Input kind</span> <span class="value">paper_title</span></li>
+        <li><span class="label">Reading mode</span> <span class="value">full_text</span></li>
+        <li><span class="label">Confidence</span> <span class="value badge-confidence badge-confidence-high">high</span></li>
+        <li><span class="label">Needs confirmation</span> <span class="value">false</span></li>
+      </ul>
+      
+      
+    </section>
+
+    <!-- 2b. Resolver Trail (structured source_resolution, v0.2.8) -->
+    <section id="resolver-trail" class="card">
+      <h2>Resolver Trail</h2>
+      
+      <div class="badges">
+        
+        <span class="badge badge-confidence badge-confidence-high">Structured trail</span>
+        
+        
+        
+      </div>
+      <ul class="kv-list">
+        <li><span class="label">Resolver status</span> <span class="value">matched</span></li>
+        <li><span class="label">Match type</span> <span class="value">title</span></li>
+        <li><span class="label">Confidence</span> <span class="value">high</span></li>
+        <li><span class="label">Matched paper</span> <span class="value">Attention Is All You Need</span></li>
+        <li><span class="label">Matched paper id</span> <span class="value">attention-is-all-you-need</span></li>
+        <li><span class="label">Matched arXiv ID</span> <span class="value">1706.03762</span></li>
+        <li><span class="label">Matched repo</span> <span class="value"></span></li>
+        <li><span class="label">Resolver source</span> <span class="value">skills/paper-three-pass-reader/data/resolver_hints.json</span></li>
+        <li><span class="label">Source resolution step</span> <span class="value">cli overlay via p3pr paper_title subcommand</span></li>
+        <li><span class="label">Candidate count</span> <span class="value">1</span></li>
+      </ul>
+      
+      <details class="candidates">
+        <summary>Top candidates (1)</summary>
+        <ul><li>Attention Is All You Need<span class="muted"> — confidence: </span></li></ul>
+      </details>
+      
+      
+    </section>
+
+    <!-- 3. Summaries -->
+    <section id="summary" class="card">
+      <h2>Summaries</h2>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">One sentence</div>
+          <p>Attention Is All You Need introduces the Transformer, a sequence model that relies entirely on self-attention and removes recurrence and convolutions.</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">Three sentences</div>
+          <ol><li>The Transformer uses multi-head scaled dot-product self-attention to model token relationships in parallel.</li><li>It removes recurrence and convolutions, enabling much faster training and better long-range modelling on translation and other tasks.</li><li>On WMT 2014 En-De and En-Fr translation the Transformer surpasses prior encoder-decoder baselines while using a fraction of the training compute.</li></ol>
+        </div>
+        <div class="summary-box summary-wide">
+          <div class="summary-label">Ten sentences</div>
+          <ol><li>The paper proposes the Transformer, a new sequence transduction architecture.</li><li>The core building block is multi-head scaled dot-product self-attention.</li><li>Self-attention allows every position to attend to every other position in O(1) sequential steps.</li><li>Encoder and decoder are stacks of identical layers with attention and position-wise feed-forward sub-layers.</li><li>Sinusoidal positional encodings inject order information.</li><li>Training uses Adam with a warmup-then-decay learning rate schedule.</li><li>Label smoothing is applied to the output projection.</li><li>On WMT 2014 En-De the base model reaches 27.5 BLEU and the big model 28.4 BLEU.</li><li>On WMT 2014 En-Fr the big model reaches 41.8 BLEU, a single-model state of the art at the time.</li><li>The architecture has since become the foundation of most large language models.</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Paper Map -->
+    <section id="paper-map" class="card">
+      <h2>Paper Map</h2>
+      <ul class="tree">
+        </ul>
+            
+          </details>
+        </li>
+        
+      </ul>
+    </section>
+
+    <!-- 5. Five Cs -->
+    <section id="five-cs" class="card">
+      <h2>Five Cs Dashboard</h2>
+      <div class="five-cs-grid">
+        <article class="ccard"><h3>Category</h3><p>Deep Learning / Sequence Modeling</p></article>
+        <article class="ccard"><h3>Context</h3><p>Sequence transduction before this work was dominated by RNN/LSTM encoder-decoders with attention; training was slow and long-range dependencies were hard to learn.</p></article>
+        <article class="ccard"><h3>Correctness</h3><p>The mathematics of scaled dot-product attention is correct; the paper's experimental claims about training cost and BLEU are reproducible on standard WMT data.</p></article>
+        <article class="ccard"><h3>Contributions</h3><ul><li>Introduces the Transformer architecture based purely on attention.</li><li>Introduces multi-head attention as a way to attend to different representation subspaces jointly.</li><li>Demonstrates large BLEU gains on WMT 2014 translation at a fraction of training cost.</li></ul></article>
+        <article class="ccard"><h3>Clarity</h3><p>The paper is clearly written with strong diagrams and a tight empirical section.</p></article>
+      </div>
+    </section>
+
+    <!-- 6. Pass 1 / Pass 2 / Pass 3 Tabs -->
+    <section id="passes" class="card">
+      <h2>Reading Passes</h2>
+      <div class="timeline">
+        <span class="dot done" title="Pass 1">1</span>
+        <span class="dot done" title="Pass 2">2</span>
+        <span class="dot done" title="Pass 3">3</span>
+      </div>
+      <div class="tabs">
+        <div class="tab-buttons" role="tablist">
+          <button class="tab-btn active" data-tab="p1" role="tab">Pass 1 · Bird's-eye</button>
+          <button class="tab-btn" data-tab="p2" role="tab">Pass 2 · Understand</button>
+          <button class="tab-btn" data-tab="p3" role="tab">Pass 3 · Reconstruct</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="p1">
+          <h3>Pass 1 — Bird's-eye view</h3>
+          <p class="evidence-line">[Author claim] / [Paper evidence] depending on source.</p>
+          <p></p>
+          <div class="callout">
+            <strong>Decision:</strong> <code>Worth deep-reading as a foundational paper.</code>
+            <p></p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="p2">
+          <h3>Pass 2 — Understanding</h3>
+          <h4>Main ideas</h4>
+          <ol><li>Replace recurrence/convolutions with self-attention.</li><li>Use multiple attention heads in parallel.</li><li>Use sinusoidal positional encodings.</li><li>Train with Adam + warmup + label smoothing.</li></ol>
+          
+          <h4>Key references</h4>
+          <ul class="refs"><li><strong>Neural Machine Translation by Jointly Learning to Align and Translate</strong> — Bahdanau, Cho, Bengio<li><strong>Sequence to Sequence Learning with Neural Networks</strong> — Sutskever, Vinyals, Le</li></ul>
+          
+        </div>
+
+        <div class="tab-panel" data-panel="p3">
+          <h3>Pass 3 — Reconstruction</h3>
+          <h4>Method reconstruction</h4>
+          <ol><li>Tokenize input and embed with d_model=512.</li><li>Add sinusoidal positional encoding.</li><li>Apply N=6 encoder layers; each layer is multi-head self-attention + position-wise FFN with residual + LayerNorm.</li><li>Decoder is similar with masked self-attention and encoder-decoder attention.</li><li>Linear + softmax projection to vocabulary, label smoothing 0.1.</li><li>Adam with warmup-then-decay LR, dropout 0.1.</li></ol>
+          
+          <h4>Critical review highlights</h4>
+          <ul><li>Quadratic memory in sequence length is the main scaling concern.</li><li>Sinusoidal positions were later replaced by RoPE / ALiBi in many follow-ups.</li><li>Label smoothing slightly hurts perplexity but improves BLEU and calibration.</li></ul>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Claims-Evidence Map -->
+    <section id="claims" class="card">
+      <h2>Claims → Evidence Map</h2>
+      <div class="filters">
+        <label>Filter confidence:
+          <select id="filter-confidence">
+            <option value="">all</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </label>
+        <label>Filter label:
+          <select id="filter-label">
+            <option value="">all</option>
+            <option>[Paper evidence]</option>
+            <option>[Figure/Table evidence]</option>
+            <option>[Author claim]</option>
+            <option>[Agent inference]</option>
+            <option>[Uncertain]</option>
+            <option>[Needs verification]</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="filter-needs" checked /> only needs-verification</label>
+      </div>
+      <table class="claims-table">
+        <thead>
+          <tr><th>ID</th><th>Claim</th><th>Evidence</th><th>Location</th><th>Conf.</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr data-confidence="" data-label="" data-needs="">
+            <td><code></code></td>
+            <td></td>
+            <td><span class="ev-label ev-x"></span></td>
+            <td></td>
+            <td><span class="conf conf-"></span></td>
+          </tr>
+          
+          <tr data-confidence="" data-label="" data-needs="">
+            <td><code></code></td>
+            <td></td>
+            <td><span class="ev-label ev-x"></span></td>
+            <td></td>
+            <td><span class="conf conf-"></span></td>
+          </tr>
+          
+          <tr data-confidence="" data-label="" data-needs="">
+            <td><code></code></td>
+            <td></td>
+            <td><span class="ev-label ev-x"></span></td>
+            <td></td>
+            <td><span class="conf conf-"></span></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Figures and Tables Explanation -->
+    <section id="figures" class="card">
+      <h2>Figures &amp; Tables</h2>
+      <div class="accordion">
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-"></span>
+            
+            
+          </summary>
+          <p>Encoder-decoder overview: stacked attention and feed-forward blocks.</p>
+          
+        </details>
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-"></span>
+            
+            
+          </summary>
+          <p>Maximum path length per layer type, motivating attention.</p>
+          
+        </details>
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-"></span>
+            
+            
+          </summary>
+          <p>BLEU and training cost on WMT 2014.</p>
+          
+        </details>
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-"></span>
+            
+            
+          </summary>
+          <p>Ablations: heads, d_model, attention type, label smoothing.</p>
+          
+        </details>
+        
+      </div>
+    </section>
+
+    <!-- 9. Key Terms Glossary -->
+    <section id="glossary" class="card">
+      <h2>Key Terms Glossary</h2>
+      <div class="chips">
+        
+        <details class="chip"><summary>Self-attention</summary>Mechanism letting every position in a sequence attend to every other position.</details>
+        
+        <details class="chip"><summary>Multi-head attention</summary>Parallel application of several attention heads to capture different subspaces.</details>
+        
+        <details class="chip"><summary>Positional encoding</summary>Sinusoidal vector added to token embeddings to encode order.</details>
+        
+        <details class="chip"><summary>Label smoothing</summary>Regularization that softens one-hot targets with a uniform mixture.</details>
+        
+      </div>
+    </section>
+
+    <!-- 10. Method Reconstruction -->
+    <section id="reconstruction" class="card">
+      <h2>Method Reconstruction (deep)</h2>
+      <ol><li>Tokenize input and embed with d_model=512.</li><li>Add sinusoidal positional encoding.</li><li>Apply N=6 encoder layers; each layer is multi-head self-attention + position-wise FFN with residual + LayerNorm.</li><li>Decoder is similar with masked self-attention and encoder-decoder attention.</li><li>Linear + softmax projection to vocabulary, label smoothing 0.1.</li><li>Adam with warmup-then-decay LR, dropout 0.1.</li></ol>
+    </section>
+
+    <!-- 11. Correctness and Limitations -->
+    <section id="limitations" class="card">
+      <h2>Correctness &amp; Limitations</h2>
+      <ul><li>Quadratic memory in sequence length.</li><li>Sinusoidal positions later outperformed by RoPE / ALiBi.</li></ul>
+    </section>
+
+    <!-- 12. Related Work Map -->
+    <section id="related" class="card">
+      <h2>Related Work</h2>
+      
+      <ul class="refs"><li><strong>Neural Machine Translation by Jointly Learning to Align and Translate</strong> — Bahdanau, Cho, Bengio<li><strong>Sequence to Sequence Learning with Neural Networks</strong> — Sutskever, Vinyals, Le</li></ul>
+      {% else %}
+      <p><em>No key references recorded.</em></p>
+      
+    </section>
+
+    <!-- 13. Practical Implications -->
+    <section id="implications" class="card">
+      <h2>Practical Implications</h2>
+      <ul>
+        <li><strong>Contribution:</strong> Introduces the Transformer architecture based purely on attention.</li><li><strong>Contribution:</strong> Introduces multi-head attention as a way to attend to different representation subspaces jointly.</li><li><strong>Contribution:</strong> Demonstrates large BLEU gains on WMT 2014 translation at a fraction of training cost.</li>
+        <li><strong>Where it does <em>not</em> apply:</strong> Quadratic memory in sequence length.</li>
+      </ul>
+    </section>
+
+    <!-- 14. Reproduction Plan -->
+    <section id="reproduction" class="card">
+      <h2>Reproduction Plan</h2>
+      <dl class="kv">
+        <dt>Dataset</dt><dd>WMT 2014 En-De / En-Fr</dd>
+        <dt>Baseline</dt><dd>GNMT / ConvS2S</dd>
+        <dt>Hardware</dt><dd>8x P100 / TPU pod</dd>
+      </dl>
+      <h4>Steps</h4>
+      <ol><li>Tokenize with BPE (shared source-target).</li><li>Train base model for 100k steps, big model for 300k steps.</li><li>Average last 5 checkpoints, beam size 4, length penalty 0.6.</li></ol>
+      
+      <h4>Sanity checks</h4>
+      <ul><li>Perplexity decreases smoothly.</li><li>BLEU on dev set crosses 25 within 50k steps.</li></ul>
+      
+      
+      <h4>Success criteria</h4>
+      <ul><li>≥ 27 BLEU on WMT 2014 En-De with the base model.</li></ul>
+      
+    </section>
+
+    <!-- 15. Open Questions -->
+    <section id="open" class="card">
+      <h2>Open Questions</h2>
+      <ul><li>Can attention replace recurrence entirely at the trillion-token scale?</li><li>What is the best positional encoding scheme for long contexts?</li></ul>
+    </section>
+
+    <!-- 16. Final Checklist -->
+    <section id="checklist" class="card">
+      <h2>"Do I understand this paper?" Checklist</h2>
+      <ol class="checklist">
+        
+        <li><label><input type="checkbox" /> </label></li>
+        
+        <li><label><input type="checkbox" /> </label></li>
+        
+        <li><label><input type="checkbox" /> </label></li>
+        
+        <li><label><input type="checkbox" /> </label></li>
+        
+        <li><label><input type="checkbox" /> </label></li>
+        
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Generated by <strong>paper-three-pass-reader v0.1.0-alpha</strong> · MIT · offline · no backend.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

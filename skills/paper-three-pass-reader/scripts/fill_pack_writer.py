@@ -28,9 +28,18 @@ The writer is stdlib-only and language-aware (zh-CN / en).
 from __future__ import annotations
 
 import json
+import sys
 from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
+
+# v0.2.8 — pull structured source_resolution from the shared utility
+sys.path.insert(0, str(Path(__file__).parent))
+from source_resolution_utils import (  # type: ignore[import-not-found]
+    is_structured_source_resolution as _is_structured_sr,
+    summarize_source_resolution as _summarize_sr,
+    validate_source_resolution as _validate_sr,
+)
 
 VALID_EVIDENCE_LABELS = [
     "[Paper evidence]",
@@ -41,6 +50,149 @@ VALID_EVIDENCE_LABELS = [
     "[Needs verification]",
 ]
 WEAK_MODES = {"abstract_only", "screenshot_only"}
+
+
+def _sr_summary(draft: dict) -> dict:
+    """Return a renderer-friendly summary of source_resolution for fill-pack."""
+    return _summarize_sr(draft or {})
+
+
+def _sr_checklist_zh() -> str:
+    """Source Resolution Checklist — zh-CN."""
+    return (
+        "## Source Resolution Checklist (v0.2.8)\n"
+        "\n"
+        "在 Stage 0 完成前，agent 必须逐条确认：\n"
+        "\n"
+        "- [ ] 已读取 `source_resolution`（**top-level structured block 是 canonical**，"
+        "不是 `intake_quality.source_resolution`）。\n"
+        "- [ ] 保留 `intake_quality.source_resolution` legacy list 的兼容说明（v0.2.5 历史 sample）。\n"
+        "- [ ] 写明 `confidence`（high / medium / low 或 0.0–1.0 数字）。\n"
+        "- [ ] 写明 `matched_paper_id` 与 `matched_arxiv_id`（若 `resolver_status=matched`）。\n"
+        "- [ ] 若 `resolver_status` 是 `ambiguous_clue` 或 `error` / `degraded = ambiguous_clue`，"
+        "在 `intake_quality.ambiguities` 中说明，并要求用户确认论文身份。\n"
+        "- [ ] 若 `resolver_status = error`，确认 `source_resolution.degraded` 已被记录，"
+        "且 `intake_quality.warnings` 至少有 1 条。\n"
+        "\n"
+        "调试方式：`python3 skills/paper-three-pass-reader/scripts/resolve_paper_hint.py title \"<hint>\"`。\n"
+    )
+
+
+def _sr_checklist_en() -> str:
+    """Source Resolution Checklist — en."""
+    return (
+        "## Source Resolution Checklist (v0.2.8)\n"
+        "\n"
+        "Before Stage 0 is closed, the agent must verify each item:\n"
+        "\n"
+        "- [ ] Read `source_resolution` (the **top-level structured block is canonical**,\n"
+        "  not `intake_quality.source_resolution`).\n"
+        "- [ ] Keep the legacy `intake_quality.source_resolution` list alive for v0.2.5\n"
+        "  historical samples; do not delete it.\n"
+        "- [ ] Surface `confidence` (high / medium / low or a 0.0–1.0 number).\n"
+        "- [ ] Surface `matched_paper_id` and `matched_arxiv_id` (when `resolver_status=matched`).\n"
+        "- [ ] If `resolver_status` is `ambiguous_clue` or `error` /\n"
+        "  `degraded = ambiguous_clue`, record it in `intake_quality.ambiguities` and ask\n"
+        "  the user to confirm the paper identity.\n"
+        "- [ ] If `resolver_status = error`, confirm `source_resolution.degraded` is set\n"
+        "  and `intake_quality.warnings` is non-empty.\n"
+        "\n"
+        "Debug with:\n"
+        "`python3 skills/paper-three-pass-reader/scripts/resolve_paper_hint.py title \"<hint>\"`.\n"
+    )
+
+
+def _sr_summary_block_zh(draft: dict) -> str:
+    s = _sr_summary(draft)
+    cand = s.get("candidates_top") or []
+    cand_lines = "".join(
+        f"  - {c.get('title') or c.get('id') or c.get('raw', '')} (confidence: {c.get('confidence') or 'n/a'})\n"
+        for c in cand
+    ) or "  - (none)\n"
+    if s.get("degraded"):
+        warn_line = (
+            f"- **降级回退**:`degraded = {s['degraded']}` — 论文身份未确认,"
+            "请用户确认后再继续。\n"
+        )
+    else:
+        warn_line = ""
+    return (
+        "## Source Resolution 摘要 (v0.2.8)\n"
+        "\n"
+        "本节展示 runner 已经确定的 paper identity trail。agent 在 Stage 0 应当\n"
+        "**优先读取** `source_resolution` (top-level structured block) 而非\n"
+        "`intake_quality.source_resolution` (legacy list)。\n"
+        "\n"
+        f"- **输入线索**:`{s.get('hint_input') or '(empty)'}`\n"
+        f"- **解析状态**:`{s.get('resolver_status') or 'unknown'}`\n"
+        f"- **匹配类型**:`{s.get('resolver_match_type') or '(none)'}`\n"
+        f"- **置信度**:`{s.get('confidence') or '(missing)'}`\n"
+        f"- **匹配论文**:`{s.get('matched_canonical_title') or s.get('matched_paper_id') or '(none)'}`\n"
+        f"- **匹配 arXiv ID**:`{s.get('matched_arxiv_id') or '(none)'}`\n"
+        f"- **匹配仓库**:`{s.get('matched_repo') or '(none)'}`\n"
+        f"- **解析来源**:`{s.get('resolver_source') or '(none)'}`\n"
+        f"- **解析步骤**:`{s.get('source_resolution_step') or '(none)'}`\n"
+        f"- **候选数量**:`{s.get('candidate_count')}`\n"
+        f"- **Structured trail**:`{s.get('structured')}`\n"
+        f"- **Legacy fallback**:`{s.get('fallback_legacy')}`\n"
+        f"{warn_line}"
+        "\n"
+        "Top 候选:\n"
+        f"{cand_lines}"
+    "## 交叉链接\n"
+    "\n"
+    "- `docs/SOURCE_RESOLUTION.md` — canonical schema 与字段说明\n"
+    "- `docs/RESOLVER_HINTS.md` — 解析器如何产生该对象\n"
+    "- `docs/AUDIT.md` — audit 如何校验该对象\n"
+    "- `docs/AGENT_FILL_PACK.md` — 如何填写 source-resolution checklist\n"
+    )
+
+
+def _sr_summary_block_en(draft: dict) -> str:
+    s = _sr_summary(draft)
+    cand = s.get("candidates_top") or []
+    cand_lines = "".join(
+        f"  - {c.get('title') or c.get('id') or c.get('raw', '')} (confidence: {c.get('confidence') or 'n/a'})\n"
+        for c in cand
+    ) or "  - (none)\n"
+    if s.get("degraded"):
+        warn_line = (
+            f"- **Degraded fallback**: `degraded = {s['degraded']}` — paper identity "
+            "is not confirmed; ask the user to verify before continuing.\n"
+        )
+    else:
+        warn_line = ""
+    return (
+        "## Source Resolution summary (v0.2.8)\n"
+        "\n"
+        "This section is the resolver trail that the runner has already computed.\n"
+        "During Stage 0 the agent must **prefer the top-level `source_resolution`\n"
+        "structured block** over the legacy `intake_quality.source_resolution` list.\n"
+        "\n"
+        f"- **Hint input**: `{s.get('hint_input') or '(empty)'}`\n"
+        f"- **Resolver status**: `{s.get('resolver_status') or 'unknown'}`\n"
+        f"- **Match type**: `{s.get('resolver_match_type') or '(none)'}`\n"
+        f"- **Confidence**: `{s.get('confidence') or '(missing)'}`\n"
+        f"- **Matched paper**: `{s.get('matched_canonical_title') or s.get('matched_paper_id') or '(none)'}`\n"
+        f"- **Matched arXiv ID**: `{s.get('matched_arxiv_id') or '(none)'}`\n"
+        f"- **Matched repo**: `{s.get('matched_repo') or '(none)'}`\n"
+        f"- **Resolver source**: `{s.get('resolver_source') or '(none)'}`\n"
+        f"- **Source resolution step**: `{s.get('source_resolution_step') or '(none)'}`\n"
+        f"- **Candidate count**: `{s.get('candidate_count')}`\n"
+        f"- **Structured trail**: `{s.get('structured')}`\n"
+        f"- **Legacy fallback**: `{s.get('fallback_legacy')}`\n"
+        f"{warn_line}"
+        "\n"
+        "Top candidates:\n"
+        f"{cand_lines}"
+        "\n"
+        "## Cross-links\n"
+        "\n"
+        "- `docs/SOURCE_RESOLUTION.md` — canonical schema and field meanings\n"
+        "- `docs/RESOLVER_HINTS.md` — how the resolver produces this object\n"
+        "- `docs/AUDIT.md` — what the audit validates on this object\n"
+        "- `docs/AGENT_FILL_PACK.md` — how to fill the source-resolution checklist\n"
+    )
 
 # Strings used in many places — keep in one dict per language for easy
 # review and translation.
@@ -165,6 +317,10 @@ def _zh_files(reading_mode, input_kind, confidence, needs_confirmation,
 - Pass 2 main ideas / method summary / Pass 3 reconstruction：**只有在 `reading_mode == full_text` 时才能完整写**。
 - Claims-Evidence Map：弱输入下每条 claim 必须带 `[Author claim]` / `[Uncertain]` / `[Needs verification]`。
 - Reproduction plan：弱输入下只能写"待补"，不能编造。
+
+{_sr_summary_block_zh(draft)}
+
+{_sr_checklist_zh()}
 
 ## 如何一步步填 `work/paper_reading.json`
 
@@ -749,8 +905,9 @@ def _en_files(reading_mode, input_kind, confidence, needs_confirmation,
     files = OrderedDict()
 
     files["00_README.md"] = _en_readme(reading_mode, input_kind, confidence,
-                                        needs_confirmation, agent_profile,
-                                        max_claims, max_figures, work_json)
+                                        needs_confirmation, weak, agent_profile,
+                                        max_claims, max_figures, work_json,
+                                        draft)
     files["01_stage0_intake_resolution.md"] = _en_step(
         1, "Stage 0 — Intake and Resolution", weak,
         "Confirm Stage 0 parsing is correct. Is this actually the canonical paper? "
@@ -942,7 +1099,8 @@ python3 skills/paper-three-pass-reader/scripts/render_page.py \\
 
 
 def _en_readme(reading_mode, input_kind, confidence, needs_confirmation,
-               agent_profile, max_claims, max_figures, work_json) -> str:
+               weak, agent_profile, max_claims, max_figures, work_json,
+               draft) -> str:
     return f"""# Agent Fill Pack — paper-three-pass-reader
 
 > This directory (`fill-pack/`) is an auto-generated **task pack** from
@@ -975,6 +1133,10 @@ def _en_readme(reading_mode, input_kind, confidence, needs_confirmation,
 - Pass 2 main ideas / method summary / Pass 3 reconstruction: only fillable when `reading_mode == full_text`.
 - Claims-Evidence Map: every weak-mode claim must carry `[Author claim]` / `[Uncertain]` / `[Needs verification]`.
 - Reproduction plan: weak mode can only say "TBD".
+
+{_sr_summary_block_en(draft)}
+
+{_sr_checklist_en()}
 
 ## How to fill `work/paper_reading.json` step by step
 

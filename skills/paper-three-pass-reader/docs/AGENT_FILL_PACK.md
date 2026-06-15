@@ -160,3 +160,9 @@ A new step in the fill-pack: `11_zh_cn_quality_gate.md`. It is generated for bot
 - How to re-render and re-publish after fixing.
 
 The agent should treat the `11_zh_cn_quality_gate.md` as a checklist before declaring the fill-pack done. Running `quality_gate_zh_cn.py` and getting `status: PASS` is the strongest signal that the fill is complete and high-quality.
+
+
+## Cross-links
+
+- Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
+- Resolver trail in the rendered page, audit, fill-pack checklist, and zh-CN quality-gate check all consume that same object.

@@ -1,0 +1,132 @@
+{
+  "_about": "v0.2.8 — legacy-only sample. No top-level structured source_resolution, only the v0.2.5-style intake_quality.source_resolution list. The utility must upgrade it on the fly to a structured summary, and the renderer / audit / quality gate must not crash.",
+  "schema_version": "0.1.0",
+  "target_language": "en",
+  "ui_language": "en",
+  "paper_metadata": {
+    "title": "How to Read a Paper",
+    "authors": ["S. Keshav"],
+    "year": 2007,
+    "venue": "ACM SIGCOMM Computer Communication Review",
+    "identifiers": {"arxiv_id": null, "doi": "10.1145/1273445.1273458", "paper_url": null},
+    "slug": "how-to-read-a-paper-legacy",
+    "reading_mode": "partial_text",
+    "source_kind": "paper_title"
+  },
+  "intake_quality": {
+    "input_kind": "paper_title",
+    "reading_mode": "partial_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [],
+    "ambiguities": [],
+    "warnings": [],
+    "source_resolution": [
+      "Input kind = paper_title.",
+      "Input string: 'How to Read a Paper'.",
+      "Resolver source: skills/paper-three-pass-reader/data/resolver_hints.json (shared).",
+      "Resolver status: matched; match_type: title; confidence: high.",
+      "Matched paper id: how-to-read-a-paper.",
+      "Matched resolver hint: 'How to Read a Paper' → How to Read a Paper (S. Keshav, 2007).",
+      "Resolver step: cli overlay via p3pr paper_title subcommand; input='How to Read a Paper'"
+    ]
+  },
+  "summaries": {
+    "one_sentence": "Keshav's three-pass method turns a paper into something you can read, summarize, and reconstruct in three passes.",
+    "three_sentence": [
+      "Pass 1 is a five-minute bird's-eye view: read the title, abstract, intro, section headings, conclusion; jot the Five Cs.",
+      "Pass 2 reads the paper but skips the math: aim to understand 90% of the content, write a one-page summary, and identify the open questions.",
+      "Pass 3 re-derives the paper from scratch, then compares your reconstruction to the authors' claims to find hidden assumptions and limitations."
+    ],
+    "ten_sentence": [
+      "Three-pass reading is a deliberate division of labour between surveying, understanding, and reconstructing.",
+      "Pass 1 should take about 5-10 minutes and produces a one-paragraph 'gist' of the paper.",
+      "The Five Cs are: Category, Context, Correctness, Contributions, Clarity.",
+      "Pass 1 also produces a first guess at the 'read?' decision.",
+      "Pass 2 reads the body of the paper but does not yet verify the math.",
+      "Pass 2 should be able to write a one-page summary that captures the key claims.",
+      "Pass 3 verifies the math, re-derives the main result, and reads the related work.",
+      "Pass 3 surfaces hidden assumptions, edge cases, and limitations.",
+      "Three-pass reading is most useful for unfamiliar research areas; in your own area one pass is enough.",
+      "The method scales from conference papers to theses."
+    ]
+  },
+  "five_cs": {
+    "category": "Reading methodology / meta-research",
+    "context": "Before this paper, students had no widely taught, systematic way to read research papers.",
+    "correctness": "The three-pass method is well supported by decades of teaching experience and is widely adopted.",
+    "contributions": [
+      "First formalization of the three-pass reading method.",
+      "A practical Five Cs checklist for Pass 1.",
+      "A reconstruction strategy for Pass 3."
+    ],
+    "clarity": "Short, well-structured, easy to teach in one lecture."
+  },
+  "pass1": {
+    "category": "Meta / Reading methodology",
+    "context": "Students entering research need a fast way to triage papers.",
+    "correctness": "Decades of classroom use.",
+    "contributions": ["Three-pass method", "Five Cs checklist"],
+    "clarity": "Excellent.",
+    "decision": "Worth reading once and keeping as a reference."
+  },
+  "pass2": {
+    "main_ideas": [
+      "Pass 1 = bird's-eye view, 5-10 minutes.",
+      "Pass 2 = read body, skip math, write one-page summary.",
+      "Pass 3 = re-derive and critique."
+    ],
+    "method_summary": "Three-pass method with the Five Cs (Category, Context, Correctness, Contributions, Clarity) used in Pass 1.",
+    "figures_tables": [],
+    "key_references": [
+      {"title": "How to Read a Paper", "authors": "S. Keshav", "year": 2007, "why": "Self-reference."}
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Pass 1: read title, abstract, intro, headings, conclusion in 5-10 min.",
+      "Pass 2: read body, skip math, write summary.",
+      "Pass 3: re-derive result, find hidden assumptions."
+    ],
+    "critical_review": [
+      "The 5-minute budget is generous for short papers but tight for theses.",
+      "Pass 3 is hard to do well without domain knowledge."
+    ],
+    "hidden_assumptions": [
+      "Reader has basic CS literacy."
+    ]
+  },
+  "claims_evidence_map": [
+    {
+      "claim": "Three-pass reading is faster than one-pass reading for unfamiliar papers.",
+      "evidence": "[Author claim] Keshav's teaching experience.",
+      "label": "[Author claim]"
+    }
+  ],
+  "figures_tables": [],
+  "glossary": [
+    {"term": "Five Cs", "definition": "Category, Context, Correctness, Contributions, Clarity."},
+    {"term": "Pass", "definition": "One of three reading stages in Keshav's method."}
+  ],
+  "limitations": [
+    "5-minute budget may be too short for very long papers.",
+    "Pass 3 requires significant domain expertise."
+  ],
+  "reproduction_plan": {
+    "dataset": "N/A (methodology paper)",
+    "baseline": "N/A",
+    "hardware": "N/A",
+    "steps": ["Pick 3 unfamiliar papers in a new field.", "Apply 3-pass method, time each pass.", "Write the 1-page summary at the end of pass 2."],
+    "sanity_checks": ["Pass 1 ≤ 10 min for a 10-page paper."],
+    "success_criteria": ["You can state the 3 main claims of each paper after Pass 2."]
+  },
+  "open_questions": [
+    "How does the 3-pass method change for review papers vs. research papers?",
+    "Is there a 4-pass variant for theses?"
+  ],
+  "final_checklist": [
+    "I can describe the three-pass method.",
+    "I can list the Five Cs.",
+    "I can write a 1-page summary of an unfamiliar paper in 1 hour."
+  ]
+}

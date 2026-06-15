@@ -1,0 +1,161 @@
+{
+  "_about": "v0.2.8 — degraded error sample. The resolver helper raised on every call; the runner recorded resolver_status=error and degraded=ambiguous_clue. The run finished (rc=0) and the draft is still written, but the paper identity is NOT confirmed. The audit and quality gate should both surface warnings; the renderer should show a Degraded fallback badge and a callout.",
+  "schema_version": "0.1.0",
+  "target_language": "en",
+  "ui_language": "en",
+  "paper_metadata": {
+    "title": "[needs confirmation]",
+    "authors": [],
+    "year": 2024,
+    "venue": "",
+    "identifiers": {
+      "arxiv_id": null,
+      "doi": null,
+      "paper_url": null
+    },
+    "slug": "degraded-error-20260615",
+    "reading_mode": "abstract_only",
+    "source_kind": "paper_title",
+    "default_slug": "degraded-error-20260615"
+  },
+  "intake_quality": {
+    "input_kind": "paper_title",
+    "reading_mode": "abstract_only",
+    "confidence": "low",
+    "needs_confirmation": true,
+    "missing_fields": [
+      "title",
+      "authors",
+      "year",
+      "venue",
+      "arxiv_id"
+    ],
+    "ambiguities": [
+      "Resolver helper errored out; paper identity not confirmed."
+    ],
+    "warnings": [
+      "Resolver helper raised on every call; degraded to ambiguous_clue."
+    ],
+    "source_resolution": [
+      "legacy list kept for back-compat"
+    ]
+  },
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_title.",
+      "Input string: 'Some Unknown Paper'.",
+      "Resolver helper raised; runner caught the exception.",
+      "Resolver status: error; degraded: ambiguous_clue.",
+      "Resolver step: hostile-resolver."
+    ],
+    "hint_input": "Some Unknown Paper",
+    "resolver_source": "skills/paper-three-pass-reader/data/resolver_hints.json",
+    "resolver_helper": "skills/paper-three-pass-reader/scripts/resolver_hints.py",
+    "resolver_status": "error",
+    "resolver_match_type": null,
+    "confidence": "low",
+    "matched_paper_id": null,
+    "matched_canonical_title": null,
+    "matched_arxiv_id": null,
+    "matched_alias": null,
+    "matched_repo": null,
+    "candidates": [],
+    "source_resolution_step": "hostile-resolver",
+    "degraded": "ambiguous_clue"
+  },
+  "candidate_papers": [],
+  "summaries": {
+    "one_sentence": "[DRAFT] Paper identity was not confirmed; the resolver helper errored out.",
+    "three_sentence": [
+      "[DRAFT] The runner's resolver helper raised an exception on this input.",
+      "[DRAFT] The run finished with rc=0 and wrote a degraded draft.",
+      "[DRAFT] The paper identity must be confirmed manually before publishing."
+    ],
+    "ten_sentence": [
+      "[DRAFT] Step 1.",
+      "[DRAFT] Step 2.",
+      "[DRAFT] Step 3.",
+      "[DRAFT] Step 4.",
+      "[DRAFT] Step 5.",
+      "[DRAFT] Step 6.",
+      "[DRAFT] Step 7.",
+      "[DRAFT] Step 8.",
+      "[DRAFT] Step 9.",
+      "[DRAFT] Step 10."
+    ]
+  },
+  "five_cs": {
+    "category": "[DRAFT] unknown",
+    "context": "[DRAFT] unknown",
+    "correctness": "[DRAFT] unknown",
+    "contributions": [
+      "[DRAFT] unknown"
+    ],
+    "clarity": "[DRAFT] unknown"
+  },
+  "pass1": {
+    "category": "[DRAFT]",
+    "context": "[DRAFT]",
+    "correctness": "[DRAFT]",
+    "contributions": [
+      "[DRAFT]"
+    ],
+    "clarity": "[DRAFT]",
+    "decision": "[DRAFT]"
+  },
+  "pass2": {
+    "main_ideas": [
+      "[DRAFT]"
+    ],
+    "method_summary": "[DRAFT]",
+    "figures_tables": [
+      "[DRAFT]"
+    ],
+    "key_references": []
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "[DRAFT]"
+    ],
+    "critical_review": [
+      "[DRAFT]"
+    ],
+    "hidden_assumptions": [
+      "[DRAFT]"
+    ]
+  },
+  "claims_evidence_map": [
+    {
+      "claim": "Paper identity not confirmed.",
+      "evidence": "[Needs verification] Resolver helper errored out.",
+      "label": "[Needs verification]"
+    }
+  ],
+  "figures_tables": [],
+  "glossary": [],
+  "limitations": [
+    "Resolver helper errored out; manual confirmation required."
+  ],
+  "reproduction_plan": {
+    "dataset": "TBD",
+    "baseline": "TBD",
+    "hardware": "TBD",
+    "steps": [
+      "TBD"
+    ],
+    "sanity_checks": [
+      "TBD"
+    ],
+    "success_criteria": [
+      "TBD"
+    ]
+  },
+  "open_questions": [
+    "Which paper did the user mean?"
+  ],
+  "final_checklist": [
+    "Resolver reported an error.",
+    "Paper identity is not confirmed.",
+    "User must verify before publishing."
+  ]
+}

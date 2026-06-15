@@ -983,6 +983,175 @@ for sub in cli-screenshot-smoke cli-abstract-smoke; do
   fi
 done
 
+# ----------------------------------------------------------------------
+# step 15 — v0.2.8 structured source_resolution consumers
+# ----------------------------------------------------------------------
+step 15 "v0.2.8 structured source_resolution consumers"
+
+# 15a. The utility module is importable.
+if python3 -c "import sys; sys.path.insert(0,'$ROOT/skills/paper-three-pass-reader/scripts'); import source_resolution_utils" >/dev/null 2>&1; then
+  ok "source_resolution_utils.py imports cleanly"
+else
+  bad "source_resolution_utils.py failed to import"
+fi
+
+# 15b. Utility reads structured source_resolution correctly.
+SR_UTILS_DIR="$ROOT/skills/paper-three-pass-reader/scripts"
+SMOKE="$ROOT/runs/source-resolution-consumers-smoke-20260615"
+if (cd "$SR_UTILS_DIR" && python3 - "$SMOKE/matched-paper_reading.json" <<'PYEOF' >/dev/null 2>&1
+import sys, json
+sys.path.insert(0, ".")
+import source_resolution_utils as u
+data = json.load(open(sys.argv[1]))
+s = u.summarize_source_resolution(data)
+assert s["structured"] is True, s
+assert s["matched_paper_id"] == "attention-is-all-you-need", s
+errs, warns = u.validate_source_resolution(data)
+assert not errs, errs
+PYEOF
+); then
+  ok "utility reads structured source_resolution from matched sample"
+else
+  bad "utility could not read structured source_resolution from matched sample"
+fi
+
+# 15c. Legacy-only sample does not crash and produces a fallback summary.
+if (cd "$SR_UTILS_DIR" && python3 - "$SMOKE/legacy-only-paper_reading.json" <<'PYEOF' >/dev/null 2>&1
+import sys, json
+sys.path.insert(0, ".")
+import source_resolution_utils as u
+data = json.load(open(sys.argv[1]))
+s = u.summarize_source_resolution(data)
+assert s["fallback_legacy"] is True, s
+errs, warns = u.validate_source_resolution(data)
+assert any("legacy" in w for w in warns), warns
+PYEOF
+); then
+  ok "legacy-only sample produces fallback summary and a legacy warning"
+else
+  bad "legacy-only sample did not degrade gracefully"
+fi
+
+# 15d. Renderer page for matched sample includes expected markers (English).
+MATCHED_HTML="$SMOKE/matched-render/index.html"
+if [[ -f "$MATCHED_HTML" ]]; then
+  if grep -q 'Resolver status' "$MATCHED_HTML" && \
+     grep -q 'Confidence' "$MATCHED_HTML" && \
+     grep -q 'Matched arXiv ID' "$MATCHED_HTML" && \
+     grep -q 'attention-is-all-you-need' "$MATCHED_HTML" && \
+     grep -q '1706.03762' "$MATCHED_HTML"; then
+    ok "matched render contains Resolver status / Confidence / arXiv ID"
+  else
+    bad "matched render is missing one of Resolver status / Confidence / arXiv ID"
+  fi
+else
+  bad "matched render/index.html is missing — re-run smoke generation"
+fi
+
+# 15e. Renderer page for zh-CN sample contains Chinese labels.
+ZH_HTML="$SMOKE/zh-cn-render/index.html"
+if [[ -f "$ZH_HTML" ]]; then
+  if grep -q '解析状态' "$ZH_HTML" && \
+     grep -q '置信度' "$ZH_HTML" && \
+     grep -q '匹配 arXiv ID' "$ZH_HTML" && \
+     grep -q '1706.03762' "$ZH_HTML"; then
+    ok "zh-cn render contains 解析状态 / 置信度 / 匹配 arXiv ID"
+  else
+    bad "zh-cn render is missing one of 解析状态 / 置信度 / 匹配 arXiv ID"
+  fi
+else
+  bad "zh-cn render/index.html is missing"
+fi
+
+# 15f. Hostile/degraded sample renders without crashing.
+DEG_HTML="$SMOKE/degraded-render/index.html"
+if [[ -f "$DEG_HTML" ]]; then
+  if grep -q 'Resolver status' "$DEG_HTML" && \
+     grep -q 'Degraded fallback' "$DEG_HTML"; then
+    ok "degraded render contains Degraded fallback badge + Resolver status"
+  else
+    bad "degraded render is missing Degraded fallback badge"
+  fi
+else
+  bad "degraded render/index.html is missing"
+fi
+
+# 15g. Audit JSON includes source_resolution block.
+if python3 - "$ROOT" <<'PYEOF' >/dev/null 2>&1
+import sys, json, subprocess, tempfile, pathlib
+root = sys.argv[1]
+src = pathlib.Path(root) / "runs/source-resolution-consumers-smoke-20260615/matched-paper_reading.json"
+data = json.load(open(src))
+sys.path.insert(0, str(pathlib.Path(root) / "skills/paper-three-pass-reader/scripts"))
+import audit_paper_reading
+r = audit_paper_reading.audit(data)
+assert "source_resolution" in r, list(r.keys())
+sr = r["source_resolution"]
+assert sr["structured"] is True
+assert "summary" in sr and sr["summary"]
+PYEOF
+then
+  ok "audit JSON includes source_resolution block with summary"
+else
+  bad "audit JSON does not include source_resolution block"
+fi
+
+# 15h. Quality gate JSON includes source_resolution_check.
+if python3 - "$ROOT" "$SMOKE/zh-cn-matched-paper_reading.json" <<'PYEOF' >/dev/null 2>&1
+import sys, json, pathlib
+root, src = sys.argv[1], sys.argv[2]
+sys.path.insert(0, str(pathlib.Path(root) / "skills/paper-three-pass-reader/scripts"))
+import quality_gate_zh_cn
+class A: min_cjk_ratio=0.5; min_glossary=5; min_claims=5; min_checklist=8
+data = json.load(open(src))
+r = quality_gate_zh_cn.run_quality_gate(data, A())
+assert "source_resolution_check" in r
+assert r["source_resolution_check"]["structured"] is True
+PYEOF
+then
+  ok "quality_gate_zh_cn JSON includes source_resolution_check"
+else
+  bad "quality_gate_zh_cn JSON missing source_resolution_check"
+fi
+
+# 15i. Fill-pack 00_README contains Source Resolution summary.
+for tag in matched degraded legacy-only zh-cn; do
+  fp="$SMOKE/$tag-fill-pack/00_README.md"
+  if [[ -f "$fp" ]] && grep -q 'Source Resolution' "$fp"; then
+    ok "$tag fill-pack 00_README has Source Resolution summary"
+  else
+    bad "$tag fill-pack 00_README missing Source Resolution summary"
+  fi
+done
+
+# 15j. zh-CN fill-pack contains 解析状态 OR 输入线索.
+for tag in zh-cn; do
+  fp="$SMOKE/$tag-fill-pack/00_README.md"
+  if [[ -f "$fp" ]] && grep -qE '解析状态|输入线索' "$fp"; then
+    ok "$tag fill-pack 00_README has 解析状态 / 输入线索"
+  else
+    bad "$tag fill-pack 00_README missing 解析状态 / 输入线索"
+  fi
+done
+
+# 15k. Runner structured source_resolution smoke still passes.
+RUNNER_SMOKE="$ROOT/runs/p3pr-cli-v26b-smoke/p3pr-v26b-title/work/paper_reading.json"
+if [[ -f "$RUNNER_SMOKE" ]] && \
+   python3 -c "import json,sys; sys.path.insert(0,'$ROOT/skills/paper-three-pass-reader/scripts'); import source_resolution_utils as u; d=json.load(open('$RUNNER_SMOKE')); s=u.summarize_source_resolution(d); assert s['matched_paper_id']=='attention-is-all-you-need' and s['structured']" >/dev/null 2>&1; then
+  ok "v0.2.6 runner smoke still has structured source_resolution"
+else
+  bad "v0.2.6 runner smoke lost structured source_resolution"
+fi
+
+# 15l. p3pr dry-run structured resolver output still passes.
+P3PR_SMOKE="$ROOT/runs/p3pr-cli-v26b-smoke/p3pr-v26b-title"
+if [[ -d "$P3PR_SMOKE" ]] && \
+   python3 -c "import json; d=json.load(open('$P3PR_SMOKE/work/paper_reading.json')); assert d.get('source_resolution',{}).get('matched_paper_id')=='attention-is-all-you-need'" >/dev/null 2>&1; then
+  ok "p3pr dry-run smoke still has structured resolver output"
+else
+  bad "p3pr dry-run smoke lost structured resolver output"
+fi
+
 # Summary
 echo
 echo "================================================="

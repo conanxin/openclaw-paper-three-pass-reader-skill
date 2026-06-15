@@ -42,6 +42,11 @@ code { color: var(--code); background: rgba(240,198,116,0.08); padding: 1px 5px;
 .badge-confidence-medium { background: rgba(183,121,31,0.18); color: #f6ad55; border-color: #b7791f; }
 .badge-confidence-low { background: rgba(197,48,48,0.18); color: #feb2b2; border-color: #c53030; }
 .badge-input { background: var(--panel); color: var(--muted); }
+.badge-warn { background: rgba(197,48,48,0.18); color: #feb2b2; border-color: #c53030; }
+.callout { padding: 10px 12px; margin-top: 12px; border-radius: 6px; border: 1px solid var(--border); }
+.callout-warn { background: rgba(197,48,48,0.10); color: #fed7d7; border-color: #c53030; }
+.muted { color: var(--muted); }
+details.candidates summary { cursor: pointer; }
 
 /* TOC */
 .toc { max-width: 980px; margin: 16px auto 0; padding: 0 24px; }

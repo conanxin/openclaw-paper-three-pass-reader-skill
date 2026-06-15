@@ -222,3 +222,14 @@ on every call, the runner:
 This means a broken helper can never fail a run. A hostile-resolver test in
 `scripts/validate.sh` step 14 forces the helper to raise on every call and asserts
 all four behaviours above. The full validation remains PASS at 195/0.
+
+---
+
+## See also (v0.2.8)
+
+- [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) — canonical reference for the
+  top-level structured `source_resolution` block introduced in v0.2.7 and
+  consumed by the renderer / audit / fill-pack / zh-CN quality gate in v0.2.8.
+- [`../RUNNER.md`](../RUNNER.md) — how the runner builds the structured block.
+- [`../../../../scripts/source_resolution_utils.py`](../../../../scripts/source_resolution_utils.py)
+  — the shared utility (lives under the v0.2.8 path).

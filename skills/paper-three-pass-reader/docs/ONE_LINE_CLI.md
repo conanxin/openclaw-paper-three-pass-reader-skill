@@ -230,3 +230,4 @@ not as a fatal error. This is verified by a hostile-resolver test in
 - [`RUNNER.md`](RUNNER.md) — what the underlying runner does.
 - [`USAGE.md`](USAGE.md) — examples of using runner / audit / quality gate directly.
 - [`ZH_CN_QUALITY_GATE.md`](ZH_CN_QUALITY_GATE.md) — what the quality gate checks.
+- [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) — what the renderer, audit, fill-pack, and zh-CN quality gate actually read from the structured top-level `source_resolution` block.

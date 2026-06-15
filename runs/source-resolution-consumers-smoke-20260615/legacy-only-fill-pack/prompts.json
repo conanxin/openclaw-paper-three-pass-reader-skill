@@ -1,0 +1,18 @@
+{
+  "language": "en",
+  "agent_profile": "default",
+  "reading_mode": "partial_text",
+  "input_kind": "paper_title",
+  "max_claims": 8,
+  "max_figures": 6,
+  "stage0_intake_resolution": "Confirm Stage 0 parsing; ensure canonical identification.",
+  "pass1_five_cs": "Write Five Cs: Category / Context / Correctness / Contributions / Clarity.",
+  "pass2_main_ideas": "Write main_ideas + method_summary.",
+  "claims_evidence_map": "Write one entry per important claim with evidence_label.",
+  "figures_tables": "Write explanation entries for key figures/tables.",
+  "pass3_reconstruction": "Reconstruct the method in your own words.",
+  "critical_review": "Write critical_review + limitations + hidden_assumptions + future_work.",
+  "reproduction_plan": "Write minimal executable reproduction plan.",
+  "finalize_json": "Audit the whole JSON before render/publish.",
+  "quality_gate": "Run audit + render; optionally publish."
+}

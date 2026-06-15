@@ -89,6 +89,44 @@
       {% endif %}
     </section>
 
+    <!-- 2b. Resolver Trail (structured source_resolution, v0.2.8) -->
+    <section id="resolver-trail" class="card">
+      <h2>Resolver Trail</h2>
+      {% set srs = source_resolution_summary %}
+      <div class="badges">
+        {% if srs.structured %}
+        <span class="badge badge-confidence badge-confidence-{{ srs.confidence|lower }}">Structured trail</span>
+        {% endif %}
+        {% if not srs.structured %}
+        <span class="badge badge-input">Legacy fallback</span>
+        {% endif %}
+        {% if srs.degraded %}
+        <span class="badge badge-warn">Degraded fallback: {{ srs.degraded }}</span>
+        {% endif %}
+      </div>
+      <ul class="kv-list">
+        <li><span class="label">Resolver status</span> <span class="value">{% if srs.resolver_status %}{{ srs.resolver_status }}{% endif %}</span></li>
+        <li><span class="label">Match type</span> <span class="value">{% if srs.resolver_match_type %}{{ srs.resolver_match_type }}{% endif %}</span></li>
+        <li><span class="label">Confidence</span> <span class="value">{% if srs.confidence %}{{ srs.confidence }}{% endif %}</span></li>
+        <li><span class="label">Matched paper</span> <span class="value">{% if srs.matched_canonical_title %}{{ srs.matched_canonical_title }}{% endif %}</span></li>
+        <li><span class="label">Matched paper id</span> <span class="value">{% if srs.matched_paper_id %}{{ srs.matched_paper_id }}{% endif %}</span></li>
+        <li><span class="label">Matched arXiv ID</span> <span class="value">{% if srs.matched_arxiv_id %}{{ srs.matched_arxiv_id }}{% endif %}</span></li>
+        <li><span class="label">Matched repo</span> <span class="value">{% if srs.matched_repo %}{{ srs.matched_repo }}{% endif %}</span></li>
+        <li><span class="label">Resolver source</span> <span class="value">{% if srs.resolver_source %}{{ srs.resolver_source }}{% endif %}</span></li>
+        <li><span class="label">Source resolution step</span> <span class="value">{% if srs.source_resolution_step %}{{ srs.source_resolution_step }}{% endif %}</span></li>
+        <li><span class="label">Candidate count</span> <span class="value">{{ srs.candidate_count }}</span></li>
+      </ul>
+      {% if srs.candidates_top %}
+      <details class="candidates">
+        <summary>Top candidates ({{ srs.candidates_top|length }})</summary>
+        <ul>{% for c in srs.candidates_top %}<li>{% if c.title %}{{ c.title }}{% endif %}{% if c.id %}{{ c.id }}{% endif %}{% if c.raw %}{{ c.raw }}{% endif %}<span class="muted"> — confidence: {% if c.confidence %}{{ c.confidence }}{% endif %}</span></li>{% endfor %}</ul>
+      </details>
+      {% endif %}
+      {% if srs.degraded %}
+      <div class="callout callout-warn">Resolver degraded (status={{ srs.resolver_status }}). The run finished but the paper identity was not confirmed. Please verify the matched_paper_id / arXiv ID manually.</div>
+      {% endif %}
+    </section>
+
     <!-- 3. Summaries -->
     <section id="summary" class="card">
       <h2>Summaries</h2>
