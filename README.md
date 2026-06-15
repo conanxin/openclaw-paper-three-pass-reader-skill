@@ -303,7 +303,8 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.2.5-alpha` | immutable | One-line CLI `p3pr`. `./p3pr arxiv 2503.08102 --zh --full --publish` does the whole pipeline (runner + fill-pack + audit + quality gate + render + publish). 6 subcommands: arxiv / title / abstract / screenshot / repo / pdf. Enforces weak-mode / quality-gate boundaries. |
 | `v0.2.6-alpha` | immutable | Shared resolver hints: `data/resolver_hints.json` is now the single source of truth, with `scripts/resolver_hints.py` and `scripts/resolve_paper_hint.py` helpers. Replaces the duplicate HINTS dict in `p3pr.py` and the duplicate `RESOLVER_HINTS` in the runner. |
 | `v0.2.7-alpha` | immutable | v0.2.6 round-2 hardening, released as a new tag (v0.2.6-alpha is immutable, never re-pointed). Adds the structured top-level `source_resolution` block, the CLI→runner overlay via `work/resolver_source.json` + `--resolver-source`, and the resolver helper degradation behaviour (a broken helper now degrades to `ambiguous_clue` and the run still finishes rc=0). Validation 195/0 PASS. |
-| `v0.2.9-alpha` | current | Polished HTML essay / talk page rendering. Renderer no longer leaks raw `{'label': ...}` dicts, no longer leaks `{% else %}` template tags, exposes `generator_version` in the page footer, switches `Reproduction Plan` → `实践计划` for essay-mode inputs, and renders a `<details>`-based accordion. Claim IDs and glossary definitions display correctly. Re-published the Chinese *You and Your Research* page. Validation 220/0 PASS. |
+| `v0.2.10-alpha` | current | Published-pages regression audit. New `audit_published_pages.py` reads `published_pages.json`, fetches every page, and produces a JSON + Markdown report covering template leaks, raw dicts, old footers, weak zh-CN UI, missing Resolver Trail, missing Claims / Glossary, and essay-mode regressions. `--selftest-dir` mode is wired into `scripts/validate.sh` step 17. First live audit run found 1/9 pages at PASS. Validation 225/0 PASS. |
+| `v0.2.9-alpha` | previous | Polished HTML essay / talk page rendering. Renderer no longer leaks raw `{'label': ...}` dicts, no longer leaks `{% else %}` template tags, exposes `generator_version` in the page footer, switches `Reproduction Plan` → `实践计划` for essay-mode inputs, and renders a `<details>`-based accordion. Claim IDs and glossary definitions display correctly. Re-published the Chinese *You and Your Research* page. Validation 220/0 PASS. |
 | `v0.2.8-alpha` | previous | Structured `source_resolution` consumers. New `source_resolution_utils.py` is the single shared helper. Renderer, audit, fill-pack, and zh-CN quality gate all read the structured block; legacy `intake_quality.source_resolution` list is still supported via on-the-fly upgrade. Validation 210/0 PASS. |
 
 ## Language support (zh-CN / en)
@@ -397,4 +398,4 @@ See [`skills/paper-three-pass-reader/docs/ONE_LINE_CLI.md`](skills/paper-three-p
 
 MIT — see [`LICENSE`](LICENSE).
 
-Version: **v0.2.9-alpha**. Previous: v0.2.8-alpha (immutable, kept for reproducibility).
+Version: **v0.2.10-alpha**. Previous: v0.2.9-alpha (immutable, kept for reproducibility).

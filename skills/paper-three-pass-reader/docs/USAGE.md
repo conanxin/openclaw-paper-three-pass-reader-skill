@@ -397,3 +397,72 @@ As of v0.2.9, the renderer classifies inputs as `essay / talk` when the paper ca
 ### Validation is now 220/0 PASS
 
 `scripts/validate.sh` step 5 no longer asserts a literal `class="accordion"` — the new template uses native `<details>` markup (13 instances in the bundled sample render). The check now accepts either form via a `details / accordion` regex.
+
+---
+
+## v0.2.10-alpha: published-pages regression audit
+
+`audit_published_pages.py` is the canonical tool for checking which live pages still carry legacy-render artefacts. It's read-only — it never writes to `gh-pages`, never republishes anything.
+
+### Run the live audit
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
+  --manifest-url https://conanxin.github.io/paper-reading-pages/published_pages.json \
+  --site-root https://conanxin.github.io/paper-reading-pages \
+  --json-output runs/published-pages-audit-20260615/audit.json \
+  --markdown-output runs/published-pages-audit-20260615/audit.md \
+  --include-root \
+  --warn-only
+```
+
+The output JSON contains per-page status (PASS / WARN / FAIL), per-issue code/severity/message/recommendation, and a top-level `recommendations` block.
+
+### When to run
+
+- Before any new release — make sure the previous release's "PASS page" is still passing after the renderer template was edited.
+- After bumping the renderer version — catch any new regressions.
+- Monthly — spot-check the live site is still healthy.
+- Before deciding to republish a batch of pages — confirm which pages actually need republishing.
+
+### Selftest
+
+```bash
+mkdir -p /tmp/p3pr-selftest
+# (copy or create fake-*.html fixtures; validate.sh does this automatically)
+python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
+  --selftest-dir /tmp/p3pr-selftest \
+  --json-output /tmp/selftest-audit.json \
+  --markdown-output /tmp/selftest-audit.md
+```
+
+The selftest is wired into `scripts/validate.sh` step 17, so `bash scripts/validate.sh` will exercise it automatically.
+
+### Severity reference
+
+| Code | Severity | What it means |
+|---|---|---|
+| `template_leak` | error | `{% %}` / `{{ }}` / `{% else %}` / `{# #}` / `No key references recorded` in the body. |
+| `old_footer` | error | `v0.1.0-alpha` (any variant) in the body. |
+| `raw_dict` | error | `{'label': …` raw Python dict in the body. |
+| `http_error` | error | Non-200 HTTP status. |
+| `empty_body` | error | Body < 200 bytes. |
+| `missing_resolver_trail` | warning | No Resolver Trail / 解析状态 block. |
+| `missing_claims_section` | warning | No Claims / Evidence section. |
+| `missing_glossary` | warning | No Glossary / 关键术语. |
+| `zh_cn_markers_weak` | warning | zh-CN page has fewer than 5 of 6 zh-CN UI markers. |
+| `essay_missing_markers` | warning | Essay / talk page missing 实践计划 / 结构说明 / 相关脉络. |
+| `empty_claim_id` | warning | `<code></code>` empty cells in the claims table. |
+| `glossary_no_explicit_definition` | info | Glossary chips without `chip-body` definition block. |
+| `no_visible_claim_id` | info | No `>C\d{2,}<` claim ID. |
+| `no_evidence_label` | info | No evidence label. |
+
+### Overall status
+
+- `PASS` — manifest readable, every page 200, no error issues.
+- `WARN` — every page 200, no error issues, but warnings exist.
+- `FAIL` — manifest unreadable or at least one page has an error issue.
+
+Pass `--strict` to promote WARN to FAIL (useful for CI gates).
+
+See [`PUBLISHED_PAGES_AUDIT.md`](PUBLISHED_PAGES_AUDIT.md) for the full reference.

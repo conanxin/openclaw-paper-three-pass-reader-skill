@@ -1,0 +1,371 @@
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-06-15T15:05:11.027322Z",
+  "status": "FAIL",
+  "site_root": "https://conanxin.github.io/paper-reading-pages",
+  "manifest_url": "https://conanxin.github.io/paper-reading-pages/published_pages.json",
+  "manifest_ok": true,
+  "pages_total": 10,
+  "pages_checked": 10,
+  "pages_pass": 1,
+  "pages_warn": 1,
+  "pages_fail": 8,
+  "issues_by_severity": {
+    "error": 16,
+    "warning": 10,
+    "info": 15
+  },
+  "pages": [
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/",
+      "slug": "index",
+      "title": "Paper Reading Pages — index",
+      "http_status": 200,
+      "fetched_bytes": 2736,
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_claims_section",
+          "message": "页面缺少 Claims / Evidence 区段。",
+          "recommendation": "确认 paper_reading.json 含 claims_evidence_map,重新渲染。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_glossary",
+          "message": "页面缺少 Glossary / 关键术语 区段。",
+          "recommendation": "如果页面是 screenshot_only,可忽略;否则补 paper_reading.json 的 glossary 字段并重新渲染。"
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/",
+      "slug": "attention-is-all-you-need",
+      "title": "Attention Is All You Need — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 44070,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-title-attention-is-all-you-need/",
+      "slug": "weakinput-title-attention-is-all-you-need",
+      "title": "Attention Is All You Need — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 44239,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-abstract-how-to-read-a-paper/",
+      "slug": "weakinput-abstract-how-to-read-a-paper",
+      "title": "How to Read a Paper — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 20140,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-screenshot-how-to-read-a-paper/",
+      "slug": "weakinput-screenshot-how-to-read-a-paper",
+      "title": "How to Read a Paper — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 21489,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-repo-bert/",
+      "slug": "weakinput-repo-bert",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 34710,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/runner-title-attention/",
+      "slug": "runner-title-attention",
+      "title": "Attention Is All You Need — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 12662,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/second-me-fulltext-autofill/",
+      "slug": "second-me-fulltext-autofill",
+      "title": "AI-native Memory 2.0: Second Me — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 42109,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/",
+      "slug": "second-me-human-inspired-memory-cn",
+      "title": "Second Me: Human-Inspired Memory Mechanism for LLM Agents — 三遍阅读法",
+      "http_status": 200,
+      "fetched_bytes": 29635,
+      "issues": [
+        {
+          "severity": "error",
+          "code": "template_leak",
+          "message": "渲染页包含未闭合的 template tag 或占位符: %}, No key references recorded, {%, {% else %}",
+          "recommendation": "重新用 v0.2.9+ 渲染器 (render_page.py) 渲染该页面,确认 mini-template 的 {% else %} 分支已处理。"
+        },
+        {
+          "severity": "error",
+          "code": "old_footer",
+          "message": "页面仍显示旧版本 footer: 'v0.1.0-alpha'",
+          "recommendation": "重新渲染该页面以使用 v0.2.9+ 的 generator_version footer。"
+        },
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        },
+        {
+          "severity": "info",
+          "code": "glossary_no_explicit_definition",
+          "message": "Glossary 仍是 v0.2.8 之前的 chip 形态(无显式定义块)。",
+          "recommendation": "v0.2.9+ 渲染器会输出 chip-body 块,重新渲染即可。"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/you-and-your-research-cn/",
+      "slug": "you-and-your-research-cn",
+      "title": "You and Your Research — 三遍阅读法",
+      "http_status": 200,
+      "fetched_bytes": 27987,
+      "issues": [],
+      "status": "PASS"
+    }
+  ],
+  "recommendations": [
+    "8 页面仍泄漏 template tag — 优先 batch re-render + republish。",
+    "8 页面 footer 仍写 v0.1.0-alpha — 重新渲染以使用 generator_version。",
+    "8 页面缺 Resolver Trail — v0.2.8 之前渲染,建议在 v0.2.11+ 分批重渲染。",
+    "1 页面缺 Glossary — 检查 paper_reading.json 的 glossary 字段。"
+  ]
+}

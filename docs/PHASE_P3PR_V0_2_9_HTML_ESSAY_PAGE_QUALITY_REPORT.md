@@ -119,21 +119,19 @@ STATUS: PASS
 
 ## COMMIT
 
-`git commit -m "Polish HTML essay reading page rendering"`
-
-(SHA will be filled in by the git step in the run that actually commits; not pre-computed here.)
+`git commit -m "Polish HTML essay reading page rendering"` → commit `d4368241ccc99131583eabececd81e4335fb1f6e` ("Polish HTML essay reading page rendering"). 24 files changed, 1378 insertions(+), 286 deletions(-). Created mode 100644 for `docs/PHASE_P3PR_V0_2_9_HTML_ESSAY_PAGE_QUALITY_REPORT.md` and `docs/RELEASE_NOTES_v0.2.9-alpha.md`.
 
 ## PUSH
 
-`git push origin main` — pending the git step.
+`git push origin main` → `3409a30..d436824 main -> main` on `https://github.com/conanxin/openclaw-paper-three-pass-reader-skill.git`.
 
 ## TAG
 
-Annotated tag `v0.2.9-alpha` pointing at the post-render commit. Pending the git step.
+Annotated tag `v0.2.9-alpha` pointing at commit `d4368241ccc99131583eabececd81e4335fb1f6e`. Pushed to `origin` as `[new tag] v0.2.9-alpha -> v0.2.9-alpha`.
 
 ## RELEASE
 
-GitHub Release `paper-three-pass-reader v0.2.9-alpha` with `--notes-file docs/RELEASE_NOTES_v0.2.9-alpha.md`. Pending the gh step.
+GitHub Release `paper-three-pass-reader v0.2.9-alpha` with `--notes-file docs/RELEASE_NOTES_v0.2.9-alpha.md`. URL: <https://github.com/conanxin/openclaw-paper-three-pass-reader-skill/releases/tag/v0.2.9-alpha>.
 
 ## GITHUB_PAGES_URL
 

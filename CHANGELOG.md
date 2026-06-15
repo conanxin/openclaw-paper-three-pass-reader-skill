@@ -3,6 +3,23 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.10-alpha] — 2026-06-15
+
+### Added
+
+- **Published-pages regression audit** — new stdlib-only CLI `skills/paper-three-pass-reader/scripts/audit_published_pages.py`. Reads `published_pages.json` (live URL or local file), fetches every page, and produces a JSON + Markdown audit report covering HTTP errors, template-tag leaks, raw dict reprs, old footers, weak zh-CN UI markers, missing Resolver Trail, missing Claims / Glossary, and essay-mode regressions.
+- **Selftest mode** — `audit_published_pages.py --selftest-dir <dir>` runs six synthetic pages through the same checks and reports which expected codes were detected. No network access required.
+- **`scripts/validate.sh` step 17** — invokes the selftest mode and asserts the audit's JSON / Markdown outputs and per-fixture expectations. Validation is now 225/0 PASS (was 220/0 PASS at v0.2.9).
+- **`skills/paper-three-pass-reader/docs/PUBLISHED_PAGES_AUDIT.md`** — canonical reference for the audit tool: check list, severity table, output format, PASS / WARN / FAIL semantics, when to run.
+- **First live audit run** — `runs/published-pages-audit-20260615/audit.json` + `audit.md`. The audit found that 8 of 9 published pages (rendered before v0.2.9) still carry legacy-render artefacts; the v0.2.9-re-published `you-and-your-research-cn` page is the only PASS.
+
+### Notes
+
+- v0.2.9-alpha stays immutable; this release lands as v0.2.10-alpha.
+- The audit is read-only. It never writes to `gh-pages`, never republishes anything, never triggers re-renders.
+- No existing page is changed by this release.
+- The first audit run reports `FAIL` overall — this is expected and is the audit's intended use: surface pages that need re-rendering in a future release.
+
 ## [v0.2.9-alpha] — 2026-06-15
 
 ### Added

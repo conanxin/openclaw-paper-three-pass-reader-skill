@@ -231,3 +231,21 @@ not as a fatal error. This is verified by a hostile-resolver test in
 - [`USAGE.md`](USAGE.md) — examples of using runner / audit / quality gate directly.
 - [`ZH_CN_QUALITY_GATE.md`](ZH_CN_QUALITY_GATE.md) — what the quality gate checks.
 - [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) — what the renderer, audit, fill-pack, and zh-CN quality gate actually read from the structured top-level `source_resolution` block.
+
+---
+
+## v0.2.10-alpha: published-pages regression audit
+
+`p3pr` does not auto-audit the live site. To get a structured report of which published pages still carry legacy-render artefacts, run `audit_published_pages.py` directly:
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
+  --manifest-url https://conanxin.github.io/paper-reading-pages/published_pages.json \
+  --site-root https://conanxin.github.io/paper-reading-pages \
+  --json-output runs/published-pages-audit-20260615/audit.json \
+  --markdown-output runs/published-pages-audit-20260615/audit.md \
+  --include-root \
+  --warn-only
+```
+
+The audit is read-only — it never writes to `gh-pages`, never republishes anything, and never modifies any local files outside the output paths you pass. See [`PUBLISHED_PAGES_AUDIT.md`](PUBLISHED_PAGES_AUDIT.md) for the full reference.
