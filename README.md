@@ -230,13 +230,33 @@ The page is copied into `gh-pages/attention-is-all-you-need/` and the repo root 
 
 ---
 
+## One-command runner (v0.2.0-alpha)
+
+`skills/paper-three-pass-reader/scripts/run_paper_reading.py` turns a paper-shaped input (title, abstract, OCR transcript, repo URL, …) into a standard run directory + draft `paper_reading.json` + (optional) rendered page + (optional) published GitHub Page.
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "Attention Is All You Need" \
+  --input-kind paper_title \
+  --slug runner-title-attention \
+  --output-root runs/runner-smoke-20260615 \
+  --render --publish \
+  --repo conanxin/paper-reading-pages \
+  --page-title "Runner Smoke: Attention Is All You Need"
+```
+
+The runner does **not** read the paper for you — it produces a DRAFT with `[DRAFT]` placeholders that you (or an agent) fill in. It enforces reading-mode discipline, writes the standard run layout, and keeps the workflow repeatable. See [`skills/paper-three-pass-reader/docs/RUNNER.md`](skills/paper-three-pass-reader/docs/RUNNER.md) for the full interface, examples, and boundaries.
+
+---
+
 ## Version history
 
 | Tag | Status | Purpose |
 |---|---|---|
 | `v0.1.0-alpha` | immutable | Initial release. |
 | `v0.1.1-alpha` | immutable | Renderer hardening (loose-JSON tolerance) + multi-page publishing script. |
-| `v0.1.2-alpha` | current | Publish-script fix that preserves sibling page subdirectories on re-publish. |
+| `v0.1.2-alpha` | immutable | Publish-script fix that preserves sibling page subdirectories on re-publish. |
+| `v0.2.0-alpha` | current | One-command runner for turning weak/complete inputs into a standard run layout + draft JSON + (optional) rendered/published page. |
 
 This project treats published tags as immutable: never force-moves an existing tag, never rewrites history.
 

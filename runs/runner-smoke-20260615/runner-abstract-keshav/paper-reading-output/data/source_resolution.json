@@ -1,0 +1,8 @@
+{
+  "steps": [
+    "Input kind = paper_excerpt.",
+    "Input string: 'abstract excerpt of How to Read a Paper'.",
+    "Matched resolver hint: 'abstract excerpt of How to Read a Paper' → How to Read a Paper (arXiv None)",
+    "Runner did NOT fetch the paper body. Operator must supply the body (PDF → extracted text) or upgrade reading_mode manually."
+  ]
+}

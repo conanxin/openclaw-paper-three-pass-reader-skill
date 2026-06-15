@@ -182,6 +182,87 @@ else
   bad "Attention run re-render failed"
 fi
 
+# 8. v0.2 runner checks
+step 8 "v0.2 runner"
+
+# 8a. runner script exists.
+if [[ -x "$SKILL_DIR/scripts/run_paper_reading.py" ]]; then
+  ok "runner script exists and is executable"
+else
+  bad "runner script missing or not executable: $SKILL_DIR/scripts/run_paper_reading.py"
+fi
+
+# 8b. runner help works.
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" --help >/dev/null 2>&1; then
+  ok "runner --help exits 0"
+else
+  bad "runner --help failed"
+fi
+
+# 8c. title-only smoke run can generate work/paper_reading.json.
+rm -rf /tmp/p3pr-runner-title-only
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "Attention Is All You Need" \
+     --input-kind paper_title \
+     --slug runner-title-only \
+     --output-root /tmp/p3pr-runner-title-only >/dev/null 2>&1; then
+  if [[ -f /tmp/p3pr-runner-title-only/runner-title-only/work/paper_reading.json ]]; then
+    ok "title-only smoke run produced work/paper_reading.json"
+  else
+    bad "title-only smoke run did not produce work/paper_reading.json"
+  fi
+else
+  bad "title-only smoke run failed"
+fi
+
+# 8d. abstract-only smoke run page contains abstract_only.
+rm -rf /tmp/p3pr-runner-abstract
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "abstract excerpt of How to Read a Paper" \
+     --input-kind paper_excerpt \
+     --slug runner-abstract \
+     --output-root /tmp/p3pr-runner-abstract \
+     --render >/dev/null 2>&1; then
+  if grep -q "abstract_only" /tmp/p3pr-runner-abstract/runner-abstract/paper-reading-output/index.html; then
+    ok "abstract_only smoke page contains abstract_only"
+  else
+    bad "abstract_only smoke page missing abstract_only"
+  fi
+else
+  bad "abstract_only smoke run failed"
+fi
+
+# 8e. screenshot-only smoke run page contains screenshot_only.
+rm -rf /tmp/p3pr-runner-screenshot
+if python3 "$SKILL_DIR/scripts/run_paper_reading.py" \
+     --input "OCR transcript of How to Read a Paper screenshot" \
+     --input-kind paper_screenshot \
+     --slug runner-screenshot \
+     --output-root /tmp/p3pr-runner-screenshot \
+     --render >/dev/null 2>&1; then
+  if grep -q "screenshot_only" /tmp/p3pr-runner-screenshot/runner-screenshot/paper-reading-output/index.html; then
+    ok "screenshot_only smoke page contains screenshot_only"
+  else
+    bad "screenshot_only smoke page missing screenshot_only"
+  fi
+else
+  bad "screenshot_only smoke run failed"
+fi
+
+# 8f. Sample render still passes.
+rm -rf /tmp/p3pr-validate-sample
+if python3 "$SKILL_DIR/scripts/render_page.py" \
+     --input "$SKILL_DIR/examples/sample_paper_reading.json" \
+     --output /tmp/p3pr-validate-sample >/dev/null 2>&1; then
+  if [[ -f /tmp/p3pr-validate-sample/index.html ]]; then
+    ok "sample render still passes"
+  else
+    bad "sample render produced no index.html"
+  fi
+else
+  bad "sample render failed"
+fi
+
 # Summary
 echo
 echo "================================================="

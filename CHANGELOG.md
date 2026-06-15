@@ -3,6 +3,54 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.0-alpha] — 2026-06-15
+
+### Added
+
+- **One-command runner** — `skills/paper-three-pass-reader/scripts/run_paper_reading.py`.
+  - Turns any paper-shaped input (title, abstract, OCR transcript, repo URL, etc.) into a standard run directory + draft `paper_reading.json` + (optional) rendered page + (optional) published GitHub Page.
+  - Stdlib only. No external LLM API.
+  - Built-in resolver hints for a handful of well-known papers (Attention, BERT, How to Read a Paper, this repo) — for smoke testing and for the most common canonical inputs. No network search.
+  - Strict reading-mode discipline: `paper_excerpt` always forces `abstract_only`; `paper_screenshot` always forces `screenshot_only`; the user's `--reading-mode` override wins over both the input-kind-forced mode and the hint default.
+  - Unknown inputs become `ambiguous_clue` drafts with `needs_confirmation = true` and `confidence = low` — never silently guessed.
+  - Drafts are explicitly marked with `[DRAFT]` placeholders so the operator knows what to fill in.
+  - New docs: `skills/paper-three-pass-reader/docs/RUNNER.md`.
+
+### Changed (validation)
+
+- `scripts/validate.sh` gained an 8th step ("v0.2 runner") with 6 new smoke checks:
+  1. Runner script exists and is executable.
+  2. `runner --help` exits 0.
+  3. title-only smoke run produces `work/paper_reading.json`.
+  4. abstract_only smoke page contains `abstract_only`.
+  5. screenshot_only smoke page contains `screenshot_only`.
+  6. sample render still passes.
+- Total: **74 PASS / 0 FAIL**.
+
+### Changed (docs)
+
+- `README.md` / `README.zh-CN.md`: added a "One-command runner" section and a v0.2.0-alpha row in the version history.
+- `CHANGELOG.md`: new v0.2.0-alpha section.
+- New `docs/RELEASE_NOTES_v0.2.0-alpha.md`.
+- New `docs/PHASE_P3PR_V0_2_RUNNER_1_REPORT.md`.
+
+### Smoke runs
+
+The runner was smoke-tested with three local runs under `runs/runner-smoke-20260615/`:
+
+- `runner-title-attention` (input kind: `paper_title` → `reading_mode = full_text`)
+- `runner-abstract-keshav` (input kind: `paper_excerpt` → `reading_mode = abstract_only`)
+- `runner-screenshot-keshav` (input kind: `paper_screenshot` → `reading_mode = screenshot_only`)
+
+`runner-title-attention` was also published to https://conanxin.github.io/paper-reading-pages/runner-title-attention/ as part of validation.
+
+### No changes to
+
+- The three-pass reading design.
+- The page layout / 19 sections.
+- The `paper_reading.schema.json` shape.
+- The `v0.1.0-alpha` / `v0.1.1-alpha` / `v0.1.2-alpha` tags or releases (kept untouched).
+
 ## [v0.1.2-alpha] — 2026-06-15
 
 ### Fixed

@@ -203,8 +203,26 @@ bash scripts/validate.sh
 
 ---
 
-## License
+## 一键 runner(v0.2.0-alpha)
 
+`skills/paper-three-pass-reader/scripts/run_paper_reading.py` 把任何"指向某篇论文"的输入(标题、摘要、OCR 转写、repo URL …)转成标准 run 目录 + 草稿 `paper_reading.json` +(可选)渲染好的页面 +(可选)发布的 GitHub Page。
+
+```bash
+python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+  --input "Attention Is All You Need" \
+  --input-kind paper_title \
+  --slug runner-title-attention \
+  --output-root runs/runner-smoke-20260615 \
+  --render --publish \
+  --repo conanxin/paper-reading-pages \
+  --page-title "Runner Smoke: Attention Is All You Need"
+```
+
+runner **不会**替你读论文——它生成的是带 `[DRAFT]` 占位符的草稿,由你(或 agent)填写。它负责强制 reading-mode 纪律、写标准 run 布局、让工作流可重复。完整接口、示例、边界见 [`skills/paper-three-pass-reader/docs/RUNNER.md`](skills/paper-three-pass-reader/docs/RUNNER.md)。
+
+---
+
+## License
 MIT — 见 [`LICENSE`](LICENSE)。
 
-版本:**v0.1.2-alpha**。
+版本:**v0.2.0-alpha**。

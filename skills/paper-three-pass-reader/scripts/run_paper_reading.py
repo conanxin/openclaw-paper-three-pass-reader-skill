@@ -1,0 +1,584 @@
+#!/usr/bin/env python3
+"""
+run_paper_reading.py — paper-three-pass-reader (v0.2.0-alpha)
+
+One-command runner that turns a weak or complete paper-shaped input into a
+standard run directory + draft `paper_reading.json` + (optional) rendered
+HTML page + (optional) published GitHub Page.
+
+Usage (minimal):
+    python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+        --input "Attention Is All You Need" \
+        --input-kind paper_title \
+        --slug runner-title-attention \
+        --output-root runs/runner-smoke-20260615 \
+        --render
+
+Usage (with publish):
+    python3 skills/paper-three-pass-reader/scripts/run_paper_reading.py \
+        --input "Attention Is All You Need" \
+        --input-kind paper_title \
+        --slug runner-title-attention \
+        --output-root runs/runner-smoke-20260615 \
+        --render --publish \
+        --repo conanxin/paper-reading-pages \
+        --branch gh-pages \
+        --page-title "Runner Smoke: Attention Is All You Need"
+
+Design rules:
+- Stdlib only (argparse, json, subprocess, pathlib, sys).
+- Creates a standard run directory layout under <output-root>/<slug>/:
+    input/          (the original input, captured for the audit trail)
+    source/         (downloaded PDFs — not auto-downloaded by this runner)
+    extracted/      (extracted text — not auto-extracted by this runner)
+    work/           (the draft paper_reading.json — the main artifact)
+    paper-reading-output/  (rendered page, only if --render)
+- The runner does NOT attempt to deep-read the paper. It produces a DRAFT
+  paper_reading.json that the operator (human or agent) fills in.
+- Reading modes are strictly enforced:
+    - abstract_only / screenshot_only → Pass 2 / Pass 3 marked unavailable
+    - full_text allowed ONLY when the operator has manually provided the body
+      in <slug>/extracted/ AND has explicitly set --reading-mode full_text.
+- A small built-in resolver hints table maps well-known inputs to canonical
+  arXiv IDs / DOIs / repo URLs. Anything not in the table becomes an
+  ambiguous_clue with reading_mode = partial_text by default.
+
+This is the v0.2 first step. It is a workflow scaffold, not a paper reader.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from collections import OrderedDict
+from datetime import datetime, timezone
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SKILL_ROOT = HERE.parent
+RENDER_SCRIPT = HERE / "render_page.py"
+PUBLISH_SCRIPT = HERE / "publish_output_to_github.sh"
+
+VALID_INPUT_KINDS = {
+    "complete_paper", "paper_url", "paper_identifier", "paper_title",
+    "paper_metadata", "paper_excerpt", "paper_image", "paper_screenshot",
+    "paper_topic", "project_or_repo", "ambiguous_clue",
+}
+VALID_READING_MODES = {"full_text", "partial_text", "abstract_only", "screenshot_only"}
+VALID_DECISIONS = {"CONTINUE_FULL", "CONTINUE_PARTIAL", "STOP", "SEEK_REFERENCES_FIRST"}
+
+# Built-in resolver hints — small, hand-curated. NO network search.
+RESOLVER_HINTS = {
+    "attention is all you need": {
+        "title": "Attention Is All You Need",
+        "authors": ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar", "Jakob Uszkoreit",
+                    "Llion Jones", "Aidan N. Gomez", "Lukasz Kaiser", "Illia Polosukhin"],
+        "year": 2017,
+        "venue": "31st Conference on Neural Information Processing Systems (NIPS 2017)",
+        "arxiv_id": "1706.03762",
+        "url": "https://arxiv.org/abs/1706.03762",
+        "field": "Machine learning / natural language processing",
+        "category": "Methods — sequence transduction architecture",
+        "default_reading_mode": "full_text",
+    },
+    "how to read a paper": {
+        "title": "How to Read a Paper",
+        "authors": ["S. Keshav"],
+        "year": 2007,
+        "venue": "SIGCOMM Computer Communication Review",
+        "arxiv_id": None,
+        "url": None,
+        "field": "Research methodology / scientific communication",
+        "category": "Methods / how-to essay",
+        "default_reading_mode": "abstract_only",
+    },
+    "bert: pre-training of deep bidirectional transformers for language understanding": {
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "authors": ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
+        "year": 2018,
+        "venue": "Google AI Language (preprint; later at NAACL 2019)",
+        "arxiv_id": "1810.04805",
+        "url": "https://arxiv.org/abs/1810.04805",
+        "field": "Natural language processing / representation learning",
+        "category": "Methods — pre-trained language model",
+        "default_reading_mode": "full_text",
+    },
+    "https://github.com/google-research/bert": {
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "authors": ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
+        "year": 2018,
+        "venue": "Google AI Language (preprint; later at NAACL 2019)",
+        "arxiv_id": "1810.04805",
+        "url": "https://arxiv.org/abs/1810.04805",
+        "field": "Natural language processing / representation learning",
+        "category": "Methods — pre-trained language model",
+        "default_reading_mode": "full_text",
+        "source_kind_override": "project_or_repo",
+    },
+    "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill": {
+        "title": "paper-three-pass-reader skill (this repo)",
+        "authors": ["Conan Xin"],
+        "year": 2026,
+        "venue": "GitHub (open-source skill)",
+        "arxiv_id": None,
+        "url": "https://github.com/conanxin/openclaw-paper-three-pass-reader-skill",
+        "field": "Tools / research methodology",
+        "category": "Methods — paper-reading skill",
+        "default_reading_mode": "abstract_only",
+        "source_kind_override": "project_or_repo",
+    },
+}
+
+
+def _resolve_hint(text: str, requested_kind: str):
+    """Look up canonical hints. Returns (hint_dict or None, normalized_key)."""
+    norm = text.strip().lower()
+    # Direct lookup
+    if norm in RESOLVER_HINTS:
+        return RESOLVER_HINTS[norm], norm
+    # URL lookup
+    if text.startswith("http://") or text.startswith("https://"):
+        if text in RESOLVER_HINTS:
+            return RESOLVER_HINTS[text], norm
+        if text.rstrip("/") in RESOLVER_HINTS:
+            return RESOLVER_HINTS[text.rstrip("/")], norm
+    # Substring / word overlap for titles (e.g. "BERT" → BERT hint)
+    for key, hint in RESOLVER_HINTS.items():
+        if key.startswith("http"):
+            continue
+        if len(key) >= 5 and key in norm:
+            return hint, key
+    return None, norm
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _slug_safe(s: str) -> str:
+    out = []
+    for ch in s:
+        if ch.isalnum() or ch in "._-":
+            out.append(ch)
+        elif ch in " \t":
+            out.append("-")
+    s2 = "".join(out).strip("-")
+    return s2 or "x"
+
+
+def make_draft(args, hint) -> dict:
+    """Build a draft paper_reading.json from runner args + (optional) hint."""
+    # Paper metadata
+    if hint:
+        title = args.title or hint.get("title") or args.input
+        authors = args.authors or hint.get("authors") or []
+        year = args.year or hint.get("year")
+        venue = hint.get("venue")
+        arxiv_id = args.arxiv_id or hint.get("arxiv_id")
+        url = args.paper_url or hint.get("url")
+        field = hint.get("field")
+        category = hint.get("category")
+        source_kind = args.input_kind
+        if hint.get("source_kind_override"):
+            source_kind = hint["source_kind_override"]
+    else:
+        title = args.title or args.input
+        authors = args.authors or []
+        year = args.year
+        venue = None
+        arxiv_id = args.arxiv_id
+        url = args.paper_url
+        field = None
+        category = None
+        source_kind = args.input_kind
+
+    if not isinstance(authors, list):
+        authors = [authors] if authors else []
+    if isinstance(year, str):
+        try:
+            year = int(year)
+        except Exception:
+            year = None
+
+    # Reading mode discipline.
+    # Priority: user override > input-kind-forced mode > hint default.
+    if args.input_kind == "paper_excerpt":
+        kind_forced_mode = "abstract_only"
+    elif args.input_kind == "paper_screenshot":
+        kind_forced_mode = "screenshot_only"
+    else:
+        kind_forced_mode = None
+
+    if args.reading_mode:
+        reading_mode = args.reading_mode
+    elif kind_forced_mode:
+        reading_mode = kind_forced_mode
+    elif hint and hint.get("default_reading_mode"):
+        reading_mode = hint["default_reading_mode"]
+    else:
+        reading_mode = "partial_text"
+
+    needs_confirmation = hint is None  # hint not found → ask the user
+
+    # Confidence heuristic
+    if hint is not None:
+        confidence = "high"
+    elif reading_mode in ("abstract_only", "screenshot_only"):
+        confidence = "medium"
+    else:
+        confidence = "low"
+
+    # Build metadata
+    paper_metadata = OrderedDict([
+        ("title", title),
+        ("authors", authors),
+        ("year", year),
+        ("venue", venue),
+        ("identifiers", OrderedDict([
+            ("arxiv_id", arxiv_id),
+            ("doi", None),
+            ("openreview_id", None),
+            ("url", url),
+        ])),
+        ("source_kind", source_kind),
+        ("reading_mode", reading_mode),
+        ("field", field),
+        ("category", category),
+    ])
+
+    # Intake quality
+    missing_fields = []
+    if not arxiv_id:
+        missing_fields.append("arxiv_id")
+    if not year:
+        missing_fields.append("year")
+    if not authors:
+        missing_fields.append("authors")
+    if reading_mode != "full_text":
+        missing_fields.extend(["full_body_text", "full_references", "full_figures", "full_tables"])
+    if reading_mode == "abstract_only":
+        missing_fields.append("abstract_only_no_body")
+
+    warnings = [
+        "Draft generated by run_paper_reading.py v0.2.0-alpha.",
+        "This is a DRAFT paper_reading.json. The operator (human or agent) must "
+        "fill in the interpretive content before treating the page as a real reading.",
+        "Pass 1 / Pass 2 / Pass 3 notes below are SKELETON placeholders, not actual readings.",
+    ]
+    if hint is None:
+        warnings.append(
+            "Input did not match any built-in resolver hint. "
+            "Canonical identification is NOT confirmed; needs human confirmation."
+        )
+    if reading_mode in ("abstract_only", "screenshot_only"):
+        warnings.append(
+            f"reading_mode = {reading_mode}. Pass 2 / Pass 3 must remain "
+            "marked unavailable unless the body is later supplied and reading_mode "
+            "is upgraded to full_text."
+        )
+
+    intake_quality = OrderedDict([
+        ("input_kind", source_kind),
+        ("reading_mode", reading_mode),
+        ("confidence", confidence),
+        ("needs_confirmation", needs_confirmation),
+        ("missing_fields", missing_fields),
+        ("warnings", warnings),
+        ("ambiguities", [] if hint else [f"No resolver hint matched for: {args.input!r}"]),
+        ("source_used", (
+            f"runner hint: {hint['title']}" if hint
+            else f"runner: no hint matched for input {args.input!r}"
+        )),
+        ("extraction_quality", "n/a — runner did not fetch the body"),
+        ("source_resolution", [
+            f"Input kind = {source_kind}.",
+            f"Input string: {args.input!r}.",
+            (f"Matched resolver hint: {args.input!r} → {hint['title']} (arXiv {hint.get('arxiv_id')})"
+             if hint else
+             f"No resolver hint matched for {args.input!r}. needs_confirmation = true."),
+            "Runner did NOT fetch the paper body. Operator must supply the body "
+            "(PDF → extracted text) or upgrade reading_mode manually.",
+        ]),
+    ])
+
+    # Summaries (DRAFT placeholders)
+    summaries = OrderedDict([
+        ("one_sentence", "[DRAFT — fill after reading]"),
+        ("three_sentence", ["[DRAFT]", "[DRAFT]", "[DRAFT]"]),
+        ("ten_sentence", ["[DRAFT]"] * 10),
+    ])
+
+    # Five Cs (DRAFT placeholders)
+    five_cs = OrderedDict([
+        ("category", "[DRAFT — fill after reading]"),
+        ("context", "[DRAFT — fill after reading]"),
+        ("correctness", "[DRAFT — fill after reading]"),
+        ("contributions", ["[DRAFT — fill after reading]"]),
+        ("clarity", "[DRAFT — fill after reading]"),
+    ])
+
+    # Pass 1 / 2 / 3 (DRAFT placeholders)
+    pass1 = OrderedDict([
+        ("bird_eye_notes", "[DRAFT — fill after Pass 1]"),
+        ("decision", "SEEK_REFERENCES_FIRST" if needs_confirmation else "CONTINUE_FULL"),
+        ("decision_rationale",
+         "[DRAFT — fill after Pass 1]"
+         + (" — input not in resolver hints; seek references before continuing"
+            if needs_confirmation else "")),
+    ])
+    pass2 = OrderedDict([
+        ("main_ideas", ["[DRAFT — unavailable until body is available]"
+                        if reading_mode in ("abstract_only", "screenshot_only") else
+                        "[DRAFT — fill after Pass 2]"]),
+        ("method_summary", "[DRAFT — fill after Pass 2]"
+                           if reading_mode != "abstract_only"
+                           else "[DRAFT — unavailable until body is available]"),
+        ("figure_table_notes", "[DRAFT — fill after Pass 2]"
+                               if reading_mode != "abstract_only"
+                               else "[DRAFT — unavailable until body is available]"),
+        ("key_references", []),
+        ("claims_evidence_map", [
+            OrderedDict([
+                ("claim_id", "C-DRAFT-001"),
+                ("claim_text", "[DRAFT — fill after Pass 2]"),
+                ("evidence_label",
+                 "[Needs verification]" if reading_mode in ("abstract_only", "screenshot_only") else
+                 "[Paper evidence]"),
+                ("evidence_location", "[DRAFT — fill after Pass 2]"),
+                ("evidence_kind", "paper_text"),
+                ("confidence", "low"),
+                ("notes", "Skeleton claim generated by runner. Replace with a real claim after reading."),
+                ("needs_verification", True),
+            ])
+        ]),
+    ])
+    pass3 = OrderedDict([
+        ("method_reconstruction", [
+            "[DRAFT — unavailable until body is available]"
+            if reading_mode in ("abstract_only", "screenshot_only") else
+            "[DRAFT — fill after Pass 3]"
+        ]),
+        ("critical_review", ["[DRAFT — fill after Pass 3]"]),
+        ("hidden_assumptions", ["[DRAFT — fill after Pass 3]"]),
+        ("limitations", ["[DRAFT — fill after Pass 3]"]),
+        ("reproduction_plan", OrderedDict([
+            ("dataset", ""), ("baseline", ""), ("hardware", ""),
+            ("steps", ["[DRAFT — fill after Pass 3]"]),
+            ("sanity_checks", []), ("success_criteria", []),
+        ])),
+        ("future_work", ["[DRAFT — fill after Pass 3]"]),
+        ("application_notes", ["[DRAFT — fill after Pass 3]"]),
+    ])
+
+    glossary = []
+    limitations = [
+        f"This is a DRAFT generated by run_paper_reading.py. Reading mode = {reading_mode}.",
+        "Replace all [DRAFT] placeholders before treating the page as a real reading.",
+    ]
+    if reading_mode in ("abstract_only", "screenshot_only"):
+        limitations.append(
+            "Pass 2 / Pass 3 are explicitly NOT performed because the body is not available."
+        )
+    open_questions = ["[DRAFT — fill after Pass 3]"]
+    final_checklist = [
+        {"question": "Did I read the full paper (or only the input kind I was given)?", "answerable": True},
+        {"question": "Am I clear about the reading mode in the hero badge?", "answerable": True},
+        {"question": "Have I marked every interpretive claim with an evidence label?", "answerable": True},
+        {"question": "Did I avoid pretending that I read Pass 2 / Pass 3 content I did not actually read?",
+         "answerable": True},
+        {"question": "Have I replaced every [DRAFT] placeholder in this paper_reading.json?",
+         "answerable": True},
+        {"question": "Do I know what I would need to do to upgrade reading_mode to full_text?",
+         "answerable": True},
+        {"question": "Have I documented the resolution trail (input → canonical paper → body) in intake_quality?",
+         "answerable": True},
+        {"question": "Did I check that claims only use [Author claim] / [Uncertain] / [Needs verification] "
+                     "when the body is not available?", "answerable": True},
+    ]
+
+    paper_outline = []
+    source_resolution = intake_quality["source_resolution"]
+    candidate_papers = [] if hint else [{"input": args.input, "rank": 1, "rationale": "no hint matched"}]
+
+    figures_tables = []
+
+    draft = OrderedDict([
+        ("schema_version", "0.1.0"),
+        ("paper_metadata", paper_metadata),
+        ("intake_quality", intake_quality),
+        ("summaries", summaries),
+        ("five_cs", five_cs),
+        ("pass1", pass1),
+        ("pass2", pass2),
+        ("pass3", pass3),
+        ("claims_evidence_map", pass2["claims_evidence_map"]),
+        ("figures_tables", figures_tables),
+        ("glossary", glossary),
+        ("limitations", limitations),
+        ("reproduction_plan", pass3["reproduction_plan"]),
+        ("open_questions", open_questions),
+        ("final_checklist", final_checklist),
+        ("paper_outline", paper_outline),
+        ("source_resolution", OrderedDict([("steps", source_resolution)])),
+        ("candidate_papers", candidate_papers),
+    ])
+    return draft
+
+
+def write_run_layout(out_root: Path, slug: str, args) -> tuple[Path, Path, Path, Path, Path, Path]:
+    """Create the standard run directory layout. Returns paths."""
+    run_dir = out_root / slug
+    input_dir = run_dir / "input"
+    source_dir = run_dir / "source"
+    extracted_dir = run_dir / "extracted"
+    work_dir = run_dir / "work"
+    output_dir = run_dir / "paper-reading-output"
+
+    for d in (input_dir, source_dir, extracted_dir, work_dir, output_dir):
+        d.mkdir(parents=True, exist_ok=True)
+
+    # Capture the input to input/input.md (audit trail).
+    input_md = input_dir / "input.md"
+    if args.input_file:
+        try:
+            content = Path(args.input_file).read_text(encoding="utf-8")
+        except Exception as e:
+            print(f"[warn] could not read input file: {e}", file=sys.stderr)
+            content = f"(could not read input file: {args.input_file})\n"
+    else:
+        content = args.input or ""
+    header = (
+        f"# Captured input for run {slug}\n\n"
+        f"- input_kind: `{args.input_kind}`\n"
+        f"- runner: paper-three-pass-reader v0.2.0-alpha\n"
+        f"- captured_at: {_now_iso()}\n\n"
+        f"## Raw input\n\n```\n{content}\n```\n"
+    )
+    input_md.write_text(header, encoding="utf-8")
+
+    return run_dir, input_dir, source_dir, extracted_dir, work_dir, output_dir
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description="One-command paper reading runner (v0.2.0-alpha).")
+    p.add_argument("--input", help="Raw input string (e.g. title, URL, repo URL).")
+    p.add_argument("--input-file", help="Path to a file containing the raw input.")
+    p.add_argument("--input-kind", required=True,
+                   choices=sorted(VALID_INPUT_KINDS),
+                   help="What kind of input this is.")
+    p.add_argument("--slug", required=True,
+                   help="Slug for the run directory (must match [A-Za-z0-9._-]+).")
+    p.add_argument("--output-root", required=True,
+                   help="Root directory under which <slug>/ will be created.")
+    p.add_argument("--title", help="Override paper title.")
+    p.add_argument("--authors", help="Override paper authors (comma-separated).")
+    p.add_argument("--year", help="Override paper year.")
+    p.add_argument("--arxiv-id", help="Override arXiv ID.")
+    p.add_argument("--paper-url", help="Override paper URL.")
+    p.add_argument("--reading-mode", choices=sorted(VALID_READING_MODES),
+                   help="Override reading mode (default: derived from input kind / hint).")
+    p.add_argument("--render", action="store_true",
+                   help="Render the page after writing the draft JSON.")
+    p.add_argument("--publish", action="store_true",
+                   help="Publish the rendered page to GitHub Pages (requires --render).")
+    p.add_argument("--repo", help="Target repo for --publish (e.g. conanxin/paper-reading-pages).")
+    p.add_argument("--branch", default="gh-pages", help="Branch for --publish (default gh-pages).")
+    p.add_argument("--site-path", help="Site path for --publish (defaults to --slug).")
+    p.add_argument("--page-title", help="Page title for --publish.")
+    args = p.parse_args(argv)
+
+    # Validate inputs.
+    if not args.input and not args.input_file:
+        print("[error] either --input or --input-file is required", file=sys.stderr)
+        return 2
+    if args.input and args.input_file:
+        print("[error] pass only one of --input or --input-file", file=sys.stderr)
+        return 2
+    if not _SLUG_SAFE_RE.match(args.slug):
+        print("[error] --slug must match [A-Za-z0-9._-]+", file=sys.stderr)
+        return 2
+    if args.publish and not args.render:
+        print("[error] --publish requires --render", file=sys.stderr)
+        return 2
+    if args.publish and not args.repo:
+        print("[error] --publish requires --repo", file=sys.stderr)
+        return 2
+    if args.publish and not args.site_path:
+        args.site_path = args.slug
+    if args.publish and not args.page_title:
+        # Default page title = slug.
+        args.page_title = args.slug
+
+    if args.authors and "," in args.authors:
+        args.authors = [a.strip() for a in args.authors.split(",") if a.strip()]
+
+    # Resolve input string.
+    input_text = args.input
+    if args.input_file:
+        try:
+            input_text = Path(args.input_file).read_text(encoding="utf-8").strip()
+        except Exception as e:
+            print(f"[error] could not read --input-file: {e}", file=sys.stderr)
+            return 2
+
+    # Look up hint.
+    hint, _ = _resolve_hint(input_text, args.input_kind)
+    if hint:
+        print(f"[info] resolved hint for: {input_text!r} → {hint['title']}")
+
+    # Create run layout.
+    out_root = Path(args.output_root).resolve()
+    run_dir, input_dir, source_dir, extracted_dir, work_dir, output_dir = write_run_layout(
+        out_root, args.slug, args)
+
+    # Write draft JSON.
+    draft = make_draft(args, hint)
+    work_json = work_dir / "paper_reading.json"
+    work_json.write_text(json.dumps(draft, indent=2, ensure_ascii=False) + "\n",
+                         encoding="utf-8")
+    print(f"[ok] wrote draft: {work_json}")
+    print(f"[ok] run layout:  {run_dir}")
+    print(f"[ok] reading_mode = {draft['paper_metadata']['reading_mode']}, "
+          f"confidence = {draft['intake_quality']['confidence']}, "
+          f"needs_confirmation = {draft['intake_quality']['needs_confirmation']}")
+
+    # Render?
+    if args.render:
+        rc = subprocess.call([
+            sys.executable, str(RENDER_SCRIPT),
+            "--input", str(work_json),
+            "--output", str(output_dir),
+        ])
+        if rc != 0:
+            print(f"[error] render_page.py exited {rc}", file=sys.stderr)
+            return rc
+        print(f"[ok] rendered: {output_dir / 'index.html'}")
+
+    # Publish?
+    if args.publish:
+        cmd = [
+            str(PUBLISH_SCRIPT),
+            "--output", str(output_dir),
+            "--repo", args.repo,
+            "--branch", args.branch,
+            "--site-path", args.site_path,
+            "--page-title", args.page_title,
+            "--message", f"Publish runner draft: {args.slug}",
+        ]
+        rc = subprocess.call(cmd)
+        if rc != 0:
+            print(f"[error] publish_output_to_github.sh exited {rc}", file=sys.stderr)
+            return rc
+        print(f"[ok] published: https://github.com/{args.repo}/tree/{args.branch}")
+
+    return 0
+
+
+import re as _re
+_SLUG_SAFE_RE = _re.compile(r"^[A-Za-z0-9._-]+$")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
