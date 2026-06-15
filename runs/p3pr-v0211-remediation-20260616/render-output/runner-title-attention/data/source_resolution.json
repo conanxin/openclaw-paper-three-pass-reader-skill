@@ -1,0 +1,8 @@
+{
+  "steps": [
+    "Input kind = paper_title.",
+    "Input string: 'Attention Is All You Need'.",
+    "Matched resolver hint: 'Attention Is All You Need' → Attention Is All You Need (arXiv 1706.03762)",
+    "Runner did NOT fetch the paper body. Operator must supply the body (PDF → extracted text) or upgrade reading_mode manually."
+  ]
+}

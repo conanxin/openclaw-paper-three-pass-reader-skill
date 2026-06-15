@@ -1,0 +1,46 @@
+[
+  {
+    "question": "Can I state BERT's main contribution in one sentence?",
+    "answerable": true
+  },
+  {
+    "question": "Can I write the two BERT pre-training objectives from memory?",
+    "answerable": true
+  },
+  {
+    "question": "Can I name BERT_BASE and BERT_LARGE hyperparameters?",
+    "answerable": true
+  },
+  {
+    "question": "Can I describe the fine-tuning recipe?",
+    "answerable": true
+  },
+  {
+    "question": "Can I quote the headline GLUE / SQuAD numbers?",
+    "answerable": true
+  },
+  {
+    "question": "Can I explain why bidirectionality matters?",
+    "answerable": true
+  },
+  {
+    "question": "Can I name at least two limitations of BERT?",
+    "answerable": true
+  },
+  {
+    "question": "Can I describe a small reproduction sanity check?",
+    "answerable": true
+  },
+  {
+    "question": "Have I marked every interpretive statement with an evidence label?",
+    "answerable": true
+  },
+  {
+    "question": "Have I honestly recorded the reading mode as full_text?",
+    "answerable": true
+  },
+  {
+    "question": "Did I record the source_resolution trail from repo → paper → PDF?",
+    "answerable": true
+  }
+]

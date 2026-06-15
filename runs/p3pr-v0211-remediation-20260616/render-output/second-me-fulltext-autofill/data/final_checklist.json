@@ -1,0 +1,62 @@
+[
+  {
+    "question": "Did I read the full paper body, or only an abstract / title?",
+    "answerable": true,
+    "answer": "Full body via pdftotext -layout extraction; ~54 KB across 28 pages. [Paper evidence]"
+  },
+  {
+    "question": "Is the reading mode badge correct (full_text)?",
+    "answerable": true,
+    "answer": "Yes — reading_mode = full_text throughout."
+  },
+  {
+    "question": "Did I mark every interpretive claim with an evidence label?",
+    "answerable": true,
+    "answer": "Yes — claims_evidence_map entries carry [Paper evidence] / [Author claim] / [Needs verification]."
+  },
+  {
+    "question": "Did I avoid pretending to have read content that was not actually read?",
+    "answerable": true,
+    "answer": "Yes — Table 2 cell values are flagged [Needs verification] due to extraction limitation."
+  },
+  {
+    "question": "Are the spec-referenced terms (HMM / Me-Alignment / Mind Palace / MoE / TIME) accurately reported as N/A for this paper?",
+    "answerable": true,
+    "answer": "Yes — flagged in glossary and limitations as spec-vs-reality mismatch."
+  },
+  {
+    "question": "Did I separate author claims from paper-evidence claims?",
+    "answerable": true,
+    "answer": "Yes — see five_cs.correctness and claims_evidence_map for label distribution."
+  },
+  {
+    "question": "Is the canonical title correct (not the spec title)?",
+    "answerable": true,
+    "answer": "Yes — used arXiv canonical 'AI-native Memory 2.0: Second Me'; spec title mismatch logged in intake_quality.warnings."
+  },
+  {
+    "question": "Did I document the resolution trail (input → arXiv → PDF → extracted text → reading_mode)?",
+    "answerable": true,
+    "answer": "Yes — intake_quality.source_resolution lists each step."
+  },
+  {
+    "question": "Does the reproduction plan have a baseline, dataset, hardware, and success criteria?",
+    "answerable": true,
+    "answer": "Yes — reproduction_plan object includes all four."
+  },
+  {
+    "question": "Did I distinguish single-turn vs multi-turn training limits and the multimodal next frontier?",
+    "answerable": true,
+    "answer": "Yes — captured in pass3.limitations and pass3.future_work."
+  },
+  {
+    "question": "Are there ≥ 10 claims in the claims_evidence_map?",
+    "answerable": true,
+    "answer": "Yes — 12 claims."
+  },
+  {
+    "question": "Are there ≥ 6 figure/table notes?",
+    "answerable": true,
+    "answer": "Yes — 7 entries (5 figures + 2 tables)."
+  }
+]

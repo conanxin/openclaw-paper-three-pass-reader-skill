@@ -1,0 +1,62 @@
+[
+  {
+    "question": "我阅读了完整论文正文，还是只读了摘要/标题？",
+    "answerable": true,
+    "answer": "通过 pdftotext -layout 提取的完整正文；~54 KB 跨 28 页。 [Paper evidence]"
+  },
+  {
+    "question": "阅读模式标签是否正确（full_text）？",
+    "answerable": true,
+    "answer": "是——reading_mode = full_text 始终一致。"
+  },
+  {
+    "question": "我是否给每个解释性声明都标记了证据标签？",
+    "answerable": true,
+    "answer": "是——claims_evidence_map 条目携带 [Paper evidence] / [Author claim] / [Needs verification]。"
+  },
+  {
+    "question": "我是否避免假装阅读了实际未读的内容？",
+    "answerable": true,
+    "answer": "是——Table 2 单元格值因提取限制标记为 [Needs verification]。"
+  },
+  {
+    "question": "我是否将作者声明与论文证据声明分开了？",
+    "answerable": true,
+    "answer": "是——见 five_cs.correctness 和 claims_evidence_map 的标签分布。"
+  },
+  {
+    "question": "规范标题是否正确（不是输入标题）？",
+    "answerable": true,
+    "answer": "是——使用了 arXiv 规范标题 'AI-native Memory 2.0: Second Me'；输入标题不匹配已记录在 intake_quality.warnings 中。"
+  },
+  {
+    "question": "我是否记录了解析轨迹（输入 → arXiv → PDF → 提取文本 → reading_mode）？",
+    "answerable": true,
+    "answer": "是——intake_quality.source_resolution 列出了每一步。"
+  },
+  {
+    "question": "复现计划是否包含基线、数据集、硬件和成功标准？",
+    "answerable": true,
+    "answer": "是——reproduction_plan 对象包含全部四项。"
+  },
+  {
+    "question": "我是否区分了单轮与多轮训练限制以及多模态下一个前沿？",
+    "answerable": true,
+    "answer": "是——记录在 pass3.limitations 和 pass3.future_work 中。"
+  },
+  {
+    "question": "claims_evidence_map 中是否有 ≥ 10 条声明？",
+    "answerable": true,
+    "answer": "是——12 条声明。"
+  },
+  {
+    "question": "是否有 ≥ 6 条图表注释？",
+    "answerable": true,
+    "answer": "是——7 条（5 图 + 2 表）。"
+  },
+  {
+    "question": "目标语言是否为中文（zh-CN）？",
+    "answerable": true,
+    "answer": "是——target_language = zh-CN，ui_language = zh-CN，所有解释性内容均为中文。"
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "F-1",
+    "kind": "figure",
+    "label": "Figure 1: SECOND ME 混合架构",
+    "explanation": "展示 L0/L1/L2 混合架构，含内循环（层间无缝整合）和外循环（在 SECOND ME 指导下的 LLM 和互联网资源）。建立了论文其余部分详细说明的高层系统布局。 [Paper evidence, caption after §1]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "架构概览；caption 文本从 PDF 中清晰恢复。",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-2",
+    "kind": "figure",
+    "label": "Figure 2: 自动化个人模型流水线，含 LLM as Judge 和 LLM as data synthesizer",
+    "explanation": "端到端训练流水线的可视化：原始数据 → 实体/主题挖掘 → 记忆数据合成（自我定位强化、记忆认知增强）→ 通过模拟场景生成上下文增强/批判数据 → 五级过滤 → PEFT SFT → DPO 数据生成 → 评估。'LLM as Judge' 和 'LLM as data synthesizer' 标签强调自动化。 [Paper evidence, §3.1]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "流水线图；caption 文本已恢复。",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-3",
+    "kind": "figure",
+    "label": "Figure 3: 三种 COT 策略对同一查询的样例输出",
+    "explanation": "对 'When you think of me, what do you see?' 的 Weak / Multi-step / Strong COT 回答并排展示。展示从 Weak 到 Strong COT 的丰富度和风格约束递增，并支撑作者在 §3.5 中报告的质量差异。 [Paper evidence, §3.2]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "定性说明图。",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-4",
+    "kind": "figure",
+    "label": "Figure 4: Context-Enhance 案例对比（Weak COT vs Strong COT，均无 DPO）",
+    "explanation": "Context-Enhance 任务的具体案例 1：关于两阶段模型训练初学者资源的查询。对比 Weak COT 与 Strong COT，用户记录中的实体以粗体标记。用于论证 Strong COT 的定性优势。 [Paper evidence, §3.5]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "案例研究图；原图中实体为粗体。",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-5",
+    "kind": "figure",
+    "label": "Figure 6 (Appendix D): 多 Agent 架构",
+    "explanation": "展示训练后的 L2 如何位于用户和专家模型（GPT-4o 等）之间，箭头表示可能的通信（用户-专家箭头为清晰起见省略）。支撑 §4 应用场景和 §3.1 多 Agent 叙事。 [Paper evidence, Appendix D]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "位于 Appendix D；原图中编号为 6。",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "T-1",
+    "kind": "table",
+    "label": "Table 1: 不同 COT 设置下的重要实验结果（满分比例）",
+    "explanation": "Strong / Multi-step / Weak COT 下的 Memory (Self) / Memory (Third-party) / Context Enhance / Context Critic 得分。报告数值（均值，0-1 尺度）：Strong 0.91/0.71/0.75/0.85；Multi-step 0.64/0.43/0.85/0.77；Weak 0.86/0.58/0.87/0.64。Strong COT 在 Memory (Self) 和 Context Critic 上获胜；Multi-step 总体弱于 Weak。 [Paper evidence, Table 1 + §3.5]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "数值来自提取的布局文本，应与渲染 PDF 交叉核对末位精度。",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "T-2",
+    "kind": "table",
+    "label": "Table 2: DPO 消融实验",
+    "explanation": "在 §3.5 中被引用为显示 DPO 在所有任务上带来显著改进。具体单元格值未被 pdftotext -layout 清晰恢复；提取限制。作者的定性声明是迭代 COT 精炼 + DPO 产生一致增益。 [Paper evidence, §3.5 引用] [Needs verification 具体数值]",
+    "evidence_label": "[Needs verification]",
+    "notes": "Table 2 布局无法从此 PDF 提取；无法引用精确单元格值。",
+    "number": "",
+    "title": "(missing title)"
+  }
+]

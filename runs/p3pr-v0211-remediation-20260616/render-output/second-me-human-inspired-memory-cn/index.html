@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Second Me: Human-Inspired Memory Mechanism for LLM Agents — 三遍阅读法</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-reading-mode="full_text">
+  <header class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="kicker">三遍阅读法 · 2025</div>
+        <h1>Second Me: Human-Inspired Memory Mechanism for LLM Agents</h1>
+        <div class="byline">
+          <span>Jiale Wei</span>, <span>Xiang Ying</span>, <span>Tao Gao</span>, <span>Fangyi Bao</span>, <span>Felix Tao</span>, <span>Jingbo Shang</span>
+           · <span class="venue">arXiv preprint (under review)</span>
+        </div>
+        <div class="badges">
+          <span class="badge badge-mode" title="阅读模式">full_text</span>
+          <span class="badge badge-confidence badge-confidence-high">high 置信度</span>
+          <span class="badge badge-input">paper_identifier</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <details open>
+      <summary>目录</summary>
+      <ol>
+        <li><a href="#metadata">论文信息</a></li>
+        <li><a href="#intake">输入解析状态</a></li>
+        <li><a href="#resolver-trail">解析路径</a></li>
+        <li><a href="#summary">摘要（1 / 3 / 10 句）</a></li>
+        <li><a href="#paper-map">论文地图</a></li>
+        <li><a href="#five-cs">Five Cs 面板</a></li>
+        <li><a href="#passes">三遍阅读</a></li>
+        <li><a href="#claims">主张—证据地图</a></li>
+        <li><a href="#figures">图表 / 结构说明</a></li>
+        <li><a href="#glossary">关键术语</a></li>
+        <li><a href="#reconstruction">方法重建</a></li>
+        <li><a href="#limitations">正确性与局限</a></li>
+        <li><a href="#related">相关脉络</a></li>
+        <li><a href="#implications">实践启发</a></li>
+        <li><a href="#reproduction">实践计划</a></li>
+        <li><a href="#open">开放问题</a></li>
+        <li><a href="#checklist">最终理解检查表</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <!-- 1. Hero Summary / 论文信息 -->
+    <section id="metadata" class="card">
+      <h2>论文信息</h2>
+      <dl class="kv">
+        <dt>标题</dt><dd>Second Me: Human-Inspired Memory Mechanism for LLM Agents</dd>
+        <dt>作者</dt><dd>Jiale Wei, Xiang Ying, Tao Gao, Fangyi Bao, Felix Tao, Jingbo Shang</dd>
+        <dt>年份</dt><dd>2025</dd>
+        <dt>场合</dt><dd>arXiv preprint (under review)</dd>
+        <dt>arXiv</dt><dd>2503.08102</dd>
+        
+        <dt>URL</dt><dd><a href="https://arxiv.org/abs/2503.08102">https://arxiv.org/abs/2503.08102</a></dd>
+        <dt>来源类型</dt><dd>paper_identifier</dd>
+        <dt>阅读模式</dt><dd>full_text</dd>
+      </dl>
+    </section>
+
+    <!-- 2. 输入解析状态 -->
+    <section id="intake" class="card">
+      <h2>输入解析状态</h2>
+      <ul class="kv-list">
+        <li><span class="label">输入类型</span> <span class="value">paper_identifier</span></li>
+        <li><span class="label">阅读模式</span> <span class="value">full_text</span></li>
+        <li><span class="label">置信度</span> <span class="value badge-confidence badge-confidence-high">high</span></li>
+        <li><span class="label">需要确认</span> <span class="value">false</span></li>
+      </ul>
+      
+      <details class="warnings">
+        <summary>警告（2）</summary>
+        <ul><li>PDF body extraction used pdftotext -layout. Some figure captions and complex tables may be partially extracted; figure/table interpretation is based on captions in body text.</li><li>作者 and affiliation inferred from PDF header (Mindverse.ai).</li></ul>
+      </details>
+      
+      
+    </section>
+
+    <!-- 2b. 解析路径 (structured source_resolution, v0.2.8) -->
+    <section id="resolver-trail" class="card">
+      <h2>解析路径</h2>
+      
+      <div class="badges">
+        
+        
+        <span class="badge badge-input">兼容旧格式</span>
+        
+        
+      </div>
+      <ul class="kv-list">
+        <li><span class="label">解析状态</span> <span class="value">ambiguous_clue</span></li>
+        <li><span class="label">匹配类型</span> <span class="value"></span></li>
+        <li><span class="label">置信度</span> <span class="value"></span></li>
+        <li><span class="label">匹配论文</span> <span class="value"></span></li>
+        <li><span class="label">匹配论文 id</span> <span class="value"></span></li>
+        <li><span class="label">匹配 arXiv ID</span> <span class="value">2503.08102</span></li>
+        <li><span class="label">匹配仓库</span> <span class="value"></span></li>
+        <li><span class="label">解析来源</span> <span class="value"></span></li>
+        <li><span class="label">解析步骤</span> <span class="value">no_resolver_run</span></li>
+        <li><span class="label">候选数量</span> <span class="value">0</span></li>
+      </ul>
+      </li></ul>
+      </details>
+      
+      <p class="muted">无候选论文；当前匹配来自用户提供 URL。</p>
+      
+      
+    </section>
+
+    <!-- 3. 摘要 -->
+    <section id="summary" class="card">
+      <h2>摘要</h2>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">一句话总结</div>
+          <p>SECOND ME 是一个 AI-native、可本地部署的基于 LLM 的记忆层，它将用户的记忆通过 L0/L1/L2 三层参数化，并作为个人上下文提供者服务于 LLM Agent 和其他用户。</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">三句话总结</div>
+          <ol><li>SECOND ME（Mindverse.ai，arXiv:2503.08102）提出了一种 AI-native 记忆系统，通过基于 LLM 的参数化方法，在三层架构（L0 原始数据、L1 自然语言记忆、L2 模型参数记忆）中存储、组织和动态检索用户特定知识。</li><li>该工作在 LPM 1.0 的基础上，引入了混合 L0/L1/L2 架构和自动化训练流水线（数据合成、五级过滤、PEFT SFT、DPO），并通过内循环编排器利用外部专家模型处理复杂任务。</li><li>在 Memory-QA、背景-Enhance 和 背景-Critic 指标上的实证评估表明，强 Chain-of-Thought 训练加 DPO 能持续提升性能，人工评估在强 COT+DPO 条件下得分接近 1。</li></ol>
+        </div>
+        <div class="summary-box summary-wide">
+          <div class="summary-label">十句话总结</div>
+          <ol><li>SECOND ME 是一个个人化、可本地部署的 AI 记忆系统，将用户数据转化为参数化的 L2 模型，作为用户自身和外部 Agent 的上下文提供者。</li><li>它是 LPM 1.0（Shang et al., 2024）的演进版本，细化了三层记忆模型：L0 原始数据层、L1 自然语言记忆层、L2 AI-native 参数记忆层。</li><li>L2 模型在三种部署场景间进行编排：Memory QA（Self / Third-party）、背景 Enhancement、背景 Critic。</li><li>训练流程完全自动化：通过自我定位强化和记忆认知增强进行数据合成，然后经过五级过滤，最后在 Qwen2.5-7B-Instruct 基座上进行 PEFT SFT 和 DPO。</li><li>答案风格在三种 COT 策略（Weak、Multi-step、Strong）下生成，其中 Strong 使用 Deepseek-R1 推理并施加严格的格式约束。</li><li>评估使用四个指标——Memory（Self）、Memory（Third-party）、背景 Enhance、背景 Critic——每项按 0-1 评分（背景 Critic 采用五级评分）。</li><li>Strong COT 显著提升了 Memory（Self）和 背景 Critic；Multi-step COT 单独使用时往往弱于 Weak COT，说明结构化训练数据比推理长度更重要。</li><li>DPO 进一步精炼偏好对齐，在 COT 基础上带来一致增益，尤其在 背景 Enhance 和 背景 Critic 上。</li><li>应用场景包括个人生产力、内部认知支持（决策反思、情绪调节），以及一个外部人机网络，其效率据作者声称通过梅特卡夫定律可提升 3-5 个数量级。</li><li>已在 github.com/Mindverse/Second-Me 开源；局限包括单轮训练数据、有限的现实世界评估，以及实时整合多模态个人数据的更广泛挑战。</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 论文地图 -->
+    <section id="paper-map" class="card">
+      <h2>论文地图</h2>
+      <ul class="tree">
+        
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            
+        <li>
+          <details><summary></summary>
+            </ul>
+            
+          </details>
+        </li>
+        
+      </ul>
+    </section>
+
+    <!-- 5. Five Cs -->
+    <section id="five-cs" class="card">
+      <h2>Five Cs 面板</h2>
+      <div class="five-cs-grid">
+        <article class="ccard">
+          <h3>类别</h3>
+          <p class="ccard-value">Methods — 面向 LLM Agent 的 AI-native 个人记忆架构，定位为 Large Personal Model (LPM) 系列的第二代（2.0）。 [Paper evidence]</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>背景</h3>
+          <p class="ccard-value">位于传统自动填充/凭证存储（静态、无推理）与长上下文 LLM（成本高、记忆检索弱）之间。直接继承 LPM 1.0（Shang et al., 2024）的三层 L0/L1/L2 模型。定位为推理 LLM 时代（如 Deepseek R1）和多 Agent 生态系统的上下文提供者。 [Paper evidence]</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>正确性</h3>
+          <p class="ccard-value">关于 COT 和 DPO 的实证声明得到作者自身在四指标上的评估和人工评估（~0.95 Strong-COT，~1.0 with DPO）的支持。背景-Enhance 指标被作者承认不够精确（模型可能产生合理但无出处的内容）。3-5 个数量级的网络效率声明被作者作为梅特卡夫式投影呈现，而非受控测量。 [Paper evidence] + [Author claim]</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>清晰度</h3>
+          <p class="ccard-value">结构清晰：Abstract、Introduction、Overview（LPM 1.0 回顾 + 新设计）、Practice and Result、Applications、Conclusions，以及 Appendices A-D（数据合成、评估合成、指标细节、多 Agent 细节）。Figures (1-6) 和 Tables (1-2) 在正文中被引用。一个模糊点：Section 3.5 引用 'Table 2 demonstrates that DPO brings substantial improvements'，但提取文本中未包含清晰的 Table 2 布局——提取限制。 [Paper evidence] + [Agent inference]</p>
+          
+          
+        </article>
+        <article class="ccard ccard-wide">
+          <h3>贡献</h3>
+          
+          <ul><li><p class="ccard-value">将 LPM 三层记忆架构细化为混合 L0/L1/L2 设计，引入显式内/外循环用于层间整合和外部协调。 [Author claim]</p><li><p class="ccard-value">提出完全自动化的训练流水线（数据合成、五级过滤、PEFT SFT、DPO），在作者自设指标上达到最先进的 L2 性能。 [Author claim]</p><li><p class="ccard-value">引入多 Agent 框架，训练后的 L2 作为编排器与通用专家模型在 Memory QA、背景 Enhance、背景 Critic 任务上协作。 [Paper evidence]</p><li><p class="ccard-value">在 github.com/Mindverse/Second-Me 开源了完全可本地化的部署系统。 [Paper evidence]</p></li></ul>
+          
+          <p class="ccard-empty">（暂无明确贡献条目）</p>
+          
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. 第一遍阅读 / 第二遍阅读 / 第三遍阅读 标签页 -->
+    <section id="passes" class="card">
+      <h2>三遍阅读</h2>
+      <div class="timeline">
+        <span class="dot done" title="第一遍阅读">1</span>
+        <span class="dot done" title="第二遍阅读">2</span>
+        <span class="dot done" title="第三遍阅读">3</span>
+      </div>
+      <div class="tabs">
+        <div class="tab-buttons" role="tablist">
+          <button class="tab-btn active" data-tab="p1" role="tab">第一遍 · 鸟瞰</button>
+          <button class="tab-btn" data-tab="p2" role="tab">第二遍 · 理解</button>
+          <button class="tab-btn" data-tab="p3" role="tab">第三遍 · 重建</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="p1">
+          <h3>第一遍 — 鸟瞰视图</h3>
+          <p class="evidence-line">依赖来源标记为 [Author claim] / [Paper evidence] 等。</p>
+          <p></p>
+          <div class="callout">
+            <strong>决策：</strong> <code>CONTINUE_FULL</code>
+            <p>正文文本已完全提取（~54 KB，28 页）。所有章节（1-5 + appendices A-D）均可访问。reading_mode = full_text 合理。继续 第二遍阅读。</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="p2">
+          <h3>第二遍 — 深入理解</h3>
+          <h4>核心观点</h4>
+          <ol><li>AI-native 记忆应存在于三个协调层中：L0（原始数据 / RAG 风格）、L1（自然语言摘要、标签、简介）、L2（神经网络参数记忆）。 [Paper evidence, §2.1]</li><li>SECOND ME 是 LPM 的演进版本，其 L2 作为编排器，将用户桥接到外部专家模型（如 GPT-4o、Deepseek-R1），而非自身执行任务。 [Paper evidence, §2.2]</li><li>自动化训练流水线——数据合成、五级过滤、PEFT SFT on Qwen2.5-7B-Instruct，然后 DPO——产生具有强偏好对齐的个性化 L2。 [Paper evidence, §3.1]</li><li>答案风格在三种 COT 策略（Weak / Multi-step / Strong）下生成，Strong 使用 Deepseek-R1 推理和严格格式约束；DPO 进一步精炼偏好。 [Paper evidence, §3.2-§3.3]</li><li>评估分解为 Memory（Self）、Memory（Third-party）、背景 Enhance、背景 Critic，附带显式评分标准（Appendix C）和人工评估作为 ground truth。 [Paper evidence, §3.4-§3.5]</li></ol>
+          
+          <h4>关键参考文献</h4>
+          <ul class="refs"><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong><li><strong></strong></li></ul>
+          
+        </div>
+
+        <div class="tab-panel" data-panel="p3">
+          <h3>第三遍 — 重建</h3>
+          <h4>方法重建</h4>
+          <ol><li>输入：原始用户数据（文本、交互、偏好、简介、记录）以及可选的预训练 LLM 常识。</li><li>阶段 A — 合成：提取实体 / 主题 / 关系；通过自我定位强化和记忆认知增强生成 Memory-QA 对；通过模拟场景和多 Agent 交互生成 背景-Enhance 和 背景-Critic 对。</li><li>阶段 B — 过滤：五级质量过滤器（Taori 风格）仅保留高质量合成数据。</li><li>阶段 C — SFT：在 Qwen2.5-7B-Instruct 上使用 PEFT（Bitfit / LoRA 家族），答案风格从三种 COT 策略之一（Weak / Multi-step / Strong，后者使用 Deepseek-R1 作为专家）抽取。</li><li>阶段 D — DPO：从 SFT 模型构建偏好对（~20% SFT 数据）并运行 Direct Preference Optimization 以精炼偏好对齐，不注入新知识。</li><li>阶段 E — 编排：推理时，训练后的 L2 在三种部署模式中选择——Memory QA（Self/Third-party）、背景 Enhance、背景 Critic——并在（复杂任务）情况下路由到外部专家模型（GPT-4o、Deepseek-R1），同时保持用户上下文。</li><li>输出：与用户身份、偏好和历史对齐的上下文增强查询、批判和直接回答。</li></ol>
+          
+          <h4>批判性审视要点</h4>
+          <ul><li>Strong COT 数字依赖作者自身的评估流水线（Memory QA + 背景 Enhance + 背景 Critic）。论文中无独立复现。 [Agent inference]</li><li>背景-Enhance 指标被作者承认不够精确——模型可能产生合理但无出处的内容，降低测试准确率 despite 实际改进。这是已知的 LLM-judge 评估问题。 [Paper evidence + Agent inference]</li><li>3-5 个数量级的网络效率声明是梅特卡夫式投影，而非受控测量。应视为愿景/抱负，而非基准。 [Author claim]</li><li>单轮训练是声明的局限；作者指出需要多轮合成。 [Paper evidence]</li><li>开源发布（Mindverse/Second-Me）是强有力的透明度信号，但论文未报告外部基准（如 LoCoMo、MSC、LLM-LongMem），这将有助于将工作与更广泛的长时记忆文献对比。 [Agent inference]</li></ul>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Claims-Evidence Map -->
+    <section id="claims" class="card">
+      <h2>主张—证据地图</h2>
+      <div class="filters">
+        <label>筛选置信度：
+          <select id="filter-confidence">
+            <option value="">all</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </label>
+        <label>筛选证据标签：
+          <select id="filter-label">
+            <option value="">all</option>
+            <option>[Paper evidence]</option>
+            <option>[Figure/Table evidence]</option>
+            <option>[Author claim]</option>
+            <option>[Agent inference]</option>
+            <option>[Uncertain]</option>
+            <option>[Needs verification]</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="filter-needs" checked /> 只看需验证项</label>
+      </div>
+      <table class="claims-table">
+        <thead>
+          <tr><th>ID</th><th>主张</th><th>证据标签</th><th>位置</th><th>置信度</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-001</code></td>
+            <td>SECOND ME 将用户记忆参数化为 L2 模型权重，叠加在 L0（原始数据）和 L1（自然语言记忆）之上。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§2.1 (LPM 1.0 回顾) + §2.2 (Overall Design)</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Author claim]" data-needs="false">
+            <td><code>C-002</code></td>
+            <td>SECOND ME 作为'上下文提供者'而非任务执行器，与用户视角对齐。</td>
+            <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
+            <td>§2.2 — 'we position SECOND ME as a context provider aligned with the user's perspective, rather than a task executor.'</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-003</code></td>
+            <td>训练流水线完全自动化，包含数据合成、五级过滤、PEFT SFT 和 DPO。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§3.1 (Training Pipeline) + Figure 2</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-004</code></td>
+            <td>基座模型为 Qwen2.5-7B-Instruct，训练以 PEFT 开始。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§3.1 — 'Our base model, Qwen2.5-7B-Instruct (Qwen et al., 2025), undergoes automatic training and evaluation.'</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-005</code></td>
+            <td>训练中使用三种答案风格 COT 策略：Weak、Multi-step 和 Strong（后者使用 Deepseek-R1 并施加严格格式约束）。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§3.2 (Answer Style: COT or Not?)</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-006</code></td>
+            <td>DPO 不引入新知识，而是在约 20% 的 SFT 数据上精炼偏好对齐。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§3.3 — 'Preference pairs constitute approximately 20% of the total SFT training data.'</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-007</code></td>
+            <td>评估使用四个指标：Memory（Self）、Memory（Third-party）、背景 Enhance、背景 Critic。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§3.4 + Appendix C</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-008</code></td>
+            <td>Strong COT 显著提升了 Memory（Self）和 背景 Critic 性能；Multi-step COT 往往弱于 Weak COT。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>Table 1（提取）: Strong Memory (Self) = 0.91 vs Weak = 0.86 vs Multi-step = 0.64。</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Paper evidence]" data-needs="true">
+            <td><code>C-009</code></td>
+            <td>DPO 在与迭代 COT 精炼结合时，在所有任务上带来显著改进。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>§3.5 — 'Table 2 demonstrates that DPO brings substantial improvements'.</td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Author claim]" data-needs="true">
+            <td><code>C-010</code></td>
+            <td>人工评估报告 Strong-COT-with-DPO 得分接近 1，Strong-COT-without-DPO 平均约 0.95。</td>
+            <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
+            <td>§3.5 — 'Human evaluation shows Strong COT without DPO achieves an average score of 0.95, while Strong COT with DPO scores close to 1.'</td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="low" data-label="[Author claim]" data-needs="true">
+            <td><code>C-011</code></td>
+            <td>SECOND ME 在人机网络中通过梅特卡夫定律驱动 3-5 个数量级的网络效率提升。</td>
+            <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
+            <td>§4 — 'integration of human and AI nodes increases network efficiency by 3 to 5 orders of magnitude.'</td>
+            <td><span class="conf conf-low">low</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-012</code></td>
+            <td>完整系统在 github.com/Mindverse/Second-Me 开源（注意：是 Mindverse，不是 mindhive）。</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td>Abstract + §4 — 'https://github.com/Mindverse/Second-Me'.</td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Figures and Tables Explanation -->
+    <section id="figures" class="card">
+      <h2>图表 / 结构说明</h2>
+      
+      <div class="accordion">
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            
+            
+          </summary>
+          <p></p>
+          
+        </details>
+        
+      </div>
+      
+      
+      <p class="muted">（原文无传统图表 / tables。）</p>
+      
+      
+    </section>
+
+    <!-- 9. Key Terms 术语表 -->
+    <section id="glossary" class="card">
+      <h2>关键术语</h2>
+      <div class="chips">
+        
+        <details class="chip">
+          <summary><strong>Second Me</strong></summary>
+          <div class="chip-body">
+            <p>本文提出的 AI-native 个人记忆系统（Mindverse.ai, arXiv:2503.08102），继承 LPM 1.0。作为持久上下文提供者，将用户记忆参数化为 L2 模型。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>LLM agent</strong></summary>
+          <div class="chip-body">
+            <p>由大语言模型驱动的系统，代表用户执行任务或交互；SECOND ME 被定位为这类 Agent 的上下文提供者。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>memory mechanism</strong></summary>
+          <div class="chip-body">
+            <p>本文中的分层架构（L0/L1/L2），用于存储和检索用户记忆，L2 实现为个性化神经网络。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>hierarchical memory</strong></summary>
+          <div class="chip-body">
+            <p>从 LPM 1.0 继承并在 SECOND ME 中细化的三层 L0（原始）/ L1（自然语言）/ L2（参数）记忆模型。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>LPM 1.0 / Large Personal Model</strong></summary>
+          <div class="chip-body">
+            <p>Shang et al. (2024) 的前代系统，提出三层记忆模型并证明 LLM 可以参数化用户记忆。SECOND ME 是其演进版本。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>L0 / L1 / L2 memory layers</strong></summary>
+          <div class="chip-body">
+            <p>L0: 原始数据层（类似 RAG/RALM）；L1: 自然语言记忆（简介、标签、摘要）；L2: AI-native 参数记忆，编码在每个用户的神经网络中。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>PEFT (Parameter-Efficient Fine-Tuning)</strong></summary>
+          <div class="chip-body">
+            <p>微调技术家族（BitFit、LoRA 等），仅更新少量参数同时保持基座模型冻结。用于 SECOND ME 在 Qwen2.5-7B 上的 SFT 步骤。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>DPO (Direct Preference Optimization)</strong></summary>
+          <div class="chip-body">
+            <p>无需强化学习的偏好优化方法。SECOND ME 在 ~20% SFT 数据上使用 DPO 精炼偏好对齐。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>SFT (Supervised Fine-Tuning)</strong></summary>
+          <div class="chip-body">
+            <p>标准 next-token 训练，使用标注或合成数据。在 SECOND ME 中：使用 COT 风格合成答案在 Qwen2.5-7B-Instruct 上进行 PEFT SFT。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>COT (Chain-of-Thought)</strong></summary>
+          <div class="chip-body">
+            <p>推理风格，模型在给出最终答案前产生中间步骤。SECOND ME 比较 Weak / Multi-step / Strong COT 合成策略。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Qwen2.5-7B-Instruct</strong></summary>
+          <div class="chip-body">
+            <p>SECOND ME 用于参数记忆的基座模型（§3.1）。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Deepseek-R1</strong></summary>
+          <div class="chip-body">
+            <p>数据合成期间用作 Strong-COT 专家的推理模型（§3.2）。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>背景 Provider</strong></summary>
+          <div class="chip-body">
+            <p>SECOND ME 的自我定位：不执行任务，而是向其他 Agent（以及用户自身）提供用户上下文。</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Inner / Outer loop</strong></summary>
+          <div class="chip-body">
+            <p>Inner loop = SECOND ME 内部 L0/L1/L2 的无缝整合。Outer loop = SECOND ME 与外部 LLM 和互联网资源的协调。</p>
+          </div>
+        </details>
+        
+      </div>
+    </section>
+
+    <!-- 10. 方法重建 -->
+    <section id="reconstruction" class="card">
+      <h2>方法重建</h2>
+      <ol><li>输入：原始用户数据（文本、交互、偏好、简介、记录）以及可选的预训练 LLM 常识。</li><li>阶段 A — 合成：提取实体 / 主题 / 关系；通过自我定位强化和记忆认知增强生成 Memory-QA 对；通过模拟场景和多 Agent 交互生成 背景-Enhance 和 背景-Critic 对。</li><li>阶段 B — 过滤：五级质量过滤器（Taori 风格）仅保留高质量合成数据。</li><li>阶段 C — SFT：在 Qwen2.5-7B-Instruct 上使用 PEFT（Bitfit / LoRA 家族），答案风格从三种 COT 策略之一（Weak / Multi-step / Strong，后者使用 Deepseek-R1 作为专家）抽取。</li><li>阶段 D — DPO：从 SFT 模型构建偏好对（~20% SFT 数据）并运行 Direct Preference Optimization 以精炼偏好对齐，不注入新知识。</li><li>阶段 E — 编排：推理时，训练后的 L2 在三种部署模式中选择——Memory QA（Self/Third-party）、背景 Enhance、背景 Critic——并在（复杂任务）情况下路由到外部专家模型（GPT-4o、Deepseek-R1），同时保持用户上下文。</li><li>输出：与用户身份、偏好和历史对齐的上下文增强查询、批判和直接回答。</li></ol>
+    </section>
+
+    <!-- 11. 正确性 and 局限 -->
+    <section id="limitations" class="card">
+      <h2>正确性与局限</h2>
+      <ul><li>阅读基于 pdftotext -layout 提取。部分图表布局（特别是 Table 2 的单元格值）未被清晰恢复，标记为 [Needs verification]。</li><li>Table 1 的数值（Strong 0.91/0.71/0.75/0.85 等）从提取的布局文本复现；应与渲染 PDF 交叉核对末位精度。</li><li>论文中未报告针对标准化长时记忆基准（LoCoMo、MSC、LLM-LongMem）的独立第三方评估。</li><li>'完全可本地化'部署的硬件/延迟/成本未量化。</li></ul>
+    </section>
+
+    <!-- 12. 相关工作 Map -->
+    <section id="related" class="card">
+      <h2>相关脉络</h2>
+      </li></ul>
+      
+      <p>原文不是学术论文，没有正式参考文献列表。</p>
+      <p>本节改为相关脉络：Bell Labs、Shannon、Los Alamos、工业研究传统、科研方法论演讲。</p>
+      
+    </section>
+
+    <!-- 13. 实践启发 -->
+    <section id="implications" class="card">
+      <h2>实践启发</h2>
+      <ul>
+        <li><strong>贡献：</strong> 将 LPM 三层记忆架构细化为混合 L0/L1/L2 设计，引入显式内/外循环用于层间整合和外部协调。 [Author claim]</li><li><strong>贡献：</strong> 提出完全自动化的训练流水线（数据合成、五级过滤、PEFT SFT、DPO），在作者自设指标上达到最先进的 L2 性能。 [Author claim]</li><li><strong>贡献：</strong> 引入多 Agent 框架，训练后的 L2 作为编排器与通用专家模型在 Memory QA、背景 Enhance、背景 Critic 任务上协作。 [Paper evidence]</li><li><strong>贡献：</strong> 在 github.com/Mindverse/Second-Me 开源了完全可本地化的部署系统。 [Paper evidence]</li>
+        <li><strong>不适用的地方：</strong> 阅读基于 pdftotext -layout 提取。部分图表布局（特别是 Table 2 的单元格值）未被清晰恢复，标记为 [Needs verification]。</li>
+      </ul>
+    </section>
+
+    <!-- 14. 复现计划 / 实践计划 -->
+    <section id="reproduction" class="card">
+      <h2>复现计划</h2>
+      
+        
+        
+        
+        <h3>实践步骤</h3>
+        <ol><li>1. 使用 SECOND ME 流水线（Appendix A）合成用户数据。</li><li>2. 运行五级过滤（Appendix A）；保留过滤后的语料库。</li><li>3. 使用 PEFT（LoRA）对 Qwen2.5-7B-Instruct 进行 SFT，为每种 COT 策略生成一个模型。</li><li>4. 构建 DPO 偏好对（~20% SFT 数据）并运行 DPO。</li><li>5. 在 Memory (Self)、Memory (Third-party)、背景 Enhance、背景 Critic 上评估（Appendix C 评分标准）。</li><li>6. 在相同指标上与长上下文和 RAG 基线对比。</li></ol>
+        
+        
+        <h3>成功标准</h3>
+        <ul><li>复现 Table 1 趋势（Strong > Weak > Multi-step on Memory (Self) and 背景 Critic）。</li><li>复现 Table 2 定性趋势（DPO 增加增益）——精确数字可能因数据合成随机性而异。</li><li>证明 SECOND ME 在 Memory QA 指标上优于 RAG 基线。</li></ul>
+        
+        
+        
+      
+        <dl class="kv">
+          <dt>数据集</dt><dd>通过 SECOND ME 流水线合成用户数据（原始用户记录 → 实体/主题挖掘 → 自我定位强化和记忆认知增强 → 模拟 背景-Enhance/Critic）。作者未发布固定数据集；复现需要重新合成。可选从公共长时记忆数据集（如 LoCoMo、MSC）启动以引导原始记录。</dd>
+          <dt>基线</dt><dd>长上下文 LLM（如带扩展上下文的 Qwen2.5-7B-Instruct）和覆盖相同原始数据的 RAG 基线，在四个 SECOND ME 指标上评估。</dd>
+          <dt>硬件</dt><dd>单张 A100 80GB 或等效设备用于 Qwen2.5-7B 的 SFT+DPO with PEFT（LoRA r=16 或 BitFit）。推理可在单张消费级 GPU 上运行，PEFT adapter 已合并。</dd>
+        </dl>
+        <h4>步骤</h4>
+        <ol><li>1. 使用 SECOND ME 流水线（Appendix A）合成用户数据。</li><li>2. 运行五级过滤（Appendix A）；保留过滤后的语料库。</li><li>3. 使用 PEFT（LoRA）对 Qwen2.5-7B-Instruct 进行 SFT，为每种 COT 策略生成一个模型。</li><li>4. 构建 DPO 偏好对（~20% SFT 数据）并运行 DPO。</li><li>5. 在 Memory (Self)、Memory (Third-party)、背景 Enhance、背景 Critic 上评估（Appendix C 评分标准）。</li><li>6. 在相同指标上与长上下文和 RAG 基线对比。</li></ol>
+        
+        <h4>合理性检查</h4>
+        <ul><li>Strong COT > Multi-step COT on Memory (Self)（Table 1 趋势）。</li><li>Multi-step COT 在 Memory (Third-party) 上未击败 Weak COT（Table 1 趋势）。</li><li>添加 DPO 在 背景 Enhance 和 背景 Critic 上带来进一步增益。</li><li>人工评估子集（小 N）显示 Strong COT + DPO 得分 ≈ 1.0。</li></ul>
+        
+        
+        <h4>成功标准</h4>
+        <ul><li>复现 Table 1 趋势（Strong > Weak > Multi-step on Memory (Self) and 背景 Critic）。</li><li>复现 Table 2 定性趋势（DPO 增加增益）——精确数字可能因数据合成随机性而异。</li><li>证明 SECOND ME 在 Memory QA 指标上优于 RAG 基线。</li></ul>
+        
+      
+    </section>
+
+    <!-- 15. 开放问题 -->
+    <section id="open" class="card">
+      <h2>开放问题</h2>
+      <ul><li>SECOND ME 在标准化长时记忆基准（LoCoMo、MSC、LLM-LongMem）上的表现如何，而非仅作者自设的四指标？</li><li>在消费级设备上运行个性化 Qwen2.5-7B-Instruct + PEFT + DPO 流水线的实际硬件占用是多少？</li><li>SECOND ME 与当前长上下文 LLM（如 1M-token 上下文的 Qwen2.5）在真实记忆规模下的 Memory QA 任务上如何头对头比较？</li><li>Appendix D 中的多 Agent 交互框架能否扩展到两个用户之外？100+ 用户时的涌现动态是什么？</li><li>多模态个人记忆将如何整合（作者命名的下一个前沿）？</li></ul>
+    </section>
+
+    <!-- 16. 最终理解检查表 -->
+    <section id="checklist" class="card">
+      <h2>最终理解检查表</h2>
+      <ol class="checklist">
+        
+        <li><label><input type="checkbox" /> 我阅读了完整论文正文，还是只读了摘要/标题？</label></li>
+        
+        <li><label><input type="checkbox" /> 阅读模式标签是否正确（full_text）？</label></li>
+        
+        <li><label><input type="checkbox" /> 我是否给每个解释性声明都标记了证据标签？</label></li>
+        
+        <li><label><input type="checkbox" /> 我是否避免假装阅读了实际未读的内容？</label></li>
+        
+        <li><label><input type="checkbox" /> 我是否将作者声明与论文证据声明分开了？</label></li>
+        
+        <li><label><input type="checkbox" /> 规范标题是否正确（不是输入标题）？</label></li>
+        
+        <li><label><input type="checkbox" /> 我是否记录了解析轨迹（输入 → arXiv → PDF → 提取文本 → reading_mode）？</label></li>
+        
+        <li><label><input type="checkbox" /> 复现计划是否包含基线、数据集、硬件和成功标准？</label></li>
+        
+        <li><label><input type="checkbox" /> 我是否区分了单轮与多轮训练限制以及多模态下一个前沿？</label></li>
+        
+        <li><label><input type="checkbox" /> claims_evidence_map 中是否有 ≥ 10 条声明？</label></li>
+        
+        <li><label><input type="checkbox" /> 是否有 ≥ 6 条图表注释？</label></li>
+        
+        <li><label><input type="checkbox" /> 目标语言是否为中文（zh-CN）？</label></li>
+        
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Generated by <strong>paper-three-pass-reader v0.2.9-alpha</strong> · MIT · offline · no backend.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

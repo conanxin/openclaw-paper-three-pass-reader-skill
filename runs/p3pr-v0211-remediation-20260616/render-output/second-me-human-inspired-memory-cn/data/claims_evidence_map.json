@@ -1,0 +1,122 @@
+[
+  {
+    "claim_id": "C-001",
+    "claim_text": "SECOND ME 将用户记忆参数化为 L2 模型权重，叠加在 L0（原始数据）和 L1（自然语言记忆）之上。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§2.1 (LPM 1.0 回顾) + §2.2 (Overall Design)",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "三层模型是核心贡献；在 Abstract、§2.1、§2.2 中一致描述。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-002",
+    "claim_text": "SECOND ME 作为'上下文提供者'而非任务执行器，与用户视角对齐。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "§2.2 — 'we position SECOND ME as a context provider aligned with the user's perspective, rather than a task executor.'",
+    "evidence_kind": "author_claim",
+    "confidence": "high",
+    "notes": "直接的作者声明；与通用 LLM Agent 形成对比。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-003",
+    "claim_text": "训练流水线完全自动化，包含数据合成、五级过滤、PEFT SFT 和 DPO。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.1 (Training Pipeline) + Figure 2",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Figure 2 端到端可视化该流水线。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-004",
+    "claim_text": "基座模型为 Qwen2.5-7B-Instruct，训练以 PEFT 开始。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.1 — 'Our base model, Qwen2.5-7B-Instruct (Qwen et al., 2025), undergoes automatic training and evaluation.'",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "正文中明确给出模型名称和规模。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-005",
+    "claim_text": "训练中使用三种答案风格 COT 策略：Weak、Multi-step 和 Strong（后者使用 Deepseek-R1 并施加严格格式约束）。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.2 (Answer Style: COT or Not?)",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "每种策略都描述了具体机制和长度约束。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-006",
+    "claim_text": "DPO 不引入新知识，而是在约 20% 的 SFT 数据上精炼偏好对齐。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.3 — 'Preference pairs constitute approximately 20% of the total SFT training data.'",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "正文中给出定量比例。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-007",
+    "claim_text": "评估使用四个指标：Memory（Self）、Memory（Third-party）、Context Enhance、Context Critic。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.4 + Appendix C",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Appendix C 中有详细评分标准。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-008",
+    "claim_text": "Strong COT 显著提升了 Memory（Self）和 Context Critic 性能；Multi-step COT 往往弱于 Weak COT。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "Table 1（提取）: Strong Memory (Self) = 0.91 vs Weak = 0.86 vs Multi-step = 0.64。",
+    "evidence_kind": "paper_table",
+    "confidence": "high",
+    "notes": "Table 1 数值从提取文本中复现。",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-009",
+    "claim_text": "DPO 在与迭代 COT 精炼结合时，在所有任务上带来显著改进。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.5 — 'Table 2 demonstrates that DPO brings substantial improvements'.",
+    "evidence_kind": "paper_text",
+    "confidence": "medium",
+    "notes": "Table 2 布局未被 pdftotext -layout 清晰提取；Table 2 中的具体数字无法从提取中恢复。",
+    "needs_verification": true
+  },
+  {
+    "claim_id": "C-010",
+    "claim_text": "人工评估报告 Strong-COT-with-DPO 得分接近 1，Strong-COT-without-DPO 平均约 0.95。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "§3.5 — 'Human evaluation shows Strong COT without DPO achieves an average score of 0.95, while Strong COT with DPO scores close to 1.'",
+    "evidence_kind": "author_claim",
+    "confidence": "medium",
+    "notes": "数字为作者报告；论文中无独立人工评估。",
+    "needs_verification": true
+  },
+  {
+    "claim_id": "C-011",
+    "claim_text": "SECOND ME 在人机网络中通过梅特卡夫定律驱动 3-5 个数量级的网络效率提升。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "§4 — 'integration of human and AI nodes increases network efficiency by 3 to 5 orders of magnitude.'",
+    "evidence_kind": "author_claim",
+    "confidence": "low",
+    "notes": "这是梅特卡夫式投影，而非受控测量。论文中无独立验证。",
+    "needs_verification": true
+  },
+  {
+    "claim_id": "C-012",
+    "claim_text": "完整系统在 github.com/Mindverse/Second-Me 开源（注意：是 Mindverse，不是 mindhive）。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "Abstract + §4 — 'https://github.com/Mindverse/Second-Me'.",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "URL 在 Abstract 和 §4 末尾都有；组织名是 Mindverse。",
+    "needs_verification": false
+  }
+]

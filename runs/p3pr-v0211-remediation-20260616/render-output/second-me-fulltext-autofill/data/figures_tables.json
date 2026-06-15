@@ -1,0 +1,72 @@
+[
+  {
+    "id": "F-1",
+    "kind": "figure",
+    "label": "Figure 1: Hybrid Architecture of SECOND ME",
+    "explanation": "Shows the L0/L1/L2 hybrid architecture with inner loop (seamless layer integration) and outer loop (LLM and internet resources under SECOND ME's guidance). Establishes the high-level system layout that the rest of the paper details. [Paper evidence, caption after §1]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "Architecture overview; caption text recovered cleanly from PDF.",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-2",
+    "kind": "figure",
+    "label": "Figure 2: Automated Personal Model pipeline with LLM as a Judge and LLM as data synthesizer",
+    "explanation": "Visualises the end-to-end training pipeline: raw data → entity/topic mining → memory data synthesis (self-location reinforcement, memory cognition enhancement) → context enhancement / critique data via simulated scenarios → five-level filtering → PEFT SFT → DPO data generation → evaluation. The 'LLM as Judge' and 'LLM as data synthesizer' labels emphasise automation. [Paper evidence, §3.1]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "Pipeline figure; caption text recovered.",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-3",
+    "kind": "figure",
+    "label": "Figure 3: Sample outputs of three COT strategies for the same query",
+    "explanation": "Side-by-side Weak / Multi-step / Strong COT responses to 'When you think of me, what do you see?'. Shows the increasing richness and stylistic constraint from Weak to Strong COT, and motivates the qualitative difference the authors report in §3.5. [Paper evidence, §3.2]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "Illustrative qualitative figure.",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-4",
+    "kind": "figure",
+    "label": "Figure 4: Context-Enhance case comparison (Weak COT vs Strong COT, both without DPO)",
+    "explanation": "Concrete Case 1 example for the Context-Enhance task: query about beginner resources for two-stage model training. Compares Weak COT vs Strong COT, with bold-marked entities from the user's record. Used to argue for qualitative superiority of Strong COT. [Paper evidence, §3.5]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "Case-study figure; entities bolded in original.",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "F-5",
+    "kind": "figure",
+    "label": "Figure 6 (Appendix D): Multi-agent architecture",
+    "explanation": "Shows how the trained L2 sits between the user and expert models (GPT-4o etc.), with arrows representing possible communications (user-expert arrows omitted for clarity). Supports the §4 Applications and §3.1 multi-agent narrative. [Paper evidence, Appendix D]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "Located in Appendix D; numbered 6 in original.",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "T-1",
+    "kind": "table",
+    "label": "Table 1: Important Experiment Results under different settings on COT (ratio of full score)",
+    "explanation": "Memory (Self) / Memory (Third-party) / Context Enhance / Context Critic scores under Strong / Multi-step / Weak COT. Reported numbers (mean, 0-1 scale): Strong 0.91/0.71/0.75/0.85; Multi-step 0.64/0.43/0.85/0.77; Weak 0.86/0.58/0.87/0.64. Strong COT wins on Memory (Self) and Context Critic; Multi-step underperforms Weak overall. [Paper evidence, Table 1 + §3.5]",
+    "evidence_label": "[Paper evidence]",
+    "notes": "Numerical values are from the extracted layout text and should be cross-checked against the rendered PDF for precision.",
+    "number": "",
+    "title": "(missing title)"
+  },
+  {
+    "id": "T-2",
+    "kind": "table",
+    "label": "Table 2: DPO ablation across COT levels",
+    "explanation": "Referenced in §3.5 as showing DPO brings substantial improvements across all tasks. Specific cell values were not cleanly recovered by pdftotext -layout; extraction limitation. Authors' qualitative claim is that iterative COT refinement + DPO yields consistent gains. [Paper evidence, §3.5 reference] [Needs verification for exact numbers]",
+    "evidence_label": "[Needs verification]",
+    "notes": "Table 2 layout not extractable from this PDF; precise cell values cannot be quoted.",
+    "number": "",
+    "title": "(missing title)"
+  }
+]

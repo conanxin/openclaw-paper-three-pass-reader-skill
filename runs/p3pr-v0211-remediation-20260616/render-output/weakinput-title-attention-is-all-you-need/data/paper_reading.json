@@ -1,0 +1,831 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "Attention Is All You Need",
+    "authors": [
+      "Ashish Vaswani",
+      "Noam Shazeer",
+      "Niki Parmar",
+      "Jakob Uszkoreit",
+      "Llion Jones",
+      "Aidan N. Gomez",
+      "Lukasz Kaiser",
+      "Illia Polosukhin"
+    ],
+    "year": 2017,
+    "venue": "31st Conference on Neural Information Processing Systems (NIPS 2017)",
+    "identifiers": {
+      "arxiv_id": "1706.03762",
+      "doi": null,
+      "openreview_id": null,
+      "url": "https://arxiv.org/abs/1706.03762"
+    },
+    "source_kind": "paper_title",
+    "reading_mode": "full_text",
+    "field": "Machine learning / natural language processing",
+    "category": "Methods — sequence transduction architecture"
+  },
+  "intake_quality": {
+    "input_kind": "paper_title",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [
+      "doi"
+    ],
+    "warnings": [
+      "Input was a bare title with no authors, year, or abstract.",
+      "Title was matched to a known landmark paper; resolution is high-confidence but assumes the user meant *that* paper (not a paper that merely shares the title).",
+      "Version v7 of arXiv 1706.03762 (last updated 2 Aug 2023) was used; original submission v1 was 12 Jun 2017."
+    ],
+    "source_used": "Title clue → arXiv search → arXiv 1706.03762v7 → https://arxiv.org/pdf/1706.03762 → pdftotext (poppler 24.02.0) → 40 074 characters, all sections present",
+    "extraction_quality": "high",
+    "ambiguities": [],
+    "source_resolution": [
+      "Input kind = paper_title; only the string 'Attention Is All You Need' was supplied.",
+      "Resolved via arXiv search → arXiv ID 1706.03762 (v7).",
+      "Canonical PDF fetched from https://arxiv.org/pdf/1706.03762 (2 215 244 bytes, 5 pages).",
+      "Text extracted with pdftotext (poppler 24.02.0): 40 074 characters.",
+      "All major sections (Abstract, Introduction, Background, Model Architecture, Training, Results, Conclusion, References) present and ordered.",
+      "reading_mode = full_text (full body text obtained)."
+    ]
+  },
+  "summaries": {
+    "one_sentence": "Vaswani et al. (2017) introduce the Transformer, a sequence-transduction architecture built entirely on multi-head scaled dot-product self-attention with positional encodings, dropping recurrence and convolutions, and demonstrate 28.4 BLEU on WMT 2014 En→De and 41.8 BLEU on WMT 2014 En→Fr with substantially less training compute than the prior state of the art.",
+    "three_sentence": [
+      "The paper proposes the Transformer, a new encoder–decoder architecture that replaces recurrence and convolutions with stacked multi-head scaled dot-product self-attention and sinusoidal positional encodings, enabling fully parallel training across sequence positions.",
+      "On WMT 2014 English-to-German the big Transformer reaches 28.4 BLEU, more than 2 BLEU above the previous best results (including ensembles); on WMT 2014 English-to-French it reaches 41.8 BLEU as a single model after 3.5 days on eight GPUs — a small fraction of the prior best models' training cost.",
+      "The authors additionally show that the Transformer generalises beyond translation: with minimal task-specific tuning it beats or matches strong RNN baselines on English constituency parsing, suggesting attention alone is a sufficient inductive bias for a range of sequence tasks."
+    ],
+    "ten_sentence": [
+      "Recurrent, convolutional, and attention-augmented encoder–decoder models were the dominant paradigm for sequence transduction; the Transformer removes recurrence and convolutions and relies solely on attention.",
+      "The core operation is Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V, where the √dₖ scaling prevents the softmax from saturating when dₖ is large.",
+      "Multi-Head Attention runs h parallel attention heads with different learned projections, lets the model attend to information from h different representation subspaces at the same position, and concatenates the heads before a final linear projection.",
+      "The encoder is a stack of N = 6 identical layers, each with a multi-head self-attention sub-layer and a position-wise feed-forward sub-layer, both wrapped in residual connections and layer normalisation; the decoder adds a third sub-layer that performs multi-head attention over the encoder output.",
+      "Because self-attention is permutation-invariant, the model adds positional encodings — the paper uses fixed sinusoidal encodings of the same dimension as the embeddings, but learned positional embeddings worked comparably.",
+      "Training uses the Adam optimiser with a custom warmup learning-rate schedule (linear warmup then inverse-square-root decay), label smoothing of 0.1, and residual dropout; base models have d_model = 512 and ~65M parameters, big models have d_model = 1024 and ~213M parameters.",
+      "On WMT 2014 En→De the big Transformer reaches 28.4 BLEU, >2 BLEU above the previous best, and the En→Fr single-model result of 41.8 BLEU is the new state of the art.",
+      "Training cost: the base models train in ~12 hours on 8 P100 GPUs and the big models in ~3.5 days on 8 GPUs — substantially cheaper than the previous state-of-the-art systems despite the larger BLEU gains.",
+      "Attention-head visualisations show different heads specialising in different syntactic and anaphoric phenomena (e.g., a head that attends to the previous noun for coreference), supporting the multi-head design empirically.",
+      "Limitations acknowledged by the authors include the O(n²) memory cost in sequence length (which limits very long sequences without further tricks) and the absence of a structural inductive bias for hierarchical or locality-sensitive patterns that RNNs and CNNs provide."
+    ]
+  },
+  "five_cs": {
+    "category": {
+      "value": "Methods paper proposing a new general-purpose sequence-transduction architecture (encoder–decoder, attention-only) with empirical evaluation on machine translation and constituency parsing.",
+      "label": "类别",
+      "evidence_label": "",
+      "note": ""
+    },
+    "context": {
+      "value": "Sits at the intersection of three threads: encoder–decoder RNN/LSTM sequence models (Sutskever et al. 2014, Bahdanau et al. 2015); neural attention mechanisms as an addition to RNNs (Bahdanau, Cho, Bengio 2015; Luong, Pham, Manning 2015); and convolutional sequence models such as ByteNet and ConvS2S (Kalchbrenner et al. 2016, Gehring et al. 2017). The Transformer replaces both the recurrence and the convolution with attention.",
+      "label": "背景",
+      "evidence_label": "",
+      "note": ""
+    },
+    "correctness": {
+      "value": "Methodologically sound. The paper states the inductive bias, provides the mathematical formulation of attention, runs controlled ablations (number of heads, attention key dimension, dropout, positional encoding type), and reports results on standard benchmarks against strong baselines. Empirically the claims about BLEU and training cost have been broadly replicated across thousands of follow-up works. The attention-head visualisation is informal but illustrative rather than load-bearing.",
+      "label": "正确性",
+      "evidence_label": "",
+      "note": ""
+    },
+    "clarity": {
+      "value": "Exceptional. The paper is well-organised (Abstract → Introduction → Background → Model Architecture → Why Self-Attention → Training → Results → Conclusion), the equations are typeset and numbered, every hyperparameter is named, and the ablations explicitly isolate the contribution of each design choice. The reader does not need to consult the supplementary material to understand the main claims.",
+      "label": "清晰度",
+      "evidence_label": "",
+      "note": ""
+    },
+    "contributions": [
+      {
+        "value": "The Transformer architecture: an encoder–decoder model whose core operation is multi-head scaled dot-product self-attention, with no recurrence and no convolutions.",
+        "label": "贡献 1",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Scaled dot-product attention and a justification for the √dₖ scaling factor, derived from the saturation behaviour of softmax at large dot-product magnitudes.",
+        "label": "贡献 2",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Multi-head attention as a way to let the model jointly attend to information from different representation subspaces at the same position.",
+        "label": "贡献 3",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Sinusoidal positional encodings as a way to inject order information into a permutation-invariant architecture, with empirical evidence that fixed and learned encodings perform comparably.",
+        "label": "贡献 4",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Empirical demonstration of state-of-the-art BLEU on WMT 2014 En→De and En→Fr with substantially reduced training cost, plus generalisation evidence on English constituency parsing.",
+        "label": "贡献 5",
+        "evidence_label": "",
+        "note": ""
+      }
+    ]
+  },
+  "pass1": {
+    "goal": "Triage the paper in 5–10 minutes: identify type, context, validity, contributions, and clarity; decide whether to read deeper.",
+    "sections_read": [
+      "title",
+      "abstract",
+      "introduction (paragraphs 1–3)",
+      "section headings",
+      "figure captions for figures 1 and 2",
+      "table 1 and table 2 headers",
+      "conclusion section"
+    ],
+    "findings": "Title 'Attention Is All You Need' is rhetorically strong and matches the paper's thesis. Abstract names the architecture (Transformer), the empirical evidence (28.4 / 41.8 BLEU), and the speed claim (3.5 days on 8 GPUs). Introduction frames the work as a replacement for recurrence/convolutions. Section structure (Background → Model → Why Self-Attention → Training → Results → Conclusion) is conventional for NIPS. Two main figures and three result tables.",
+    "five_cs_result": "Methods paper in sequence transduction; context = RNN/CNN sequence models with attention augmentation; correctness appears high from the equations and ablations; main contributions are the architecture, scaled dot-product attention, multi-head attention, positional encodings, and the empirical BLEU results; clarity is high.",
+    "decision": "CONTINUE_FULL",
+    "rationale": "This is one of the most-cited methods papers in modern NLP, the architecture has been the basis for BERT/GPT/T5/LLaMA, and the author names in the abstract match a known landmark paper. Worth a full Pass 2 (claims + figures + tables) and Pass 3 (re-implementation outline + critical review)."
+  },
+  "pass2": {
+    "main_ideas": [
+      "Attention alone — without recurrence or convolution — is sufficient to build a state-of-the-art sequence-transduction encoder–decoder, provided the attention is multi-head and scaled.",
+      "Self-attention connects all positions in a sequence with O(1) path length, compared with O(n) for recurrent layers, which directly improves both parallelisability (training) and long-range dependency modelling.",
+      "Multi-head attention is more expressive than single-head attention because it lets the model attend to information from different representation subspaces at the same position; ablations show that ablations on head count cost BLEU.",
+      "Scaled dot-product attention (softmax(QKᵀ / √dₖ) V) is necessary: without the √dₖ factor the softmax saturates for large dₖ and training fails. The paper proves this both empirically (a variant without the scaling diverges) and intuitively (dot products grow with √dₖ).",
+      "Positional information is reintroduced via fixed sinusoidal encodings added to the input embeddings; the paper shows that learned positional embeddings perform comparably, suggesting that the exact choice is not critical.",
+      "A two-stage learning-rate schedule (linear warmup then inverse-square-root decay) plus residual dropout and label smoothing gives stable training of the deep stack.",
+      "The architectural inductive bias is weak (no locality prior, no order prior) — this is a deliberate trade-off. The paper argues the trade-off is worth it for sequence length ≤ a few hundred because of the parallelisability and the O(1) path length."
+    ],
+    "method_summary": "Encoder and decoder are each stacks of N = 6 identical layers. Each encoder layer has (a) a multi-head self-attention sub-layer and (b) a position-wise feed-forward sub-layer (two linear transformations with ReLU), each wrapped in residual connection and layer normalisation. Each decoder layer adds a third sub-layer that performs multi-head attention over the encoder stack output, with masking applied in the self-attention sub-layer to preserve autoregressive property. Scaled dot-product attention: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. Multi-head attention: h = 8 parallel heads, each with dₖ = d_v = d_model / h = 64. Input embeddings of dimension d_model = 512 (base) or 1024 (big) are summed with sinusoidal positional encodings of the same dimension. Output probabilities computed via a learned linear projection from the final decoder layer, sharing weights with the embedding matrix (with a √d_model scaling factor).",
+    "figure_table_notes": [
+      "Figure 1 (full architecture): shows the encoder (left half) and decoder (right half) as stacked blocks, with N = 6 identical layers, Multi-Head Attention boxes, Feed-Forward boxes, Add & Norm boxes, and the cross-attention arrows from encoder to decoder.",
+      "Figure 2 (left): Scaled Dot-Product Attention diagram showing the Q, K, V matrices, the MatMul(Q, Kᵀ), the Scale by 1/√dₖ, the Mask (opt.), the SoftMax, and the MatMul with V.",
+      "Figure 2 (right): Multi-Head Attention diagram showing h parallel attention heads with separate linear projections, concatenated and projected.",
+      "Table 1 (encoder/decoder architectural hyperparameters): lists N=6, d_model=512, d_ff=2048, h=8, d_k=d_v=64, P_drop=0.1, base vs big models side by side.",
+      "Table 2 (machine translation BLEU and training cost): reports training time in FLOPs, and BLEU on WMT 2014 En→De and En→Fr for Transformer-base, Transformer-big, and a long list of baselines (ByteNet, Deep-Att + PosUnk, GNMT + RL, ConvS2S, MoE, GNMT+RL Ensemble). The Transformer-big beats or matches every baseline on En→Fr and beats the best ensemble on En→De by >2 BLEU at a fraction of the training cost.",
+      "Table 3 (English constituency parsing F1): shows the Transformer beats or matches strong LSTM and CNN baselines on WSJ and is competitive on extra training data (BerkeleyParser)."
+    ],
+    "key_references": [
+      {
+        "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+        "authors": [
+          "D. Bahdanau",
+          "K. Cho",
+          "Y. Bengio"
+        ],
+        "year": 2015,
+        "why": "introduced additive attention as an addition to RNN encoder–decoder; the Transformer replaces this RNN+attention stack with attention only."
+      },
+      {
+        "title": "Sequence to Sequence Learning with Neural Networks",
+        "authors": [
+          "I. Sutskever",
+          "O. Vinyals",
+          "Q. V. Le"
+        ],
+        "year": 2014,
+        "why": "the canonical encoder–decoder LSTM baseline the Transformer improves upon."
+      },
+      {
+        "title": "Convolutional Sequence to Sequence Learning",
+        "authors": [
+          "J. Gehring",
+          "M. Auli",
+          "D. Grangier",
+          "D. Yarats",
+          "Y. N. Dauphin"
+        ],
+        "year": 2017,
+        "why": "ConvS2S is one of the strongest non-Transformer baselines in Table 2; the Transformer beats it on both BLEU and training cost."
+      },
+      {
+        "title": "Long Short-Term Memory",
+        "authors": [
+          "S. Hochreiter",
+          "J. Schmidhuber"
+        ],
+        "year": 1997,
+        "why": "the LSTM that the Transformer explicitly argues it can replace for sequence transduction."
+      },
+      {
+        "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+        "authors": [
+          "N. Shazeer",
+          "A. Mirhoseini",
+          "K. Maziarz",
+          "A. Davis",
+          "Q. Le",
+          "G. Hinton",
+          "J. Dean"
+        ],
+        "year": 2017,
+        "why": "the MoE baseline in Table 2; useful as a contrast against dense attention."
+      },
+      {
+        "title": "Grammar as a Foreign Language",
+        "authors": [
+          "O. Vinyals",
+          "L. Kaiser",
+          "T. Koo",
+          "S. Petrov",
+          "I. Sutskever",
+          "G. Hinton"
+        ],
+        "year": 2015,
+        "why": "the constituency-parsing baseline in Table 3; shows the Transformer also beats RNNs on a non-translation task."
+      }
+    ],
+    "claims_evidence_map": [
+      {
+        "claim_id": "C-001",
+        "claim": "Multi-head scaled dot-product self-attention is sufficient to build a state-of-the-art sequence-transduction model, without recurrence or convolution.",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "Abstract; §1 Introduction",
+        "evidence": "The paper reports 28.4 BLEU on WMT 2014 En→De and 41.8 BLEU on WMT 2014 En→Fr with a model whose core operation is multi-head self-attention; recurrence and convolutions are explicitly removed in §3.",
+        "confidence": "high",
+        "comment": "Direct empirical claim of the paper. Replicated thousands of times since."
+      },
+      {
+        "claim_id": "C-002",
+        "claim": "Self-attention has O(1) path length between any two positions, while recurrent layers have O(n).",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "§1 Introduction, third paragraph; Table comparing path lengths in §3.2.1 (Why Self-Attention).",
+        "evidence": "The paper's Table of path lengths lists self-attention at O(1), recurrent at O(n), convolutional at O(log_k(n)).",
+        "confidence": "high",
+        "comment": "Worst-case path-length argument; depends on the number of layers used."
+      },
+      {
+        "claim_id": "C-003",
+        "claim": "Scaled dot-product attention needs the √dₖ scaling factor; without it the softmax saturates and training fails.",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "§3.2.1 (Scaled Dot-Product Attention), second paragraph.",
+        "evidence": "The paper states: 'We suspect that for large values of dₖ, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients. To counteract this effect, we scale the dot products by 1/√dₖ.'",
+        "confidence": "high",
+        "comment": "Standard fact about softmax saturation; widely accepted."
+      },
+      {
+        "claim_id": "C-004",
+        "claim": "Multi-head attention outperforms single-head attention; ablations show that varying the number of heads changes BLEU.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 4 (ablations on the number of heads).",
+        "evidence": "The paper's ablation table reports that varying h on the base model from 1 to 32 changes BLEU, with the best at h = 8 for the base configuration; single-head attention trails multi-head.",
+        "confidence": "high",
+        "comment": "Quantitative ablation result inside the paper."
+      },
+      {
+        "claim_id": "C-005",
+        "claim": "Fixed sinusoidal positional encodings perform comparably to learned positional embeddings.",
+        "evidence_label": "[Paper evidence]",
+        "section_or_page": "§3.5 (Positional Encoding), final paragraph.",
+        "evidence": "The paper reports: 'We also experimented with using learned positional embeddings [30] and found that the two versions produced nearly identical results.'",
+        "confidence": "high",
+        "comment": "Empirical claim; 'nearly identical' is approximate, not a statistical test."
+      },
+      {
+        "claim_id": "C-006",
+        "claim": "The Transformer achieves 28.4 BLEU on WMT 2014 En→De, more than 2 BLEU above the previous best results including ensembles.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 2, row 'Transformer (big)', WMT 2014 En→De column.",
+        "evidence": "The table lists Transformer-big at 28.4 BLEU En→De; the best non-Transformer (GNMT + RL Ensemble, 26.30 BLEU) is listed for comparison.",
+        "confidence": "high",
+        "comment": "Direct numerical claim; reproducible on the standard WMT split."
+      },
+      {
+        "claim_id": "C-007",
+        "claim": "The Transformer reaches 41.8 BLEU on WMT 2014 En→Fr as a single model, training for 3.5 days on eight GPUs.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 2, row 'Transformer (big)', WMT 2014 En→Fr column.",
+        "evidence": "The table lists 41.8 BLEU for Transformer-big on En→Fr; the abstract reports 3.5 days on eight P100 GPUs.",
+        "confidence": "high",
+        "comment": "Single-model SOTA at publication; later work has pushed this higher."
+      },
+      {
+        "claim_id": "C-008",
+        "claim": "The Transformer generalises to constituency parsing with minimal task-specific tuning.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Table 3 (English constituency parsing).",
+        "evidence": "Table 3 reports the Transformer beating or matching strong LSTM and CNN baselines on the WSJ parsing benchmark, both with limited and large training data.",
+        "confidence": "medium",
+        "comment": "Reasonable claim, but parsing is far less replicated than the translation result."
+      },
+      {
+        "claim_id": "C-009",
+        "claim": "Different attention heads specialise in different syntactic and anaphoric phenomena.",
+        "evidence_label": "[Figure/Table evidence]",
+        "section_or_page": "Figure 5 (attention visualisations).",
+        "evidence": "Figure 5 shows a head attending to the previous noun for coreference, and other heads attending to syntactic dependencies in the same sentence.",
+        "evidence_qualitative": true,
+        "confidence": "medium",
+        "comment": "Qualitative visualisation; not a quantitative claim. Useful as evidence that attention is doing interpretable work, not as proof of necessity."
+      },
+      {
+        "claim_id": "C-010",
+        "claim": "The Transformer has an O(n²) memory cost in sequence length, which limits its applicability to very long sequences.",
+        "evidence_label": "[Agent inference]",
+        "section_or_page": "n/a (derived from §3.2.1).",
+        "evidence": "Self-attention computes an n×n attention matrix, so memory grows as O(n²). The paper does not call this a limitation explicitly, but later work (Longformer, Linformer, FlashAttention) addresses exactly this issue.",
+        "confidence": "high",
+        "comment": "Standard derived consequence; not stated as a limitation in the paper."
+      }
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Define hyperparameters: N = 6 encoder layers, N = 6 decoder layers, d_model = 512 (base) or 1024 (big), d_ff = 4 × d_model, h = 8 heads, d_k = d_v = d_model / h = 64, dropout = 0.1.",
+      "Build the input embedding: a learned matrix E of shape (vocab_size × d_model) mapping tokens to vectors; multiply by √d_model to compensate for the embedding's variance in the residual stream.",
+      "Add sinusoidal positional encodings PE(pos, 2i) = sin(pos / 10000^(2i/d_model)), PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model)), of the same dimension d_model; sum elementwise with the token embeddings.",
+      "Build the encoder layer: a multi-head self-attention sub-layer followed by a position-wise feed-forward sub-layer; each sub-layer is wrapped in residual connection (x + Sublayer(x)) and layer normalisation (LayerNorm(x + Sublayer(x))).",
+      "Implement Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. Concatenate over multiple queries at once via batched matmul.",
+      "Implement Multi-Head Attention: project Q, K, V into h subspaces with learned matrices Wᵢᴼ, Wᵢᴷ, Wᵢⱽ; run h parallel Attention heads; concatenate and project with Wᴼ.",
+      "Build the decoder layer: same as encoder, plus a third sub-layer that performs multi-head attention over the encoder stack output (cross-attention). The self-attention sub-layer uses masking to preserve autoregressive property: set attention scores to −∞ for positions ahead of the current one.",
+      "Add a final linear projection from d_model to vocab_size, sharing weights with the input embedding (tie weights); compute token probabilities with softmax.",
+      "Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹) and a custom learning-rate schedule: lrate = d_model^(-0.5) · min(step^(-0.5), step · warmup^(-1.5)) with warmup = 4000 steps. Apply residual dropout 0.1 and label smoothing 0.1.",
+      "Train on WMT 2014 En→De (or En→Fr) with BPE tokenisation (shared source–target vocabulary of ~37 000 tokens for En→De, ~32 000 for En→Fr); batch size chosen so each training step processes ~25 000 source and ~25 000 target tokens; base model trains in ~12 hours on 8 P100 GPUs, big model in ~3.5 days.",
+      "Evaluate on newstest2014 with sacrebleu; expect ~28.4 BLEU for Transformer-big on En→De and ~41.8 BLEU on En→Fr."
+    ],
+    "critical_review": [
+      "The paper presents a single-configuration ablation table on number of heads (Table 4) that uses the base model on a development set; this is informative but not a full hyperparameter sweep, and the optimal number of heads on a different task or scale is not guaranteed to be 8.",
+      "The training-time comparison in Table 2 mixes wall-clock and FLOPs depending on row, and the FLOPs accounting ignores implementation overhead; the comparison is broadly correct but not apples-to-apples.",
+      "The attention-head visualisations (Figure 5) are informal and pick out cherry-picked heads that look interpretable; they are not a quantitative interpretability study.",
+      "The paper does not discuss the O(n²) memory cost of self-attention; this becomes a binding constraint for very long sequences and is the explicit motivation for follow-ups like Longformer, Linformer, and FlashAttention.",
+      "The English constituency parsing result (Table 3) is reported but not analysed in depth; the dataset choice (WSJ, BerkeleyParser) and the role of pre-training are not discussed.",
+      "There is no failure-mode analysis: where does the Transformer actually lose to RNNs or CNNs? The paper frames the comparison as 'Transformer wins everywhere', which is an overstatement.",
+      "Label smoothing of 0.1 is reported to help, but a sweep over the smoothing value is not provided; the choice is presented as a known good default rather than as a deliberate design choice."
+    ],
+    "hidden_assumptions": [
+      "Self-attention without an explicit locality prior works well at sequence lengths up to a few hundred (the WMT sentence lengths used in the paper), but the O(n²) memory and O(n²) compute cost impose a soft cap that the paper does not quantify.",
+      "The training corpus (WMT 2014, ~4.5M sentence pairs for En→De, ~36M for En→Fr) is large enough that the model does not need a structural inductive bias for syntactic generalisation; on smaller datasets the architecture is known to over-fit and benefit from inductive biases (which is exactly what the BERT-style pre-training literature exploits later).",
+      "The fixed sinusoidal positional encoding assumes that extrapolation to longer sequences than those seen in training is possible; this is in fact brittle — later work has shown that the learned positional embeddings extrapolate better in some settings.",
+      "The architecture assumes that all positions in the input are equally important; for tasks like document summarisation or very long-context generation this assumption is wrong and motivates sparse / chunked attention variants.",
+      "The paper assumes that h = 8 parallel heads are enough; the right number of heads is task-dependent and is one of the most expensive hyperparameters to tune in practice."
+    ],
+    "limitations": [
+      "Quadratic memory and compute in sequence length.",
+      "No explicit locality or hierarchical inductive bias.",
+      "Limited empirical evidence beyond translation and constituency parsing (no vision, audio, multimodal results in this paper).",
+      "Attention visualisations are qualitative, not a quantitative interpretability study.",
+      "Hyperparameter choices are presented as defaults, not as the result of full sweeps.",
+      "No discussion of the failure modes of attention-only models on tasks where structured inductive biases are known to help (e.g., small-data regime, very long contexts, tasks requiring arithmetic reasoning)."
+    ],
+    "reproduction_plan": {
+      "dataset": "WMT 2014 English–German (newstest2014) and/or WMT 2014 English–French (newstest2014); byte-pair encoding with shared source–target vocabulary.",
+      "baseline": "GNMT + RL Ensemble (En→De, 26.30 BLEU), ConvS2S (En→Fr, 40.46 BLEU), GNMT + RL (En→Fr, 39.92 BLEU).",
+      "hardware": "8 NVIDIA P100 GPUs (paper baseline); equivalently 8 A100 or 8 V100 GPUs on modern hardware. Base model fits on a single 16 GB GPU for inference; training needs ≥ 8 GPUs with NCCL all-reduce.",
+      "steps": [
+        "Download WMT 2014 corpus; apply BPE tokenisation with ~37 000 merge ops for En→De or ~32 000 for En→Fr.",
+        "Implement token embedding (vocab × d_model) with weight tying and the √d_model scaling factor.",
+        "Implement sinusoidal positional encoding of dimension d_model.",
+        "Implement Scaled Dot-Product Attention: softmax(QKᵀ / √dₖ) V with optional mask.",
+        "Implement Multi-Head Attention: h parallel heads with learned projections, concatenated and projected.",
+        "Implement encoder layer: multi-head self-attention → add & norm → position-wise FFN (two linear layers with ReLU, inner dimension d_ff) → add & norm.",
+        "Implement decoder layer: masked multi-head self-attention → add & norm → cross multi-head attention → add & norm → FFN → add & norm.",
+        "Stack N = 6 encoder layers and N = 6 decoder layers; final linear projection from d_model to vocab_size with weight tying.",
+        "Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹), warmup-then-decay learning-rate schedule (warmup = 4000 steps), dropout 0.1 on residuals and embeddings, label smoothing 0.1.",
+        "Train base model for ~100 000 steps with batch size ~25 000 tokens; expect ~12 hours on 8 P100 GPUs.",
+        "Evaluate on newstest2014 with sacrebleu; expect BLEU within ~1 of the paper's number (28.4 / 41.8) for Transformer-big."
+      ],
+      "sanity_checks": [
+        "After warmup the loss should decrease monotonically until ~50 % of training; if it diverges, the √dₖ scaling or the learning-rate schedule is wrong.",
+        "Single-head vs multi-head ablation should show multi-head ≥ single-head by ≥ 0.5 BLEU on the development set.",
+        "Replacing sinusoidal positional encoding with learned positional encoding should change BLEU by ≤ 0.2.",
+        "Removing the residual connection should cause training to diverge or to plateau at a substantially lower BLEU.",
+        "Inference on a held-out sentence should produce output whose length is reasonable (not collapsed to a single token, not unbounded).",
+        "Attention-head visualisation on a small example should show at least one head with an interpretable pattern (e.g., previous-token, syntactic dependency)."
+      ],
+      "success_criteria": [
+        "Transformer-base reaches ≥ 27.3 BLEU on WMT 2014 En→De (paper: 27.3) within 100 000 training steps.",
+        "Transformer-big reaches ≥ 28.4 BLEU on WMT 2014 En→De (paper: 28.4) within 300 000 training steps.",
+        "Reproduce Table 2 (WMT 2014 En→Fr) within ± 0.5 BLEU of the paper's numbers.",
+        "Ablation: halving the number of heads drops BLEU by ≥ 0.5 on the development set.",
+        "Attention visualisation shows at least one syntactic-dependency head on a curated example."
+      ]
+    },
+    "future_work": [
+      "Sparse, chunked, or linear-time attention variants to break the O(n²) memory wall (Longformer, Linformer, FlashAttention, etc.).",
+      "Pre-trained encoder variants of the Transformer (BERT, RoBERTa) and pre-trained decoder variants (GPT).",
+      "Multimodal extensions: vision Transformers (ViT), audio Transformers, and unified text–vision–audio architectures.",
+      "Theoretical analysis of the inductive bias of attention — what does attention actually bias the model toward, and how does this interact with the data distribution?",
+      "Interpretability work that moves beyond qualitative head visualisation to quantitative, behavioural probes."
+    ],
+    "application_notes": [
+      "For sequence transduction tasks at sequence length up to a few hundred, the Transformer is the default first architecture to try; the paper's hyperparameters are good starting points but should be re-tuned on the target task.",
+      "For very long sequences (≥ 4 096 tokens), reach for a sparse-attention variant or a chunked local-global hybrid.",
+      "For very small datasets (< 100 000 examples), consider adding a strong inductive bias (convolutions, recurrence) or pre-training; vanilla Transformer can over-fit.",
+      "The weight-sharing trick (input and output embeddings tied, scaled by √d_model) is cheap and almost always worth keeping.",
+      "The warmup learning-rate schedule matters: skipping warmup typically causes early divergence. The warmup length (4 000 steps in the paper) is itself a hyperparameter."
+    ]
+  },
+  "glossary": [
+    {
+      "term": "Transformer",
+      "definition": "The encoder–decoder architecture proposed in this paper, whose core operation is multi-head scaled dot-product self-attention. No recurrence, no convolutions."
+    },
+    {
+      "term": "self-attention",
+      "definition": "An attention mechanism in which queries, keys and values all come from the same sequence, allowing each position to attend to every other position in the same sequence."
+    },
+    {
+      "term": "scaled dot-product attention",
+      "definition": "Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. The √dₖ factor prevents the softmax from saturating when dₖ is large."
+    },
+    {
+      "term": "multi-head attention",
+      "definition": "Running h parallel attention heads with different learned projections of Q, K, V, then concatenating the outputs and projecting. Allows the model to attend to information from h different representation subspaces at the same position."
+    },
+    {
+      "term": "positional encoding",
+      "definition": "A vector added to each token embedding to inject order information into the otherwise permutation-invariant self-attention. The paper uses fixed sinusoidal encodings of dimension d_model."
+    },
+    {
+      "term": "encoder",
+      "definition": "A stack of N = 6 identical layers, each with a multi-head self-attention sub-layer and a position-wise feed-forward sub-layer, both with residual connection and layer normalisation. Maps the input sequence to a continuous representation."
+    },
+    {
+      "term": "decoder",
+      "definition": "A stack of N = 6 identical layers. Like the encoder but with a third sub-layer that performs multi-head attention over the encoder output, and with masking in the self-attention sub-layer to preserve the autoregressive property."
+    },
+    {
+      "term": "residual connection",
+      "definition": "x + Sublayer(x), a skip connection that lets gradients flow through a deep stack. Combined with layer normalisation: LayerNorm(x + Sublayer(x))."
+    },
+    {
+      "term": "layer normalization",
+      "definition": "Per-position, per-feature normalisation that subtracts the mean and divides by the standard deviation across the feature dimension, then applies a learned affine transformation. Used in every sub-layer of the Transformer."
+    },
+    {
+      "term": "BLEU",
+      "definition": "Bilingual Evaluation Understudy, a standard machine-translation metric that measures n-gram overlap between the model output and one or more reference translations, with a brevity penalty. Higher is better; the paper reports BLEU on newstest2014."
+    },
+    {
+      "term": "sequence transduction",
+      "definition": "The general task of mapping an input sequence to an output sequence, of variable length and potentially different modality. Machine translation, summarisation, and parsing are all sequence-transduction tasks."
+    }
+  ],
+  "limitations": [
+    "Quadratic memory and compute in sequence length — O(n²) cost in self-attention.",
+    "No explicit structural inductive bias (no locality prior, no order prior beyond positional encodings).",
+    "Limited empirical evidence beyond machine translation and English constituency parsing in this paper.",
+    "Attention visualisations are qualitative; no quantitative interpretability study is included.",
+    "Hyperparameter choices are presented as defaults rather than the result of full sweeps.",
+    "No discussion of the failure modes where attention-only models are known to underperform (small-data regime, very long contexts, tasks requiring strong structural priors)."
+  ],
+  "reproduction_plan": {
+    "dataset": "WMT 2014 En→De and WMT 2014 En→Fr (newstest2014 for evaluation); BPE tokenisation.",
+    "baseline": "GNMT + RL Ensemble (En→De), ConvS2S (En→Fr), GNMT + RL (En→Fr).",
+    "hardware": "8 NVIDIA P100 GPUs (paper); equivalently 8 A100 or V100 GPUs. Inference fits on a single 16 GB GPU.",
+    "steps": [
+      "Download WMT 2014 corpus and apply BPE tokenisation with ~37 000 merges for En→De or ~32 000 for En→Fr.",
+      "Implement token embedding (vocab × d_model) with weight tying and the √d_model scaling factor.",
+      "Implement sinusoidal positional encoding of dimension d_model.",
+      "Implement Scaled Dot-Product Attention: softmax(QKᵀ / √dₖ) V, optionally with mask.",
+      "Implement Multi-Head Attention: h parallel heads with learned projections, concatenated and projected.",
+      "Implement encoder layer: multi-head self-attention → add & norm → position-wise FFN → add & norm.",
+      "Implement decoder layer: masked multi-head self-attention → add & norm → cross multi-head attention → add & norm → FFN → add & norm.",
+      "Stack N = 6 encoder layers and N = 6 decoder layers; final linear projection from d_model to vocab_size with weight tying.",
+      "Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹), warmup-then-decay learning-rate schedule (warmup = 4000 steps), dropout 0.1, label smoothing 0.1.",
+      "Train base model for ~100 000 steps with batch size ~25 000 tokens; expect ~12 hours on 8 P100 GPUs.",
+      "Evaluate on newstest2014 with sacrebleu."
+    ],
+    "sanity_checks": [
+      "After warmup the loss decreases monotonically until ~50 % of training; divergence indicates wrong √dₖ or learning-rate schedule.",
+      "Single-head vs multi-head: multi-head ≥ single-head by ≥ 0.5 BLEU on the development set.",
+      "Sinusoidal vs learned positional encodings: BLEU differs by ≤ 0.2.",
+      "Removing residual connections: training diverges or plateaus at much lower BLEU.",
+      "Inference: output length is sensible (not collapsed, not unbounded).",
+      "At least one attention head shows an interpretable pattern on a curated example."
+    ],
+    "success_criteria": [
+      "Transformer-base ≥ 27.3 BLEU on WMT 2014 En→De within 100 000 steps.",
+      "Transformer-big ≥ 28.4 BLEU on WMT 2014 En→De within 300 000 steps.",
+      "Reproduce Table 2 within ± 0.5 BLEU on En→Fr.",
+      "Halving the number of heads drops BLEU by ≥ 0.5.",
+      "Attention visualisation shows at least one syntactic-dependency head."
+    ],
+    "plan_7_day": [],
+    "plan_30_day": [],
+    "plan_90_day": [],
+    "risks": [],
+    "rationale": "",
+    "applicable": true,
+    "kind": "experiment"
+  },
+  "open_questions": [
+    "How can the quadratic memory wall of self-attention be broken without losing the parallelisability and the O(1) path length?",
+    "What is the right number of attention heads for a given task and dataset size? Is there a principled way to choose it?",
+    "Why does the Transformer generalise so well to constituency parsing with so little task-specific tuning? Is the inductive bias weaker than it appears, or is the data enough to overcome the bias?",
+    "Do attention heads actually learn interpretable structure in tasks other than translation and parsing?",
+    "What is the failure mode of attention-only models on tasks where strong structural priors are known to help (small data, very long contexts, arithmetic reasoning)?",
+    "How does the Transformer behave under distribution shift in the input distribution (e.g., out-of-distribution source-side vocabulary, code-switching)?",
+    "Could the multi-head structure be replaced by a single larger attention head, or by a structured attention operator with a learned structure?"
+  ],
+  "final_checklist": [
+    {
+      "question": "Can I state the paper's main contribution in one sentence?",
+      "answerable": true
+    },
+    {
+      "question": "Can I write the equation for Scaled Dot-Product Attention from memory?",
+      "answerable": true
+    },
+    {
+      "question": "Can I name at least two reasons why the √dₖ scaling factor is necessary?",
+      "answerable": true
+    },
+    {
+      "question": "Can I describe the encoder layer in terms of sub-layers, residual connections, and layer normalisation?",
+      "answerable": true
+    },
+    {
+      "question": "Can I describe the decoder layer and how it differs from the encoder?",
+      "answerable": true
+    },
+    {
+      "question": "Can I explain why positional encodings are needed at all?",
+      "answerable": true
+    },
+    {
+      "question": "Can I quote the BLEU numbers from Table 2 and the training cost from the abstract?",
+      "answerable": true
+    },
+    {
+      "question": "Can I name at least two limitations of the Transformer that are not addressed in this paper?",
+      "answerable": true
+    },
+    {
+      "question": "Can I list the hyperparameters of the base model (N, d_model, d_ff, h, d_k)?",
+      "answerable": true
+    },
+    {
+      "question": "Can I describe a single sanity check that would catch a mis-implementation?",
+      "answerable": true
+    },
+    {
+      "question": "Have I marked every interpretive statement with an evidence label?",
+      "answerable": true
+    },
+    {
+      "question": "Have I honestly recorded the reading mode as full_text?",
+      "answerable": true
+    }
+  ],
+  "paper_outline": [
+    {
+      "title": "1. Introduction",
+      "subsections": []
+    },
+    {
+      "title": "2. Background",
+      "subsections": []
+    },
+    {
+      "title": "3. Model Architecture",
+      "subsections": [
+        "3.1 Encoder and Decoder Stacks",
+        "3.2 Attention",
+        "3.2.1 Scaled Dot-Product Attention",
+        "3.2.2 Multi-Head Attention",
+        "3.2.3 Applications of Attention in our Model",
+        "3.2.4 (inside Why Self-Attention) Internal structure",
+        "3.3 Position-wise Feed-Forward Networks",
+        "3.4 Embeddings and Softmax",
+        "3.5 Positional Encoding",
+        "3.6 Training"
+      ]
+    },
+    {
+      "title": "4. Why Self-Attention",
+      "subsections": []
+    },
+    {
+      "title": "5. Training",
+      "subsections": [
+        "5.1 Training Data and Batching",
+        "5.2 Hardware and Schedule",
+        "5.3 Optimizer",
+        "5.4 Regularization"
+      ]
+    },
+    {
+      "title": "6. Results",
+      "subsections": [
+        "6.1 Machine Translation",
+        "6.2 Model Variations",
+        "6.3 English Constituency Parsing"
+      ]
+    },
+    {
+      "title": "7. Conclusion",
+      "subsections": []
+    },
+    {
+      "title": "References",
+      "subsections": []
+    }
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_identifier (arXiv ID 1706.03762).",
+      "Resolved via arXiv abs landing page: https://arxiv.org/abs/1706.03762",
+      "Canonical PDF fetched from https://arxiv.org/pdf/1706.03762",
+      "Version v7 (last updated 2 Aug 2023) used; original submission v1 was 12 Jun 2017.",
+      "Text extracted with pdftotext (poppler 24.02.0); 40 074 characters, 5 pages.",
+      "All major sections present; no body content missing.",
+      "Reading mode = full_text."
+    ]
+  },
+  "candidate_papers": [],
+  "claims_evidence_map": [
+    {
+      "claim_id": "C-001",
+      "claim": "Multi-head scaled dot-product self-attention is sufficient to build a state-of-the-art sequence-transduction model, without recurrence or convolution.",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "Abstract; §1 Introduction",
+      "evidence": "The paper reports 28.4 BLEU on WMT 2014 En→De and 41.8 BLEU on WMT 2014 En→Fr with a model whose core operation is multi-head self-attention; recurrence and convolutions are explicitly removed in §3.",
+      "confidence": "high",
+      "comment": "Direct empirical claim of the paper. Replicated thousands of times since.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-002",
+      "claim": "Self-attention has O(1) path length between any two positions, while recurrent layers have O(n).",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "§1 Introduction, third paragraph; Table comparing path lengths in §3.2.1 (Why Self-Attention).",
+      "evidence": "The paper's Table of path lengths lists self-attention at O(1), recurrent at O(n), convolutional at O(log_k(n)).",
+      "confidence": "high",
+      "comment": "Worst-case path-length argument; depends on the number of layers used.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-003",
+      "claim": "Scaled dot-product attention needs the √dₖ scaling factor; without it the softmax saturates and training fails.",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "§3.2.1 (Scaled Dot-Product Attention), second paragraph.",
+      "evidence": "The paper states: 'We suspect that for large values of dₖ, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients. To counteract this effect, we scale the dot products by 1/√dₖ.'",
+      "confidence": "high",
+      "comment": "Standard fact about softmax saturation; widely accepted.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-004",
+      "claim": "Multi-head attention outperforms single-head attention; ablations show that varying the number of heads changes BLEU.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 4 (ablations on the number of heads).",
+      "evidence": "The paper's ablation table reports that varying h on the base model from 1 to 32 changes BLEU, with the best at h = 8 for the base configuration; single-head attention trails multi-head.",
+      "confidence": "high",
+      "comment": "Quantitative ablation result inside the paper.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-005",
+      "claim": "Fixed sinusoidal positional encodings perform comparably to learned positional embeddings.",
+      "evidence_label": "[Paper evidence]",
+      "section_or_page": "§3.5 (Positional Encoding), final paragraph.",
+      "evidence": "The paper reports: 'We also experimented with using learned positional embeddings [30] and found that the two versions produced nearly identical results.'",
+      "confidence": "high",
+      "comment": "Empirical claim; 'nearly identical' is approximate, not a statistical test.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-006",
+      "claim": "The Transformer achieves 28.4 BLEU on WMT 2014 En→De, more than 2 BLEU above the previous best results including ensembles.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 2, row 'Transformer (big)', WMT 2014 En→De column.",
+      "evidence": "The table lists Transformer-big at 28.4 BLEU En→De; the best non-Transformer (GNMT + RL Ensemble, 26.30 BLEU) is listed for comparison.",
+      "confidence": "high",
+      "comment": "Direct numerical claim; reproducible on the standard WMT split.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-007",
+      "claim": "The Transformer reaches 41.8 BLEU on WMT 2014 En→Fr as a single model, training for 3.5 days on eight GPUs.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 2, row 'Transformer (big)', WMT 2014 En→Fr column.",
+      "evidence": "The table lists 41.8 BLEU for Transformer-big on En→Fr; the abstract reports 3.5 days on eight P100 GPUs.",
+      "confidence": "high",
+      "comment": "Single-model SOTA at publication; later work has pushed this higher.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-008",
+      "claim": "The Transformer generalises to constituency parsing with minimal task-specific tuning.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Table 3 (English constituency parsing).",
+      "evidence": "Table 3 reports the Transformer beating or matching strong LSTM and CNN baselines on the WSJ parsing benchmark, both with limited and large training data.",
+      "confidence": "medium",
+      "comment": "Reasonable claim, but parsing is far less replicated than the translation result.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-009",
+      "claim": "Different attention heads specialise in different syntactic and anaphoric phenomena.",
+      "evidence_label": "[Figure/Table evidence]",
+      "section_or_page": "Figure 5 (attention visualisations).",
+      "evidence": "Figure 5 shows a head attending to the previous noun for coreference, and other heads attending to syntactic dependencies in the same sentence.",
+      "evidence_qualitative": true,
+      "confidence": "medium",
+      "comment": "Qualitative visualisation; not a quantitative claim. Useful as evidence that attention is doing interpretable work, not as proof of necessity.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-010",
+      "claim": "The Transformer has an O(n²) memory cost in sequence length, which limits its applicability to very long sequences.",
+      "evidence_label": "[Agent inference]",
+      "section_or_page": "n/a (derived from §3.2.1).",
+      "evidence": "Self-attention computes an n×n attention matrix, so memory grows as O(n²). The paper does not call this a limitation explicitly, but later work (Longformer, Linformer, FlashAttention) addresses exactly this issue.",
+      "confidence": "high",
+      "comment": "Standard derived consequence; not stated as a limitation in the paper.",
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": "",
+      "needs_verification": true
+    }
+  ],
+  "figures_tables": [
+    {
+      "id": "FT-001",
+      "kind": "figure",
+      "number": "1",
+      "title": "Figure 1 (full architecture): shows the encoder (left half) and decoder (right half) as stacked blocks, with N = 6 ident",
+      "explanation": "Figure 1 (full architecture): shows the encoder (left half) and decoder (right half) as stacked blocks, with N = 6 identical layers, Multi-Head Attention boxes, Feed-Forward boxes, Add & Norm boxes, and the cross-attention arrows from encoder to decoder.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-002",
+      "kind": "figure",
+      "number": "2",
+      "title": "Figure 2 (left): Scaled Dot-Product Attention diagram showing the Q, K, V matrices, the MatMul(Q, Kᵀ), the Scale by 1/√d",
+      "explanation": "Figure 2 (left): Scaled Dot-Product Attention diagram showing the Q, K, V matrices, the MatMul(Q, Kᵀ), the Scale by 1/√dₖ, the Mask (opt.), the SoftMax, and the MatMul with V.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-003",
+      "kind": "figure",
+      "number": "3",
+      "title": "Figure 2 (right): Multi-Head Attention diagram showing h parallel attention heads with separate linear projections, conc",
+      "explanation": "Figure 2 (right): Multi-Head Attention diagram showing h parallel attention heads with separate linear projections, concatenated and projected.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-004",
+      "kind": "table",
+      "number": "4",
+      "title": "Table 1 (encoder/decoder architectural hyperparameters): lists N=6, d_model=512, d_ff=2048, h=8, d_k=d_v=64, P_drop=0.1,",
+      "explanation": "Table 1 (encoder/decoder architectural hyperparameters): lists N=6, d_model=512, d_ff=2048, h=8, d_k=d_v=64, P_drop=0.1, base vs big models side by side.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-005",
+      "kind": "figure",
+      "number": "5",
+      "title": "Table 2 (machine translation BLEU and training cost): reports training time in FLOPs, and BLEU on WMT 2014 En→De and En→",
+      "explanation": "Table 2 (machine translation BLEU and training cost): reports training time in FLOPs, and BLEU on WMT 2014 En→De and En→Fr for Transformer-base, Transformer-big, and a long list of baselines (ByteNet, Deep-Att + PosUnk, GNMT + RL, ConvS2S, MoE, GNMT+RL Ensemble). The Transformer-big beats or matches every baseline on En→Fr and beats the best ensemble on En→De by >2 BLEU at a fraction of the training cost.",
+      "evidence_label": "[Figure/Table evidence]"
+    },
+    {
+      "id": "FT-006",
+      "kind": "figure",
+      "number": "6",
+      "title": "Table 3 (English constituency parsing F1): shows the Transformer beats or matches strong LSTM and CNN baselines on WSJ a",
+      "explanation": "Table 3 (English constituency parsing F1): shows the Transformer beats or matches strong LSTM and CNN baselines on WSJ and is competitive on extra training data (BerkeleyParser).",
+      "evidence_label": "[Figure/Table evidence]"
+    }
+  ],
+  "related_work": [],
+  "_is_essay_talk": false,
+  "generator_version": "v0.2.9-alpha"
+}

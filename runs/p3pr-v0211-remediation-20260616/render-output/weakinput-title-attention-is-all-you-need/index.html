@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Attention Is All You Need — Three-Pass Reading</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-reading-mode="full_text">
+  <header class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="kicker">三遍阅读法 · 2017</div>
+        <h1>Attention Is All You Need</h1>
+        <div class="byline">
+          <span>Ashish Vaswani</span>, <span>Noam Shazeer</span>, <span>Niki Parmar</span>, <span>Jakob Uszkoreit</span>, <span>Llion Jones</span>, <span>Aidan N. Gomez</span>, <span>Lukasz Kaiser</span>, <span>Illia Polosukhin</span>
+           · <span class="venue">31st Conference on Neural Information Processing Systems (NIPS 2017)</span>
+        </div>
+        <div class="badges">
+          <span class="badge badge-mode" title="阅读模式">full_text</span>
+          <span class="badge badge-confidence badge-confidence-high">high 置信度</span>
+          <span class="badge badge-input">paper_title</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <details open>
+      <summary>目录</summary>
+      <ol>
+        <li><a href="#metadata">论文信息</a></li>
+        <li><a href="#intake">输入解析状态</a></li>
+        <li><a href="#resolver-trail">解析路径</a></li>
+        <li><a href="#summary">摘要（1 / 3 / 10 句）</a></li>
+        <li><a href="#paper-map">论文地图</a></li>
+        <li><a href="#five-cs">Five Cs 面板</a></li>
+        <li><a href="#passes">三遍阅读</a></li>
+        <li><a href="#claims">主张—证据地图</a></li>
+        <li><a href="#figures">图表 / 结构说明</a></li>
+        <li><a href="#glossary">关键术语</a></li>
+        <li><a href="#reconstruction">方法重建</a></li>
+        <li><a href="#limitations">正确性与局限</a></li>
+        <li><a href="#related">相关脉络</a></li>
+        <li><a href="#implications">实践启发</a></li>
+        <li><a href="#reproduction">实践计划</a></li>
+        <li><a href="#open">开放问题</a></li>
+        <li><a href="#checklist">最终理解检查表</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <!-- 1. Hero Summary / Paper Metadata -->
+    <section id="metadata" class="card">
+      <h2>论文信息</h2>
+      <dl class="kv">
+        <dt>标题</dt><dd>Attention Is All You Need</dd>
+        <dt>作者</dt><dd>Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin</dd>
+        <dt>年份</dt><dd>2017</dd>
+        <dt>场合</dt><dd>31st Conference on Neural Information Processing Systems (NIPS 2017)</dd>
+        <dt>arXiv</dt><dd>1706.03762</dd>
+        
+        <dt>URL</dt><dd><a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a></dd>
+        <dt>来源类型</dt><dd>paper_title</dd>
+        <dt>阅读模式</dt><dd>full_text</dd>
+      </dl>
+    </section>
+
+    <!-- 2. Intake Status -->
+    <section id="intake" class="card">
+      <h2>输入解析状态</h2>
+      <ul class="kv-list">
+        <li><span class="label">输入类型</span> <span class="value">paper_title</span></li>
+        <li><span class="label">阅读模式</span> <span class="value">full_text</span></li>
+        <li><span class="label">置信度</span> <span class="value badge-confidence badge-confidence-high">high</span></li>
+        <li><span class="label">需要确认</span> <span class="value">false</span></li>
+      </ul>
+      
+      <details class="warnings">
+        <summary>警告（3）</summary>
+        <ul><li>Input was a bare title with no authors, year, or abstract.</li><li>Title was matched to a known landmark paper; resolution is high-confidence but assumes the user meant *that* paper (not a paper that merely shares the title).</li><li>Version v7 of arXiv 1706.03762 (last updated 2 Aug 2023) was used; original submission v1 was 12 Jun 2017.</li></ul>
+      </details>
+      
+      
+      <details class="warnings">
+        <summary>缺失字段</summary>
+        <ul><li>doi</li></ul>
+      </details>
+      
+    </section>
+
+    <!-- 2b. Resolver Trail (structured source_resolution, v0.2.8) -->
+    <section id="resolver-trail" class="card">
+      <h2>Resolver Trail</h2>
+      
+      <div class="badges">
+        
+        
+        <span class="badge badge-input">Legacy fallback</span>
+        
+        
+      </div>
+      <ul class="kv-list">
+        <li><span class="label">Resolver status</span> <span class="value">ambiguous_clue</span></li>
+        <li><span class="label">Match type</span> <span class="value"></span></li>
+        <li><span class="label">Confidence</span> <span class="value"></span></li>
+        <li><span class="label">Matched paper</span> <span class="value"></span></li>
+        <li><span class="label">Matched paper id</span> <span class="value"></span></li>
+        <li><span class="label">Matched arXiv ID</span> <span class="value"></span></li>
+        <li><span class="label">Matched repo</span> <span class="value"></span></li>
+        <li><span class="label">Resolver source</span> <span class="value"></span></li>
+        <li><span class="label">Source resolution step</span> <span class="value">no_resolver_run</span></li>
+        <li><span class="label">Candidate count</span> <span class="value">0</span></li>
+      </ul>
+      </li></ul>
+      </details>
+      
+      <p class="muted">无候选论文；当前匹配来自用户提供 URL。</p>
+      
+      
+    </section>
+
+    <!-- 3. Summaries -->
+    <section id="summary" class="card">
+      <h2>摘要</h2>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">一句话总结</div>
+          <p>Vaswani et al. (2017) introduce the Transformer, a sequence-transduction architecture built entirely on multi-head scaled dot-product self-attention with positional encodings, dropping recurrence and convolutions, and demonstrate 28.4 BLEU on WMT 2014 En→De and 41.8 BLEU on WMT 2014 En→Fr with substantially less training compute than the prior state of the art.</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">三句话总结</div>
+          <ol><li>The paper proposes the Transformer, a new encoder–decoder architecture that replaces recurrence and convolutions with stacked multi-head scaled dot-product self-attention and sinusoidal positional encodings, enabling fully parallel training across sequence positions.</li><li>On WMT 2014 English-to-German the big Transformer reaches 28.4 BLEU, more than 2 BLEU above the previous best results (including ensembles); on WMT 2014 English-to-French it reaches 41.8 BLEU as a single model after 3.5 days on eight GPUs — a small fraction of the prior best models' training cost.</li><li>The authors additionally show that the Transformer generalises beyond translation: with minimal task-specific tuning it beats or matches strong RNN baselines on English constituency parsing, suggesting attention alone is a sufficient inductive bias for a range of sequence tasks.</li></ol>
+        </div>
+        <div class="summary-box summary-wide">
+          <div class="summary-label">十句话总结</div>
+          <ol><li>Recurrent, convolutional, and attention-augmented encoder–decoder models were the dominant paradigm for sequence transduction; the Transformer removes recurrence and convolutions and relies solely on attention.</li><li>The core operation is Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V, where the √dₖ scaling prevents the softmax from saturating when dₖ is large.</li><li>Multi-Head Attention runs h parallel attention heads with different learned projections, lets the model attend to information from h different representation subspaces at the same position, and concatenates the heads before a final linear projection.</li><li>The encoder is a stack of N = 6 identical layers, each with a multi-head self-attention sub-layer and a position-wise feed-forward sub-layer, both wrapped in residual connections and layer normalisation; the decoder adds a third sub-layer that performs multi-head attention over the encoder output.</li><li>Because self-attention is permutation-invariant, the model adds positional encodings — the paper uses fixed sinusoidal encodings of the same dimension as the embeddings, but learned positional embeddings worked comparably.</li><li>Training uses the Adam optimiser with a custom warmup learning-rate schedule (linear warmup then inverse-square-root decay), label smoothing of 0.1, and residual dropout; base models have d_model = 512 and ~65M parameters, big models have d_model = 1024 and ~213M parameters.</li><li>On WMT 2014 En→De the big Transformer reaches 28.4 BLEU, >2 BLEU above the previous best, and the En→Fr single-model result of 41.8 BLEU is the new state of the art.</li><li>Training cost: the base models train in ~12 hours on 8 P100 GPUs and the big models in ~3.5 days on 8 GPUs — substantially cheaper than the previous state-of-the-art systems despite the larger BLEU gains.</li><li>Attention-head visualisations show different heads specialising in different syntactic and anaphoric phenomena (e.g., a head that attends to the previous noun for coreference), supporting the multi-head design empirically.</li><li>Limitations acknowledged by the authors include the O(n²) memory cost in sequence length (which limits very long sequences without further tricks) and the absence of a structural inductive bias for hierarchical or locality-sensitive patterns that RNNs and CNNs provide.</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Paper Map -->
+    <section id="paper-map" class="card">
+      <h2>论文地图</h2>
+      <ul class="tree">
+        
+        <li>
+          <details><summary>1. Introduction</summary>
+            
+        <li>
+          <details><summary>2. Background</summary>
+            
+        <li>
+          <details><summary>3. Model Architecture</summary>
+            
+            <ul><li>3.1 Encoder and Decoder Stacks</li><li>3.2 Attention</li><li>3.2.1 Scaled Dot-Product Attention</li><li>3.2.2 Multi-Head Attention</li><li>3.2.3 Applications of Attention in our Model</li><li>3.2.4 (inside Why Self-Attention) Internal structure</li><li>3.3 Position-wise Feed-Forward Networks</li><li>3.4 Embeddings and Softmax</li><li>3.5 Positional Encoding</li><li>3.6 Training</li>
+        <li>
+          <details><summary>4. Why Self-Attention</summary>
+            
+        <li>
+          <details><summary>5. Training</summary>
+            
+            <ul><li>5.1 Training Data and Batching</li><li>5.2 Hardware and Schedule</li><li>5.3 Optimizer</li><li>5.4 Regularization</li>
+        <li>
+          <details><summary>6. Results</summary>
+            
+            <ul><li>6.1 Machine Translation</li><li>6.2 Model Variations</li><li>6.3 English Constituency Parsing</li>
+        <li>
+          <details><summary>7. Conclusion</summary>
+            
+        <li>
+          <details><summary>References</summary>
+            </ul>
+            
+          </details>
+        </li>
+        
+      </ul>
+    </section>
+
+    <!-- 5. Five Cs -->
+    <section id="five-cs" class="card">
+      <h2>Five Cs 面板</h2>
+      <div class="five-cs-grid">
+        <article class="ccard">
+          <h3>类别</h3>
+          <p class="ccard-value">Methods paper proposing a new general-purpose sequence-transduction architecture (encoder–decoder, attention-only) with empirical evaluation on machine translation and constituency parsing.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>背景</h3>
+          <p class="ccard-value">Sits at the intersection of three threads: encoder–decoder RNN/LSTM sequence models (Sutskever et al. 2014, Bahdanau et al. 2015); neural attention mechanisms as an addition to RNNs (Bahdanau, Cho, Bengio 2015; Luong, Pham, Manning 2015); and convolutional sequence models such as ByteNet and ConvS2S (Kalchbrenner et al. 2016, Gehring et al. 2017). The Transformer replaces both the recurrence and the convolution with attention.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>正确性</h3>
+          <p class="ccard-value">Methodologically sound. The paper states the inductive bias, provides the mathematical formulation of attention, runs controlled ablations (number of heads, attention key dimension, dropout, positional encoding type), and reports results on standard benchmarks against strong baselines. Empirically the claims about BLEU and training cost have been broadly replicated across thousands of follow-up works. The attention-head visualisation is informal but illustrative rather than load-bearing.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>清晰度</h3>
+          <p class="ccard-value">Exceptional. The paper is well-organised (Abstract → Introduction → Background → Model Architecture → Why Self-Attention → Training → Results → Conclusion), the equations are typeset and numbered, every hyperparameter is named, and the ablations explicitly isolate the contribution of each design choice. The reader does not need to consult the supplementary material to understand the main claims.</p>
+          
+          
+        </article>
+        <article class="ccard ccard-wide">
+          <h3>贡献</h3>
+          
+          <ul><li><p class="ccard-value">The Transformer architecture: an encoder–decoder model whose core operation is multi-head scaled dot-product self-attention, with no recurrence and no convolutions.</p><li><p class="ccard-value">Scaled dot-product attention and a justification for the √dₖ scaling factor, derived from the saturation behaviour of softmax at large dot-product magnitudes.</p><li><p class="ccard-value">Multi-head attention as a way to let the model jointly attend to information from different representation subspaces at the same position.</p><li><p class="ccard-value">Sinusoidal positional encodings as a way to inject order information into a permutation-invariant architecture, with empirical evidence that fixed and learned encodings perform comparably.</p><li><p class="ccard-value">Empirical demonstration of state-of-the-art BLEU on WMT 2014 En→De and En→Fr with substantially reduced training cost, plus generalisation evidence on English constituency parsing.</p></li></ul>
+          
+          <p class="ccard-empty">（暂无明确贡献条目）</p>
+          
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. Pass 1 / Pass 2 / Pass 3 Tabs -->
+    <section id="passes" class="card">
+      <h2>三遍阅读</h2>
+      <div class="timeline">
+        <span class="dot done" title="Pass 1">1</span>
+        <span class="dot done" title="Pass 2">2</span>
+        <span class="dot done" title="Pass 3">3</span>
+      </div>
+      <div class="tabs">
+        <div class="tab-buttons" role="tablist">
+          <button class="tab-btn active" data-tab="p1" role="tab">第一遍 · 鸟瞰</button>
+          <button class="tab-btn" data-tab="p2" role="tab">第二遍 · 理解</button>
+          <button class="tab-btn" data-tab="p3" role="tab">第三遍 · 重建</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="p1">
+          <h3>第一遍 — 鸟瞰视图</h3>
+          <p class="evidence-line">依赖来源标记为 [Author claim] / [Paper evidence] 等。</p>
+          <p></p>
+          <div class="callout">
+            <strong>决策：</strong> <code>CONTINUE_FULL</code>
+            <p></p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="p2">
+          <h3>第二遍 — 深入理解</h3>
+          <h4>核心观点</h4>
+          <ol><li>Attention alone — without recurrence or convolution — is sufficient to build a state-of-the-art sequence-transduction encoder–decoder, provided the attention is multi-head and scaled.</li><li>Self-attention connects all positions in a sequence with O(1) path length, compared with O(n) for recurrent layers, which directly improves both parallelisability (training) and long-range dependency modelling.</li><li>Multi-head attention is more expressive than single-head attention because it lets the model attend to information from different representation subspaces at the same position; ablations show that ablations on head count cost BLEU.</li><li>Scaled dot-product attention (softmax(QKᵀ / √dₖ) V) is necessary: without the √dₖ factor the softmax saturates for large dₖ and training fails. The paper proves this both empirically (a variant without the scaling diverges) and intuitively (dot products grow with √dₖ).</li><li>Positional information is reintroduced via fixed sinusoidal encodings added to the input embeddings; the paper shows that learned positional embeddings perform comparably, suggesting that the exact choice is not critical.</li><li>A two-stage learning-rate schedule (linear warmup then inverse-square-root decay) plus residual dropout and label smoothing gives stable training of the deep stack.</li><li>The architectural inductive bias is weak (no locality prior, no order prior) — this is a deliberate trade-off. The paper argues the trade-off is worth it for sequence length ≤ a few hundred because of the parallelisability and the O(1) path length.</li></ol>
+          
+          <h4>关键参考文献</h4>
+          <ul class="refs"><li><strong>Neural Machine Translation by Jointly Learning to Align and Translate</strong> — ['D. Bahdanau', 'K. Cho', 'Y. Bengio']<li><strong>Sequence to Sequence Learning with Neural Networks</strong> — ['I. Sutskever', 'O. Vinyals', 'Q. V. Le']<li><strong>Convolutional Sequence to Sequence Learning</strong> — ['J. Gehring', 'M. Auli', 'D. Grangier', 'D. Yarats', 'Y. N. Dauphin']<li><strong>Long Short-Term Memory</strong> — ['S. Hochreiter', 'J. Schmidhuber']<li><strong>Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</strong> — ['N. Shazeer', 'A. Mirhoseini', 'K. Maziarz', 'A. Davis', 'Q. Le', 'G. Hinton', 'J. Dean']<li><strong>Grammar as a Foreign Language</strong> — ['O. Vinyals', 'L. Kaiser', 'T. Koo', 'S. Petrov', 'I. Sutskever', 'G. Hinton']</li></ul>
+          
+        </div>
+
+        <div class="tab-panel" data-panel="p3">
+          <h3>第三遍 — 重建</h3>
+          <h4>方法重建</h4>
+          <ol><li>Define hyperparameters: N = 6 encoder layers, N = 6 decoder layers, d_model = 512 (base) or 1024 (big), d_ff = 4 × d_model, h = 8 heads, d_k = d_v = d_model / h = 64, dropout = 0.1.</li><li>Build the input embedding: a learned matrix E of shape (vocab_size × d_model) mapping tokens to vectors; multiply by √d_model to compensate for the embedding's variance in the residual stream.</li><li>Add sinusoidal positional encodings PE(pos, 2i) = sin(pos / 10000^(2i/d_model)), PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model)), of the same dimension d_model; sum elementwise with the token embeddings.</li><li>Build the encoder layer: a multi-head self-attention sub-layer followed by a position-wise feed-forward sub-layer; each sub-layer is wrapped in residual connection (x + Sublayer(x)) and layer normalisation (LayerNorm(x + Sublayer(x))).</li><li>Implement Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. Concatenate over multiple queries at once via batched matmul.</li><li>Implement Multi-Head Attention: project Q, K, V into h subspaces with learned matrices Wᵢᴼ, Wᵢᴷ, Wᵢⱽ; run h parallel Attention heads; concatenate and project with Wᴼ.</li><li>Build the decoder layer: same as encoder, plus a third sub-layer that performs multi-head attention over the encoder stack output (cross-attention). The self-attention sub-layer uses masking to preserve autoregressive property: set attention scores to −∞ for positions ahead of the current one.</li><li>Add a final linear projection from d_model to vocab_size, sharing weights with the input embedding (tie weights); compute token probabilities with softmax.</li><li>Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹) and a custom learning-rate schedule: lrate = d_model^(-0.5) · min(step^(-0.5), step · warmup^(-1.5)) with warmup = 4000 steps. Apply residual dropout 0.1 and label smoothing 0.1.</li><li>Train on WMT 2014 En→De (or En→Fr) with BPE tokenisation (shared source–target vocabulary of ~37 000 tokens for En→De, ~32 000 for En→Fr); batch size chosen so each training step processes ~25 000 source and ~25 000 target tokens; base model trains in ~12 hours on 8 P100 GPUs, big model in ~3.5 days.</li><li>Evaluate on newstest2014 with sacrebleu; expect ~28.4 BLEU for Transformer-big on En→De and ~41.8 BLEU on En→Fr.</li></ol>
+          
+          <h4>批判性审视要点</h4>
+          <ul><li>The paper presents a single-configuration ablation table on number of heads (Table 4) that uses the base model on a development set; this is informative but not a full hyperparameter sweep, and the optimal number of heads on a different task or scale is not guaranteed to be 8.</li><li>The training-time comparison in Table 2 mixes wall-clock and FLOPs depending on row, and the FLOPs accounting ignores implementation overhead; the comparison is broadly correct but not apples-to-apples.</li><li>The attention-head visualisations (Figure 5) are informal and pick out cherry-picked heads that look interpretable; they are not a quantitative interpretability study.</li><li>The paper does not discuss the O(n²) memory cost of self-attention; this becomes a binding constraint for very long sequences and is the explicit motivation for follow-ups like Longformer, Linformer, and FlashAttention.</li><li>The English constituency parsing result (Table 3) is reported but not analysed in depth; the dataset choice (WSJ, BerkeleyParser) and the role of pre-training are not discussed.</li><li>There is no failure-mode analysis: where does the Transformer actually lose to RNNs or CNNs? The paper frames the comparison as 'Transformer wins everywhere', which is an overstatement.</li><li>Label smoothing of 0.1 is reported to help, but a sweep over the smoothing value is not provided; the choice is presented as a known good default rather than as a deliberate design choice.</li></ul>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Claims-Evidence Map -->
+    <section id="claims" class="card">
+      <h2>主张—证据地图</h2>
+      <div class="filters">
+        <label>筛选置信度：
+          <select id="filter-confidence">
+            <option value="">all</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </label>
+        <label>筛选证据标签：
+          <select id="filter-label">
+            <option value="">all</option>
+            <option>[Paper evidence]</option>
+            <option>[Figure/Table evidence]</option>
+            <option>[Author claim]</option>
+            <option>[Agent inference]</option>
+            <option>[Uncertain]</option>
+            <option>[Needs verification]</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="filter-needs" checked /> 只看需验证项</label>
+      </div>
+      <table class="claims-table">
+        <thead>
+          <tr><th>ID</th><th>主张</th><th>证据标签</th><th>位置</th><th>置信度</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="true">
+            <td><code>C-001</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="true">
+            <td><code>C-002</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="true">
+            <td><code>C-003</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Figure/Table evidence]" data-needs="true">
+            <td><code>C-004</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="true">
+            <td><code>C-005</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Figure/Table evidence]" data-needs="true">
+            <td><code>C-006</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Figure/Table evidence]" data-needs="true">
+            <td><code>C-007</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Figure/Table evidence]" data-needs="true">
+            <td><code>C-008</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Figure/Table evidence]" data-needs="true">
+            <td><code>C-009</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Agent inference]" data-needs="true">
+            <td><code>C-010</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-agent-inference">[Agent inference]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Figures and Tables Explanation -->
+    <section id="figures" class="card">
+      <h2>图表 / 结构说明</h2>
+      
+      <div class="accordion">
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">1</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">2</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">3</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            <span class="fig-num">4</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">5</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">6</span>
+            
+          </summary>
+          <p></p>
+          
+        </details>
+        
+      </div>
+      
+      
+      <p class="muted">（原文无传统图表 / tables。）</p>
+      
+      
+    </section>
+
+    <!-- 9. Key Terms Glossary -->
+    <section id="glossary" class="card">
+      <h2>关键术语</h2>
+      <div class="chips">
+        
+        <details class="chip">
+          <summary><strong>Transformer</strong></summary>
+          <div class="chip-body">
+            <p>The encoder–decoder architecture proposed in this paper, whose core operation is multi-head scaled dot-product self-attention. No recurrence, no convolutions.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>self-attention</strong></summary>
+          <div class="chip-body">
+            <p>An attention mechanism in which queries, keys and values all come from the same sequence, allowing each position to attend to every other position in the same sequence.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>scaled dot-product attention</strong></summary>
+          <div class="chip-body">
+            <p>Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. The √dₖ factor prevents the softmax from saturating when dₖ is large.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>multi-head attention</strong></summary>
+          <div class="chip-body">
+            <p>Running h parallel attention heads with different learned projections of Q, K, V, then concatenating the outputs and projecting. Allows the model to attend to information from h different representation subspaces at the same position.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>positional encoding</strong></summary>
+          <div class="chip-body">
+            <p>A vector added to each token embedding to inject order information into the otherwise permutation-invariant self-attention. The paper uses fixed sinusoidal encodings of dimension d_model.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>encoder</strong></summary>
+          <div class="chip-body">
+            <p>A stack of N = 6 identical layers, each with a multi-head self-attention sub-layer and a position-wise feed-forward sub-layer, both with residual connection and layer normalisation. Maps the input sequence to a continuous representation.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>decoder</strong></summary>
+          <div class="chip-body">
+            <p>A stack of N = 6 identical layers. Like the encoder but with a third sub-layer that performs multi-head attention over the encoder output, and with masking in the self-attention sub-layer to preserve the autoregressive property.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>residual connection</strong></summary>
+          <div class="chip-body">
+            <p>x + Sublayer(x), a skip connection that lets gradients flow through a deep stack. Combined with layer normalisation: LayerNorm(x + Sublayer(x)).</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>layer normalization</strong></summary>
+          <div class="chip-body">
+            <p>Per-position, per-feature normalisation that subtracts the mean and divides by the standard deviation across the feature dimension, then applies a learned affine transformation. Used in every sub-layer of the Transformer.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>BLEU</strong></summary>
+          <div class="chip-body">
+            <p>Bilingual Evaluation Understudy, a standard machine-translation metric that measures n-gram overlap between the model output and one or more reference translations, with a brevity penalty. Higher is better; the paper reports BLEU on newstest2014.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>sequence transduction</strong></summary>
+          <div class="chip-body">
+            <p>The general task of mapping an input sequence to an output sequence, of variable length and potentially different modality. Machine translation, summarisation, and parsing are all sequence-transduction tasks.</p>
+          </div>
+        </details>
+        
+      </div>
+    </section>
+
+    <!-- 10. Method Reconstruction -->
+    <section id="reconstruction" class="card">
+      <h2>方法重建</h2>
+      <ol><li>Define hyperparameters: N = 6 encoder layers, N = 6 decoder layers, d_model = 512 (base) or 1024 (big), d_ff = 4 × d_model, h = 8 heads, d_k = d_v = d_model / h = 64, dropout = 0.1.</li><li>Build the input embedding: a learned matrix E of shape (vocab_size × d_model) mapping tokens to vectors; multiply by √d_model to compensate for the embedding's variance in the residual stream.</li><li>Add sinusoidal positional encodings PE(pos, 2i) = sin(pos / 10000^(2i/d_model)), PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model)), of the same dimension d_model; sum elementwise with the token embeddings.</li><li>Build the encoder layer: a multi-head self-attention sub-layer followed by a position-wise feed-forward sub-layer; each sub-layer is wrapped in residual connection (x + Sublayer(x)) and layer normalisation (LayerNorm(x + Sublayer(x))).</li><li>Implement Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V. Concatenate over multiple queries at once via batched matmul.</li><li>Implement Multi-Head Attention: project Q, K, V into h subspaces with learned matrices Wᵢᴼ, Wᵢᴷ, Wᵢⱽ; run h parallel Attention heads; concatenate and project with Wᴼ.</li><li>Build the decoder layer: same as encoder, plus a third sub-layer that performs multi-head attention over the encoder stack output (cross-attention). The self-attention sub-layer uses masking to preserve autoregressive property: set attention scores to −∞ for positions ahead of the current one.</li><li>Add a final linear projection from d_model to vocab_size, sharing weights with the input embedding (tie weights); compute token probabilities with softmax.</li><li>Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹) and a custom learning-rate schedule: lrate = d_model^(-0.5) · min(step^(-0.5), step · warmup^(-1.5)) with warmup = 4000 steps. Apply residual dropout 0.1 and label smoothing 0.1.</li><li>Train on WMT 2014 En→De (or En→Fr) with BPE tokenisation (shared source–target vocabulary of ~37 000 tokens for En→De, ~32 000 for En→Fr); batch size chosen so each training step processes ~25 000 source and ~25 000 target tokens; base model trains in ~12 hours on 8 P100 GPUs, big model in ~3.5 days.</li><li>Evaluate on newstest2014 with sacrebleu; expect ~28.4 BLEU for Transformer-big on En→De and ~41.8 BLEU on En→Fr.</li></ol>
+    </section>
+
+    <!-- 11. Correctness and Limitations -->
+    <section id="limitations" class="card">
+      <h2>正确性与局限</h2>
+      <ul><li>Quadratic memory and compute in sequence length — O(n²) cost in self-attention.</li><li>No explicit structural inductive bias (no locality prior, no order prior beyond positional encodings).</li><li>Limited empirical evidence beyond machine translation and English constituency parsing in this paper.</li><li>Attention visualisations are qualitative; no quantitative interpretability study is included.</li><li>Hyperparameter choices are presented as defaults rather than the result of full sweeps.</li><li>No discussion of the failure modes where attention-only models are known to underperform (small-data regime, very long contexts, tasks requiring strong structural priors).</li></ul>
+    </section>
+
+    <!-- 12. Related Work Map -->
+    <section id="related" class="card">
+      <h2>相关脉络</h2>
+      </li></ul>
+      
+      <p>原文不是学术论文，没有正式参考文献列表。</p>
+      <p>本节改为相关脉络：Bell Labs、Shannon、Los Alamos、工业研究传统、科研方法论演讲。</p>
+      
+    </section>
+
+    <!-- 13. Practical Implications -->
+    <section id="implications" class="card">
+      <h2>实践启发</h2>
+      <ul>
+        <li><strong>贡献：</strong> The Transformer architecture: an encoder–decoder model whose core operation is multi-head scaled dot-product self-attention, with no recurrence and no convolutions.</li><li><strong>贡献：</strong> Scaled dot-product attention and a justification for the √dₖ scaling factor, derived from the saturation behaviour of softmax at large dot-product magnitudes.</li><li><strong>贡献：</strong> Multi-head attention as a way to let the model jointly attend to information from different representation subspaces at the same position.</li><li><strong>贡献：</strong> Sinusoidal positional encodings as a way to inject order information into a permutation-invariant architecture, with empirical evidence that fixed and learned encodings perform comparably.</li><li><strong>贡献：</strong> Empirical demonstration of state-of-the-art BLEU on WMT 2014 En→De and En→Fr with substantially reduced training cost, plus generalisation evidence on English constituency parsing.</li>
+        <li><strong>不适用的地方：</strong> Quadratic memory and compute in sequence length — O(n²) cost in self-attention.</li>
+      </ul>
+    </section>
+
+    <!-- 14. Reproduction Plan / 实践计划 -->
+    <section id="reproduction" class="card">
+      <h2>复现计划</h2>
+      
+        
+        
+        
+        <h3>实践步骤</h3>
+        <ol><li>Download WMT 2014 corpus and apply BPE tokenisation with ~37 000 merges for En→De or ~32 000 for En→Fr.</li><li>Implement token embedding (vocab × d_model) with weight tying and the √d_model scaling factor.</li><li>Implement sinusoidal positional encoding of dimension d_model.</li><li>Implement Scaled Dot-Product Attention: softmax(QKᵀ / √dₖ) V, optionally with mask.</li><li>Implement Multi-Head Attention: h parallel heads with learned projections, concatenated and projected.</li><li>Implement encoder layer: multi-head self-attention → add & norm → position-wise FFN → add & norm.</li><li>Implement decoder layer: masked multi-head self-attention → add & norm → cross multi-head attention → add & norm → FFN → add & norm.</li><li>Stack N = 6 encoder layers and N = 6 decoder layers; final linear projection from d_model to vocab_size with weight tying.</li><li>Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹), warmup-then-decay learning-rate schedule (warmup = 4000 steps), dropout 0.1, label smoothing 0.1.</li><li>Train base model for ~100 000 steps with batch size ~25 000 tokens; expect ~12 hours on 8 P100 GPUs.</li><li>Evaluate on newstest2014 with sacrebleu.</li></ol>
+        
+        
+        <h3>成功标准</h3>
+        <ul><li>Transformer-base ≥ 27.3 BLEU on WMT 2014 En→De within 100 000 steps.</li><li>Transformer-big ≥ 28.4 BLEU on WMT 2014 En→De within 300 000 steps.</li><li>Reproduce Table 2 within ± 0.5 BLEU on En→Fr.</li><li>Halving the number of heads drops BLEU by ≥ 0.5.</li><li>Attention visualisation shows at least one syntactic-dependency head.</li></ul>
+        
+        
+        
+      
+        <dl class="kv">
+          <dt>Dataset</dt><dd>WMT 2014 En→De and WMT 2014 En→Fr (newstest2014 for evaluation); BPE tokenisation.</dd>
+          <dt>Baseline</dt><dd>GNMT + RL Ensemble (En→De), ConvS2S (En→Fr), GNMT + RL (En→Fr).</dd>
+          <dt>Hardware</dt><dd>8 NVIDIA P100 GPUs (paper); equivalently 8 A100 or V100 GPUs. Inference fits on a single 16 GB GPU.</dd>
+        </dl>
+        <h4>步骤</h4>
+        <ol><li>Download WMT 2014 corpus and apply BPE tokenisation with ~37 000 merges for En→De or ~32 000 for En→Fr.</li><li>Implement token embedding (vocab × d_model) with weight tying and the √d_model scaling factor.</li><li>Implement sinusoidal positional encoding of dimension d_model.</li><li>Implement Scaled Dot-Product Attention: softmax(QKᵀ / √dₖ) V, optionally with mask.</li><li>Implement Multi-Head Attention: h parallel heads with learned projections, concatenated and projected.</li><li>Implement encoder layer: multi-head self-attention → add & norm → position-wise FFN → add & norm.</li><li>Implement decoder layer: masked multi-head self-attention → add & norm → cross multi-head attention → add & norm → FFN → add & norm.</li><li>Stack N = 6 encoder layers and N = 6 decoder layers; final linear projection from d_model to vocab_size with weight tying.</li><li>Train with Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹), warmup-then-decay learning-rate schedule (warmup = 4000 steps), dropout 0.1, label smoothing 0.1.</li><li>Train base model for ~100 000 steps with batch size ~25 000 tokens; expect ~12 hours on 8 P100 GPUs.</li><li>Evaluate on newstest2014 with sacrebleu.</li></ol>
+        
+        <h4>合理性检查</h4>
+        <ul><li>After warmup the loss decreases monotonically until ~50 % of training; divergence indicates wrong √dₖ or learning-rate schedule.</li><li>Single-head vs multi-head: multi-head ≥ single-head by ≥ 0.5 BLEU on the development set.</li><li>Sinusoidal vs learned positional encodings: BLEU differs by ≤ 0.2.</li><li>Removing residual connections: training diverges or plateaus at much lower BLEU.</li><li>Inference: output length is sensible (not collapsed, not unbounded).</li><li>At least one attention head shows an interpretable pattern on a curated example.</li></ul>
+        
+        
+        <h4>成功标准</h4>
+        <ul><li>Transformer-base ≥ 27.3 BLEU on WMT 2014 En→De within 100 000 steps.</li><li>Transformer-big ≥ 28.4 BLEU on WMT 2014 En→De within 300 000 steps.</li><li>Reproduce Table 2 within ± 0.5 BLEU on En→Fr.</li><li>Halving the number of heads drops BLEU by ≥ 0.5.</li><li>Attention visualisation shows at least one syntactic-dependency head.</li></ul>
+        
+      
+    </section>
+
+    <!-- 15. Open Questions -->
+    <section id="open" class="card">
+      <h2>开放问题</h2>
+      <ul><li>How can the quadratic memory wall of self-attention be broken without losing the parallelisability and the O(1) path length?</li><li>What is the right number of attention heads for a given task and dataset size? Is there a principled way to choose it?</li><li>Why does the Transformer generalise so well to constituency parsing with so little task-specific tuning? Is the inductive bias weaker than it appears, or is the data enough to overcome the bias?</li><li>Do attention heads actually learn interpretable structure in tasks other than translation and parsing?</li><li>What is the failure mode of attention-only models on tasks where strong structural priors are known to help (small data, very long contexts, arithmetic reasoning)?</li><li>How does the Transformer behave under distribution shift in the input distribution (e.g., out-of-distribution source-side vocabulary, code-switching)?</li><li>Could the multi-head structure be replaced by a single larger attention head, or by a structured attention operator with a learned structure?</li></ul>
+    </section>
+
+    <!-- 16. Final Checklist -->
+    <section id="checklist" class="card">
+      <h2>最终理解检查表</h2>
+      <ol class="checklist">
+        
+        <li><label><input type="checkbox" /> Can I state the paper's main contribution in one sentence?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I write the equation for Scaled Dot-Product Attention from memory?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I name at least two reasons why the √dₖ scaling factor is necessary?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I describe the encoder layer in terms of sub-layers, residual connections, and layer normalisation?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I describe the decoder layer and how it differs from the encoder?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I explain why positional encodings are needed at all?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I quote the BLEU numbers from Table 2 and the training cost from the abstract?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I name at least two limitations of the Transformer that are not addressed in this paper?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I list the hyperparameters of the base model (N, d_model, d_ff, h, d_k)?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I describe a single sanity check that would catch a mis-implementation?</label></li>
+        
+        <li><label><input type="checkbox" /> Have I marked every interpretive statement with an evidence label?</label></li>
+        
+        <li><label><input type="checkbox" /> Have I honestly recorded the reading mode as full_text?</label></li>
+        
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Generated by <strong>paper-three-pass-reader v0.2.9-alpha</strong> · MIT · offline · no backend.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

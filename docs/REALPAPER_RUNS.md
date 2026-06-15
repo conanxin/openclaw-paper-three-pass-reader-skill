@@ -170,3 +170,46 @@ Same run as the v0.2.8 section above (`runs/you-and-your-research-20260615/`). v
 - The `Related Work` section is renamed `相关脉络` and shows a clean fallback for essay-mode inputs.
 
 Project-wide `scripts/validate.sh` returns **220/0 PASS** (210 v0.2.8 baseline + 10 new step-16 essay / talk checks). Audit returns **PASS** (claims=12, glossary=13, checklist=11, no DRAFT placeholders). The zh-CN quality gate still returns **WARN** for the embedded Newton / Pasteur direct quote, by design. The page was re-published in multi-page mode into the same `you-and-your-research-cn/` site-path; all three live URLs (`/`, `/you-and-your-research-cn/`, `/published_pages.json`) return HTTP/2 200. The v0.2.9-alpha tag and GitHub Release are created on the upstream skill repo.
+
+---
+
+## v0.2.11 published-pages remediation (consumer pages only)
+
+The v0.2.10 published-pages regression audit
+(`runs/published-pages-audit-20260615/audit.json`) reported 8 pages FAIL with
+`template_leak` + `old_footer` + `missing_resolver_trail` (16 error-level issues
+in total). All 8 pages had been rendered with the v0.2.9 renderer already
+shipping in this repo, but their published `index.html` on the `gh-pages` branch
+of `conanxin/paper-reading-pages` still served the pre-v0.2.9 output.
+
+| Slug | Local run | Reading mode |
+|------|-----------|--------------|
+| attention-is-all-you-need | runs/attention-is-all-you-need-20260615 | full_text |
+| weakinput-title-attention-is-all-you-need | runs/weakinput-20260615/case-title-attention | full_text (paper_title) |
+| weakinput-abstract-how-to-read-a-paper | runs/weakinput-20260615/case-abstract-keshav | abstract_only |
+| weakinput-screenshot-how-to-read-a-paper | runs/weakinput-20260615/case-screenshot-keshav | screenshot_only |
+| weakinput-repo-bert | runs/weakinput-20260615/case-repo-bert | full_text (project_or_repo) |
+| runner-title-attention | runs/runner-smoke-20260615/runner-title-attention | partial_text |
+| second-me-fulltext-autofill | runs/v022-fulltext-autofill-secondme-20260615/second-me-fulltext-autofill | full_text |
+| second-me-human-inspired-memory-cn | runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn | zh-CN |
+
+Action: re-render each page with the v0.2.9 renderer (no `paper_reading.json`
+content changes — no claim fabrication, no glossary fabrication) and re-publish
+to the same `site-path` in multi-page mode. Rendered output is archived under
+`runs/p3pr-v0211-remediation-20260616/render-output/`. The full plan and report
+live in `docs/PHASE_P3PR_V0_2_11_PUBLISHED_PAGES_REMEDIATION_PLAN.md` and
+`docs/PHASE_P3PR_V0_2_11_PUBLISHED_PAGES_REMEDIATION_REPORT.md`.
+
+After-audit (`runs/published-pages-audit-20260615-remediation/audit.json`):
+
+- pages: PASS=9, WARN=1, FAIL=0 (was PASS=1, WARN=1, FAIL=8)
+- issues: error=0, warning=3, info=8 (was error=16, warning=10, info=15)
+- remaining 3 warnings are all on the **index page** (by design — manifest page,
+  no per-paper sections). No FAIL.
+- `template_leak`: 8 → 0. `old_footer`: 8 → 0. `missing_resolver_trail`: 8 → 1 (index).
+
+Project-wide `scripts/validate.sh` returns **225/0 PASS** (220 v0.2.9 baseline +
+5 new step-17 published-pages audit checks). No skill code changed; no new
+project tag or release was created — this is a consumer-pages-only remediation.
+The 8 page commits land on the `gh-pages` branch of `conanxin/paper-reading-pages`
+and are visible in the published-pages repo history.

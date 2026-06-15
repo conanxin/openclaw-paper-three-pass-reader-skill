@@ -1,0 +1,24 @@
+{
+  "input_kind": "paper_identifier",
+  "reading_mode": "full_text",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "missing_fields": [],
+  "warnings": [
+    "PDF body extraction used pdftotext -layout. Some figure captions and complex tables may be partially extracted; figure/table interpretation is based on captions in body text.",
+    "Authors and affiliation inferred from PDF header (Mindverse.ai)."
+  ],
+  "ambiguities": [
+    "Canonical title confirmed from arXiv PDF."
+  ],
+  "source_used": "runner hint + arXiv PDF download + pdftotext extraction. PDF: runs/second-me-zh-cn-20260615/second-me-human-inspired-memory-cn/source/second-me.pdf (1.75 MB). Text: extracted/second-me.txt (~54 KB, 28 pages).",
+  "extraction_quality": "good — full body extracted; some figure captions and table 1 row labels partial; flagged inline.",
+  "source_resolution": [
+    "Input kind = paper_identifier.",
+    "Input string: 'arXiv:2503.08102 — Second Me: Human-Inspired Memory Mechanism for LLM Agents'.",
+    "Resolved via arXiv ID lookup → arXiv:2503.08102v2, 12 Mar 2025.",
+    "Downloaded canonical PDF to source/second-me.pdf.",
+    "Extracted body via pdftotext -layout → extracted/second-me.txt (54,502 chars).",
+    "Reading mode forced to full_text (per task spec; body present in extracted/)."
+  ]
+}

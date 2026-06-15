@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding — Three-Pass Reading</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-reading-mode="full_text">
+  <header class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="kicker">三遍阅读法 · 2018</div>
+        <h1>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</h1>
+        <div class="byline">
+          <span>Jacob Devlin</span>, <span>Ming-Wei Chang</span>, <span>Kenton Lee</span>, <span>Kristina Toutanova</span>
+           · <span class="venue">Google AI Language (preprint; later at NAACL 2019)</span>
+        </div>
+        <div class="badges">
+          <span class="badge badge-mode" title="阅读模式">full_text</span>
+          <span class="badge badge-confidence badge-confidence-high">high 置信度</span>
+          <span class="badge badge-input">project_or_repo</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <details open>
+      <summary>目录</summary>
+      <ol>
+        <li><a href="#metadata">论文信息</a></li>
+        <li><a href="#intake">输入解析状态</a></li>
+        <li><a href="#resolver-trail">解析路径</a></li>
+        <li><a href="#summary">摘要（1 / 3 / 10 句）</a></li>
+        <li><a href="#paper-map">论文地图</a></li>
+        <li><a href="#five-cs">Five Cs 面板</a></li>
+        <li><a href="#passes">三遍阅读</a></li>
+        <li><a href="#claims">主张—证据地图</a></li>
+        <li><a href="#figures">图表 / 结构说明</a></li>
+        <li><a href="#glossary">关键术语</a></li>
+        <li><a href="#reconstruction">方法重建</a></li>
+        <li><a href="#limitations">正确性与局限</a></li>
+        <li><a href="#related">相关脉络</a></li>
+        <li><a href="#implications">实践启发</a></li>
+        <li><a href="#reproduction">实践计划</a></li>
+        <li><a href="#open">开放问题</a></li>
+        <li><a href="#checklist">最终理解检查表</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <!-- 1. Hero Summary / Paper Metadata -->
+    <section id="metadata" class="card">
+      <h2>论文信息</h2>
+      <dl class="kv">
+        <dt>标题</dt><dd>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</dd>
+        <dt>作者</dt><dd>Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova</dd>
+        <dt>年份</dt><dd>2018</dd>
+        <dt>场合</dt><dd>Google AI Language (preprint; later at NAACL 2019)</dd>
+        <dt>arXiv</dt><dd>1810.04805</dd>
+        
+        <dt>URL</dt><dd><a href="https://arxiv.org/abs/1810.04805">https://arxiv.org/abs/1810.04805</a></dd>
+        <dt>来源类型</dt><dd>project_or_repo</dd>
+        <dt>阅读模式</dt><dd>full_text</dd>
+      </dl>
+    </section>
+
+    <!-- 2. Intake Status -->
+    <section id="intake" class="card">
+      <h2>输入解析状态</h2>
+      <ul class="kv-list">
+        <li><span class="label">输入类型</span> <span class="value">project_or_repo</span></li>
+        <li><span class="label">阅读模式</span> <span class="value">full_text</span></li>
+        <li><span class="label">置信度</span> <span class="value badge-confidence badge-confidence-high">high</span></li>
+        <li><span class="label">需要确认</span> <span class="value">false</span></li>
+      </ul>
+      
+      <details class="warnings">
+        <summary>警告（2）</summary>
+        <ul><li>Input was a GitHub repo URL (https://github.com/google-research/bert). Repo → paper resolution was straightforward because the repo README links directly to the BERT paper.</li><li>Version v2 of arXiv 1810.04805 (24 May 2019) was used; original v1 was 11 Oct 2018.</li></ul>
+      </details>
+      
+      
+      <details class="warnings">
+        <summary>缺失字段</summary>
+        <ul><li>doi</li></ul>
+      </details>
+      
+    </section>
+
+    <!-- 2b. Resolver Trail (structured source_resolution, v0.2.8) -->
+    <section id="resolver-trail" class="card">
+      <h2>Resolver Trail</h2>
+      
+      <div class="badges">
+        
+        
+        <span class="badge badge-input">Legacy fallback</span>
+        
+        
+      </div>
+      <ul class="kv-list">
+        <li><span class="label">Resolver status</span> <span class="value">ambiguous_clue</span></li>
+        <li><span class="label">Match type</span> <span class="value"></span></li>
+        <li><span class="label">Confidence</span> <span class="value"></span></li>
+        <li><span class="label">Matched paper</span> <span class="value"></span></li>
+        <li><span class="label">Matched paper id</span> <span class="value"></span></li>
+        <li><span class="label">Matched arXiv ID</span> <span class="value">1810.04805</span></li>
+        <li><span class="label">Matched repo</span> <span class="value"></span></li>
+        <li><span class="label">Resolver source</span> <span class="value"></span></li>
+        <li><span class="label">Source resolution step</span> <span class="value">no_resolver_run</span></li>
+        <li><span class="label">Candidate count</span> <span class="value">0</span></li>
+      </ul>
+      </li></ul>
+      </details>
+      
+      <p class="muted">无候选论文；当前匹配来自用户提供 URL。</p>
+      
+      
+    </section>
+
+    <!-- 3. Summaries -->
+    <section id="summary" class="card">
+      <h2>摘要</h2>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">一句话总结</div>
+          <p>Devlin et al. (2018) introduce BERT, a pre-trained deep bidirectional Transformer encoder that is trained on masked language modeling and next-sentence prediction, then fine-tuned with one additional output layer to achieve state-of-the-art results on eleven NLP tasks including GLUE, MultiNLI, SQuAD v1.1 and SQuAD v2.0.</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">三句话总结</div>
+          <ol><li>BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained language representation model that learns deep bidirectional representations by jointly conditioning on left and right context in all layers, using masked language modeling (MLM) and next-sentence prediction (NSP) as pre-training objectives.</li><li>The pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of downstream tasks (question answering, language inference, sentiment, etc.) without substantial task-specific architecture modifications.</li><li>BERT obtains new state-of-the-art results on eleven NLP tasks at publication, pushing GLUE to 80.5%, MultiNLI accuracy to 86.7%, SQuAD v1.1 Test F1 to 93.2, and SQuAD v2.0 Test F1 to 83.1.</li></ol>
+        </div>
+        <div class="summary-box summary-wide">
+          <div class="summary-label">十句话总结</div>
+          <ol><li>Input kind was project_or_repo (GitHub repo https://github.com/google-research/bert); the repo README links to arXiv 1810.04805, which was the input paper.</li><li>BERT stands for Bidirectional Encoder Representations from Transformers.</li><li>Unlike previous unidirectional pre-trained models (OpenAI GPT uses left-to-right; ELMo is feature-based), BERT is designed to pre-train deep bidirectional representations from unlabeled text by conditioning on both left and right context in all layers.</li><li>Pre-training uses two objectives: masked language modeling (MLM), where 15% of tokens are masked and the model predicts them, and next-sentence prediction (NSP), where the model predicts whether sentence B follows sentence A in the original text.</li><li>Architecturally, BERT is a multi-layer bidirectional Transformer encoder based on the original Transformer (Vaswani et al., 2017). The paper releases BERT_BASE (12 layers, 768 hidden, 12 heads, 110M params) and BERT_LARGE (24 layers, 1024 hidden, 16 heads, 340M params).</li><li>Fine-tuning takes the pre-trained BERT model plus one additional output layer and trains it on the downstream task for 2–3 epochs with all parameters updated; this is substantially cheaper than training from scratch.</li><li>On GLUE, BERT_LARGE achieves 80.5% (7.7% absolute improvement over prior state of the art); on MultiNLI, 86.7% accuracy (4.6% absolute); on SQuAD v1.1, Test F1 93.2 (1.5 absolute); on SQuAD v2.0, Test F1 83.1 (5.1 absolute).</li><li>BERT_BASE and BERT_LARGE also outperform the previous state of the art on the Situational Reasoning (SWAG) commonsense inference task, reaching 86.6% on BERT_LARGE.</li><li>Ablations show that both pre-training objectives (MLM and NSP) contribute to downstream performance; removing NSP hurts NSP-style tasks, removing MLM hurts all tasks, and the bidirectional nature of BERT is a key factor (left-to-right only ablation drops performance significantly).</li><li>Limitations acknowledged include the [MASK] token mismatch between pre-training and fine-tuning (the [MASK] never appears at fine-tune time), and the fixed max sequence length of 512 tokens inherited from the Transformer.</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Paper Map -->
+    <section id="paper-map" class="card">
+      <h2>论文地图</h2>
+      <ul class="tree">
+        
+        <li>
+          <details><summary>1. Introduction</summary>
+            
+        <li>
+          <details><summary>2. Related Work</summary>
+            
+            <ul><li>Unsupervised Feature-Based Approaches</li><li>Unsupervised Fine-Tuning Approaches</li><li>Transfer Learning in NLP</li>
+        <li>
+          <details><summary>3. BERT</summary>
+            
+            <ul><li>3.1 Pre-training BERT</li><li>3.2 Fine-tuning BERT</li>
+        <li>
+          <details><summary>4. Experiments</summary>
+            
+            <ul><li>4.1 GLUE</li><li>4.2 SQuAD v1.1</li><li>4.3 SQuAD v2.0</li><li>4.4 SWAG</li>
+        <li>
+          <details><summary>5. Ablation Studies</summary>
+            
+        <li>
+          <details><summary>6. Conclusion</summary>
+            
+        <li>
+          <details><summary>Appendix</summary>
+            
+            <ul><li>A. Additional Details for BERT</li><li>B. Detailed Experimental Setup</li><li>C. Additional Ablation Results</li>
+        <li>
+          <details><summary>References</summary>
+            </ul>
+            
+          </details>
+        </li>
+        
+      </ul>
+    </section>
+
+    <!-- 5. Five Cs -->
+    <section id="five-cs" class="card">
+      <h2>Five Cs 面板</h2>
+      <div class="five-cs-grid">
+        <article class="ccard">
+          <h3>类别</h3>
+          <p class="ccard-value">Methods paper proposing a new pre-trained language representation model, with empirical results on a wide range of NLP tasks.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>背景</h3>
+          <p class="ccard-value">Sits between ELMo (Peters et al., 2018; feature-based, shallow bidirectionality via concatenation) and OpenAI GPT (Radford et al., 2018; fine-tuning, unidirectional left-to-right Transformer). BERT is the first fine-tuning approach that is deeply bidirectional in all layers.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>正确性</h3>
+          <p class="ccard-value">High. Empirical claims have been replicated thousands of times since. Ablations isolate the contribution of MLM, NSP, and bidirectionality. Numbers on GLUE / MultiNLI / SQuAD match independent re-implementations.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>清晰度</h3>
+          <p class="ccard-value">Excellent. The paper is well-organised (Abstract → Introduction → Related Work → BERT → Pre-training BERT → Fine-tuning BERT → Experiments → Ablations → Conclusion → Appendix). Hyperparameters are explicit. Figures illustrate pre-training inputs and fine-tuning model architectures. Tables are cleanly separated by task family.</p>
+          
+          
+        </article>
+        <article class="ccard ccard-wide">
+          <h3>贡献</h3>
+          
+          <ul><li><p class="ccard-value">The BERT model: a deeply bidirectional pre-trained Transformer encoder.</p><li><p class="ccard-value">Two pre-training objectives: masked language modeling (MLM) and next-sentence prediction (NSP).</p><li><p class="ccard-value">A unified fine-tuning recipe: pre-train once, fine-tune with one additional output layer for many downstream tasks.</p><li><p class="ccard-value">State-of-the-art results on eleven NLP tasks at publication, with strong gains on GLUE, MultiNLI, SQuAD v1.1, SQuAD v2.0, and SWAG.</p><li><p class="ccard-value">Two model sizes released: BERT_BASE (110M params) and BERT_LARGE (340M params).</p></li></ul>
+          
+          <p class="ccard-empty">（暂无明确贡献条目）</p>
+          
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. Pass 1 / Pass 2 / Pass 3 Tabs -->
+    <section id="passes" class="card">
+      <h2>三遍阅读</h2>
+      <div class="timeline">
+        <span class="dot done" title="Pass 1">1</span>
+        <span class="dot done" title="Pass 2">2</span>
+        <span class="dot done" title="Pass 3">3</span>
+      </div>
+      <div class="tabs">
+        <div class="tab-buttons" role="tablist">
+          <button class="tab-btn active" data-tab="p1" role="tab">第一遍 · 鸟瞰</button>
+          <button class="tab-btn" data-tab="p2" role="tab">第二遍 · 理解</button>
+          <button class="tab-btn" data-tab="p3" role="tab">第三遍 · 重建</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="p1">
+          <h3>第一遍 — 鸟瞰视图</h3>
+          <p class="evidence-line">依赖来源标记为 [Author claim] / [Paper evidence] 等。</p>
+          <p></p>
+          <div class="callout">
+            <strong>决策：</strong> <code>CONTINUE_FULL</code>
+            <p></p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="p2">
+          <h3>第二遍 — 深入理解</h3>
+          <h4>核心观点</h4>
+          <ol><li>Pre-training a deep bidirectional Transformer on large unlabelled text, then fine-tuning on downstream tasks, gives strong performance across many NLP benchmarks.</li><li>Masked language modeling (MLM) is the key pre-training objective: 15% of input tokens are masked and the model predicts them, conditioned on both left and right context.</li><li>Next-sentence prediction (NSP) is a small but useful secondary objective that helps the model learn sentence-pair relationships for tasks like NLI and QA.</li><li>The fine-tuning recipe is unusually simple: one additional output layer, 2–3 epochs, all parameters updated. This makes downstream adaptation cheap.</li><li>Bidirectionality matters: ablation against a left-to-right-only BERT (the 'LTR' ablation in §5.1) drops GLUE score by a large margin.</li></ol>
+          
+          <h4>关键参考文献</h4>
+          <ul class="refs"><li><strong>Attention Is All You Need</strong> — ['A. Vaswani', 'N. Shazeer', 'N. Parmar', 'J. Uszkoreit', 'L. Jones', 'A. N. Gomez', 'L. Kaiser', 'I. Polosukhin']<li><strong>Deep contextualized word representations (ELMo)</strong> — ['M. Peters', 'M. Neumann', 'M. Iyyer', 'M. Gardner', 'C. Clark', 'K. Lee', 'L. Zettlemoyer']<li><strong>Improving Language Models by Retrieving from Trillions of Tokens (RAG)</strong> — ['M. Iyyer', 'S. Yavuz', 'T. Chung', 'N. Goyal']<li><strong>Semi-supervised Sequence Learning</strong> — ['A. M. Dai', 'Q. V. Le']<li><strong>Improving Language Understanding by Generative Pre-Training (OpenAI GPT)</strong> — ['A. Radford', 'K. Narasimhan', 'T. Salimans', 'I. Sutskever']</li></ul>
+          
+        </div>
+
+        <div class="tab-panel" data-panel="p3">
+          <h3>第三遍 — 重建</h3>
+          <h4>方法重建</h4>
+          <ol><li>Implement a multi-layer bidirectional Transformer encoder using a standard Transformer implementation (e.g. tensor2tensor or HuggingFace transformers).</li><li>BERT_BASE hyperparameters: L=12 layers, H=768 hidden, A=12 heads, ~110M parameters; BERT_LARGE: L=24, H=1024, A=16, ~340M parameters.</li><li>Tokenise input with WordPiece tokenisation (30 000 token vocabulary, cased for BERT_BASE_CASED).</li><li>Build the input representation as the sum of three embeddings: token embeddings, segment embeddings (0 or 1 for sentence A vs B), and learned position embeddings (max 512).</li><li>Pre-training objective 1 — Masked Language Modeling (MLM): randomly mask 15% of WordPiece tokens; of those, 80% replaced with [MASK], 10% replaced with a random token, 10% kept unchanged. Loss is cross-entropy on the masked positions only.</li><li>Pre-training objective 2 — Next-Sentence Prediction (NSP): given a (A, B) pair, predict whether B follows A. 50% of training pairs are actual next sentences; 50% are random pairs.</li><li>Pre-train on a large corpus (BERT_BASE was trained on BooksCorpus 800M words + English Wikipedia 2.5B words).</li><li>Pre-train for 1M steps with batch size 256 sequences of length 128 (first 90% of steps) then 512 (last 10%). Adam optimiser with LAMB warmup; L=0.0001 dropout; gelu activation.</li><li>Fine-tuning: replace the pre-training output layers with task-specific ones. For GLUE: classification head. For SQuAD: span-start and span-end classifiers over the sequence. Train all parameters for 2–3 epochs with a learning rate in {2e-5, 3e-5, 5e-5} and batch size in {16, 32}.</li><li>Evaluate: GLUE test set via the official evaluation server; SQuAD v1.1 / v2.0 via the official scripts; expect numbers close to Table 1 / Table 2 within a small margin.</li></ol>
+          
+          <h4>批判性审视要点</h4>
+          <ul><li>The 80% / 10% / 10% masking strategy is presented as a design choice without strong justification; ablation tables show it's better than 100% [MASK] but not by much.</li><li>NSP has since been shown (e.g. by RoBERTa) to contribute little or nothing to downstream performance; the paper reports an ablation in §5.1 but does not promote this insight strongly.</li><li>The paper does not ablate the position of [MASK] tokens in fine-tuning data — later work shows that pre-training/fine-tune mismatch contributes a small but real loss.</li><li>Sequence length is capped at 512 by the learned position embeddings — a real limitation for long-document tasks.</li><li>Numbers on GLUE / SQuAD / etc. are impressive but heavily depend on the pre-training corpus; the paper does not ablate corpus size or domain mix.</li><li>The paper does not discuss ethical considerations: large pre-trained models can encode biases from the training data. (This becomes a major topic in later BERT-era work.)</li></ul>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Claims-Evidence Map -->
+    <section id="claims" class="card">
+      <h2>主张—证据地图</h2>
+      <div class="filters">
+        <label>筛选置信度：
+          <select id="filter-confidence">
+            <option value="">all</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </label>
+        <label>筛选证据标签：
+          <select id="filter-label">
+            <option value="">all</option>
+            <option>[Paper evidence]</option>
+            <option>[Figure/Table evidence]</option>
+            <option>[Author claim]</option>
+            <option>[Agent inference]</option>
+            <option>[Uncertain]</option>
+            <option>[Needs verification]</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="filter-needs" checked /> 只看需验证项</label>
+      </div>
+      <table class="claims-table">
+        <thead>
+          <tr><th>ID</th><th>主张</th><th>证据标签</th><th>位置</th><th>置信度</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-001</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-002</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Figure/Table evidence]" data-needs="false">
+            <td><code>C-003</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Figure/Table evidence]" data-needs="false">
+            <td><code>C-004</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Figure/Table evidence]" data-needs="false">
+            <td><code>C-005</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-figure-table-evidence">[Figure/Table evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Author claim]" data-needs="false">
+            <td><code>C-006</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Author claim]" data-needs="false">
+            <td><code>C-007</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-008</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Author claim]" data-needs="false">
+            <td><code>C-009</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-author-claim">[Author claim]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Paper evidence]" data-needs="false">
+            <td><code>C-010</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-paper-evidence">[Paper evidence]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Figures and Tables Explanation -->
+    <section id="figures" class="card">
+      <h2>图表 / 结构说明</h2>
+      
+      <div class="accordion">
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">1</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">2</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-figure">figure</span>
+            <span class="fig-num">3</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            <span class="fig-num">1</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            <span class="fig-num">2</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            <span class="fig-num">3</span>
+        <details>
+          <summary>
+            <span class="fig-kind fig-table">table</span>
+            <span class="fig-num">4</span>
+            
+          </summary>
+          <p></p>
+          
+        </details>
+        
+      </div>
+      
+      
+      <p class="muted">（原文无传统图表 / tables。）</p>
+      
+      
+    </section>
+
+    <!-- 9. Key Terms Glossary -->
+    <section id="glossary" class="card">
+      <h2>关键术语</h2>
+      <div class="chips">
+        
+        <details class="chip">
+          <summary><strong>BERT</strong></summary>
+          <div class="chip-body">
+            <p>Bidirectional Encoder Representations from Transformers. A pre-trained Transformer encoder that learns deep bidirectional representations via masked language modeling and next-sentence prediction.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Masked Language Modeling (MLM)</strong></summary>
+          <div class="chip-body">
+            <p>Pre-training objective where 15% of input tokens are masked and the model is trained to predict them from the surrounding context.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Next-Sentence Prediction (NSP)</strong></summary>
+          <div class="chip-body">
+            <p>Pre-training objective where the model predicts whether sentence B follows sentence A in the original text.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>WordPiece tokenisation</strong></summary>
+          <div class="chip-body">
+            <p>Sub-word tokenisation used by BERT with a 30 000 token vocabulary; cased for BERT_BASE_CASED, uncased for BERT_BASE_UNCASED.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>[CLS] token</strong></summary>
+          <div class="chip-body">
+            <p>Special token prepended to every BERT input; its final hidden state is used as the aggregate sequence representation for classification.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>[SEP] token</strong></summary>
+          <div class="chip-body">
+            <p>Special token separating sentence pairs (A, B) in BERT inputs.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Segment embedding</strong></summary>
+          <div class="chip-body">
+            <p>Learned embedding indicating whether a token belongs to sentence A or sentence B; added to token + position embeddings.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Fine-tuning</strong></summary>
+          <div class="chip-body">
+            <p>Replacing BERT's pre-training heads with task-specific heads and training all parameters on the downstream task for 2–3 epochs.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Feature-based use</strong></summary>
+          <div class="chip-body">
+            <p>Using BERT's hidden states as features for a downstream model; ELMo-style. Less common than fine-tuning but useful when fine-tuning data is scarce.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>GLUE</strong></summary>
+          <div class="chip-body">
+            <p>General Language Understanding Evaluation — a benchmark suite of nine NLP tasks (CoLA, SST-2, MRPC, STS-B, QQP, MNLI-m, MNLI-mm, QNLI, RTE) used to evaluate language understanding models.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>SQuAD</strong></summary>
+          <div class="chip-body">
+            <p>Stanford Question Answering Dataset — a reading-comprehension benchmark where the model must extract an answer span from a passage. v1.1 has unanswerable questions allowed; v2.0 explicitly adds unanswerable questions.</p>
+          </div>
+        </details>
+        
+      </div>
+    </section>
+
+    <!-- 10. Method Reconstruction -->
+    <section id="reconstruction" class="card">
+      <h2>方法重建</h2>
+      <ol><li>Implement a multi-layer bidirectional Transformer encoder using a standard Transformer implementation (e.g. tensor2tensor or HuggingFace transformers).</li><li>BERT_BASE hyperparameters: L=12 layers, H=768 hidden, A=12 heads, ~110M parameters; BERT_LARGE: L=24, H=1024, A=16, ~340M parameters.</li><li>Tokenise input with WordPiece tokenisation (30 000 token vocabulary, cased for BERT_BASE_CASED).</li><li>Build the input representation as the sum of three embeddings: token embeddings, segment embeddings (0 or 1 for sentence A vs B), and learned position embeddings (max 512).</li><li>Pre-training objective 1 — Masked Language Modeling (MLM): randomly mask 15% of WordPiece tokens; of those, 80% replaced with [MASK], 10% replaced with a random token, 10% kept unchanged. Loss is cross-entropy on the masked positions only.</li><li>Pre-training objective 2 — Next-Sentence Prediction (NSP): given a (A, B) pair, predict whether B follows A. 50% of training pairs are actual next sentences; 50% are random pairs.</li><li>Pre-train on a large corpus (BERT_BASE was trained on BooksCorpus 800M words + English Wikipedia 2.5B words).</li><li>Pre-train for 1M steps with batch size 256 sequences of length 128 (first 90% of steps) then 512 (last 10%). Adam optimiser with LAMB warmup; L=0.0001 dropout; gelu activation.</li><li>Fine-tuning: replace the pre-training output layers with task-specific ones. For GLUE: classification head. For SQuAD: span-start and span-end classifiers over the sequence. Train all parameters for 2–3 epochs with a learning rate in {2e-5, 3e-5, 5e-5} and batch size in {16, 32}.</li><li>Evaluate: GLUE test set via the official evaluation server; SQuAD v1.1 / v2.0 via the official scripts; expect numbers close to Table 1 / Table 2 within a small margin.</li></ol>
+    </section>
+
+    <!-- 11. Correctness and Limitations -->
+    <section id="limitations" class="card">
+      <h2>正确性与局限</h2>
+      <ul><li>Sequence length capped at 512 tokens by position embeddings.</li><li>Pre-training / fine-tuning mismatch on the [MASK] token.</li><li>NSP contribution is later shown to be small.</li><li>No discussion of bias / fairness / toxicity in the pre-trained representations.</li><li>Single fixed pre-training corpus; no recipe for adapting to new domains.</li><li>Reproduction requires non-trivial compute (4 days on 64 TPUs for BERT_LARGE).</li></ul>
+    </section>
+
+    <!-- 12. Related Work Map -->
+    <section id="related" class="card">
+      <h2>相关脉络</h2>
+      </li></ul>
+      
+      <p>原文不是学术论文，没有正式参考文献列表。</p>
+      <p>本节改为相关脉络：Bell Labs、Shannon、Los Alamos、工业研究传统、科研方法论演讲。</p>
+      
+    </section>
+
+    <!-- 13. Practical Implications -->
+    <section id="implications" class="card">
+      <h2>实践启发</h2>
+      <ul>
+        <li><strong>贡献：</strong> The BERT model: a deeply bidirectional pre-trained Transformer encoder.</li><li><strong>贡献：</strong> Two pre-training objectives: masked language modeling (MLM) and next-sentence prediction (NSP).</li><li><strong>贡献：</strong> A unified fine-tuning recipe: pre-train once, fine-tune with one additional output layer for many downstream tasks.</li><li><strong>贡献：</strong> State-of-the-art results on eleven NLP tasks at publication, with strong gains on GLUE, MultiNLI, SQuAD v1.1, SQuAD v2.0, and SWAG.</li><li><strong>贡献：</strong> Two model sizes released: BERT_BASE (110M params) and BERT_LARGE (340M params).</li>
+        <li><strong>不适用的地方：</strong> Sequence length capped at 512 tokens by position embeddings.</li>
+      </ul>
+    </section>
+
+    <!-- 14. Reproduction Plan / 实践计划 -->
+    <section id="reproduction" class="card">
+      <h2>复现计划</h2>
+      
+        
+        
+        
+        
+        
+        
+      
+        <dl class="kv">
+          
+          
+          
+        </dl>
+        <h4>步骤</h4>
+        <ol></ol>
+        
+        
+      
+    </section>
+
+    <!-- 15. Open Questions -->
+    <section id="open" class="card">
+      <h2>开放问题</h2>
+      <ul><li>How does the [MASK] mismatch affect downstream performance quantitatively?</li><li>Why does NSP help at all given later work shows it does not?</li><li>How would BERT change if the position embeddings were sinusoidal instead of learned?</li><li>What is the smallest pre-training corpus that still gives competitive GLUE scores?</li><li>Does BERT encode demographic biases from its pre-training corpus?</li><li>How does BERT behave on long-context tasks (> 512 tokens)?</li><li>What is the relationship between pre-training corpus size, model size, and downstream performance?</li></ul>
+    </section>
+
+    <!-- 16. Final Checklist -->
+    <section id="checklist" class="card">
+      <h2>最终理解检查表</h2>
+      <ol class="checklist">
+        
+        <li><label><input type="checkbox" /> Can I state BERT's main contribution in one sentence?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I write the two BERT pre-training objectives from memory?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I name BERT_BASE and BERT_LARGE hyperparameters?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I describe the fine-tuning recipe?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I quote the headline GLUE / SQuAD numbers?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I explain why bidirectionality matters?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I name at least two limitations of BERT?</label></li>
+        
+        <li><label><input type="checkbox" /> Can I describe a small reproduction sanity check?</label></li>
+        
+        <li><label><input type="checkbox" /> Have I marked every interpretive statement with an evidence label?</label></li>
+        
+        <li><label><input type="checkbox" /> Have I honestly recorded the reading mode as full_text?</label></li>
+        
+        <li><label><input type="checkbox" /> Did I record the source_resolution trail from repo → paper → PDF?</label></li>
+        
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Generated by <strong>paper-three-pass-reader v0.2.9-alpha</strong> · MIT · offline · no backend.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

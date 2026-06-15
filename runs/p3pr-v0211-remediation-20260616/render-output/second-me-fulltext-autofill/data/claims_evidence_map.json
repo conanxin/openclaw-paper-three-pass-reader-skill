@@ -1,0 +1,122 @@
+[
+  {
+    "claim_id": "C-001",
+    "claim_text": "SECOND ME parameterises a user's memory into L2 model weights, layered above L0 (raw data) and L1 (natural-language memory).",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§2.1 (LPM 1.0 recap) + §2.2 (Overall Design)",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Three-layer model is the central contribution; consistently described across Abstract, §2.1, §2.2.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-002",
+    "claim_text": "SECOND ME serves as a 'context provider' rather than a task executor, aligning with the user's perspective.",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "§2.2 — 'we position SECOND ME as a context provider aligned with the user's perspective, rather than a task executor.'",
+    "evidence_kind": "author_claim",
+    "confidence": "high",
+    "notes": "Direct author statement; positioned against general-purpose LLM agents.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-003",
+    "claim_text": "The training pipeline is fully automated and comprises data synthesis, five-level filtering, PEFT SFT, and DPO.",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.1 (Training Pipeline) + Figure 2",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Figure 2 visualises the pipeline end-to-end.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-004",
+    "claim_text": "The base model is Qwen2.5-7B-Instruct and training starts with PEFT.",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.1 — 'Our base model, Qwen2.5-7B-Instruct (Qwen et al., 2025), undergoes automatic training and evaluation.'",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Specific model name + size in body text.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-005",
+    "claim_text": "Three answer-style COT strategies are used during training: Weak, Multi-step, and Strong (the last using Deepseek-R1 with strict format constraints).",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.2 (Answer Style: COT or Not?)",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Each strategy is described with concrete mechanics and length constraints.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-006",
+    "claim_text": "DPO does not introduce new knowledge but refines preference alignment on approximately 20% of the SFT data.",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.3 — 'Preference pairs constitute approximately 20% of the total SFT training data.'",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Quantitative proportion is in the body.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-007",
+    "claim_text": "Evaluation uses four metrics: Memory (Self), Memory (Third-party), Context Enhance, and Context Critic.",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.4 + Appendix C",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "Detailed rubric in Appendix C.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-008",
+    "claim_text": "Strong COT significantly improves Memory (Self) and Context Critic performance; Multi-step COT often underperforms Weak COT.",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "Table 1 (extracted): Strong Memory (Self) = 0.91 vs Weak = 0.86 vs Multi-step = 0.64.",
+    "evidence_kind": "paper_table",
+    "confidence": "high",
+    "notes": "Table 1 numerical values reproduced from extracted text.",
+    "needs_verification": false
+  },
+  {
+    "claim_id": "C-009",
+    "claim_text": "DPO brings substantial improvements across all tasks when combined with iterative COT refinement.",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "§3.5 — 'Table 2 demonstrates that DPO brings substantial improvements'.",
+    "evidence_kind": "paper_text",
+    "confidence": "medium",
+    "notes": "Table 2 layout was not cleanly extracted (pdftotext -layout limitation); specific numbers in Table 2 not recoverable from extraction.",
+    "needs_verification": true
+  },
+  {
+    "claim_id": "C-010",
+    "claim_text": "Human evaluation reports Strong-COT-with-DPO scores close to 1 and Strong-COT-without-DPO at ~0.95 average.",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "§3.5 — 'Human evaluation shows Strong COT without DPO achieves an average score of 0.95, while Strong COT with DPO scores close to 1.'",
+    "evidence_kind": "author_claim",
+    "confidence": "medium",
+    "notes": "Numbers are author-reported; independent human eval not in the paper.",
+    "needs_verification": true
+  },
+  {
+    "claim_id": "C-011",
+    "claim_text": "SECOND ME drives a 3 to 5 orders of magnitude network-efficiency gain via Metcalfe's Law in human-AI networks.",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "§4 — 'integration of human and AI nodes increases network efficiency by 3 to 5 orders of magnitude.'",
+    "evidence_kind": "author_claim",
+    "confidence": "low",
+    "notes": "This is a Metcalfe-style projection, not a controlled measurement. Independent verification absent in the paper.",
+    "needs_verification": true
+  },
+  {
+    "claim_id": "C-012",
+    "claim_text": "The full system is open-sourced at github.com/Mindverse/Second-Me (note: Mindverse, not mindhive).",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "Abstract + §4 — 'https://github.com/Mindverse/Second-Me'.",
+    "evidence_kind": "paper_text",
+    "confidence": "high",
+    "notes": "URL is in the abstract and at the end of §4; org name is Mindverse.",
+    "needs_verification": false
+  }
+]

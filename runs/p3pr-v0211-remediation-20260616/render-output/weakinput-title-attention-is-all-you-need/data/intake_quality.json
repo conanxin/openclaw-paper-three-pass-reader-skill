@@ -1,0 +1,25 @@
+{
+  "input_kind": "paper_title",
+  "reading_mode": "full_text",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "missing_fields": [
+    "doi"
+  ],
+  "warnings": [
+    "Input was a bare title with no authors, year, or abstract.",
+    "Title was matched to a known landmark paper; resolution is high-confidence but assumes the user meant *that* paper (not a paper that merely shares the title).",
+    "Version v7 of arXiv 1706.03762 (last updated 2 Aug 2023) was used; original submission v1 was 12 Jun 2017."
+  ],
+  "source_used": "Title clue → arXiv search → arXiv 1706.03762v7 → https://arxiv.org/pdf/1706.03762 → pdftotext (poppler 24.02.0) → 40 074 characters, all sections present",
+  "extraction_quality": "high",
+  "ambiguities": [],
+  "source_resolution": [
+    "Input kind = paper_title; only the string 'Attention Is All You Need' was supplied.",
+    "Resolved via arXiv search → arXiv ID 1706.03762 (v7).",
+    "Canonical PDF fetched from https://arxiv.org/pdf/1706.03762 (2 215 244 bytes, 5 pages).",
+    "Text extracted with pdftotext (poppler 24.02.0): 40 074 characters.",
+    "All major sections (Abstract, Introduction, Background, Model Architecture, Training, Results, Conclusion, References) present and ordered.",
+    "reading_mode = full_text (full body text obtained)."
+  ]
+}

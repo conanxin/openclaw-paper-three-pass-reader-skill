@@ -1,0 +1,50 @@
+[
+  {
+    "title": "1. Introduction",
+    "subsections": []
+  },
+  {
+    "title": "2. Related Work",
+    "subsections": [
+      "Unsupervised Feature-Based Approaches",
+      "Unsupervised Fine-Tuning Approaches",
+      "Transfer Learning in NLP"
+    ]
+  },
+  {
+    "title": "3. BERT",
+    "subsections": [
+      "3.1 Pre-training BERT",
+      "3.2 Fine-tuning BERT"
+    ]
+  },
+  {
+    "title": "4. Experiments",
+    "subsections": [
+      "4.1 GLUE",
+      "4.2 SQuAD v1.1",
+      "4.3 SQuAD v2.0",
+      "4.4 SWAG"
+    ]
+  },
+  {
+    "title": "5. Ablation Studies",
+    "subsections": []
+  },
+  {
+    "title": "6. Conclusion",
+    "subsections": []
+  },
+  {
+    "title": "Appendix",
+    "subsections": [
+      "A. Additional Details for BERT",
+      "B. Detailed Experimental Setup",
+      "C. Additional Ablation Results"
+    ]
+  },
+  {
+    "title": "References",
+    "subsections": []
+  }
+]

@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How to Read a Paper — Three-Pass Reading</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-reading-mode="screenshot_only">
+  <header class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="kicker">三遍阅读法 · 2007</div>
+        <h1>How to Read a Paper</h1>
+        <div class="byline">
+          <span>S. Keshav</span>
+           · <span class="venue">SIGCOMM Computer Communication Review</span>
+        </div>
+        <div class="badges">
+          <span class="badge badge-mode" title="阅读模式">screenshot_only</span>
+          <span class="badge badge-confidence badge-confidence-medium">medium 置信度</span>
+          <span class="badge badge-input">paper_screenshot</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <details open>
+      <summary>目录</summary>
+      <ol>
+        <li><a href="#metadata">论文信息</a></li>
+        <li><a href="#intake">输入解析状态</a></li>
+        <li><a href="#resolver-trail">解析路径</a></li>
+        <li><a href="#summary">摘要（1 / 3 / 10 句）</a></li>
+        <li><a href="#paper-map">论文地图</a></li>
+        <li><a href="#five-cs">Five Cs 面板</a></li>
+        <li><a href="#passes">三遍阅读</a></li>
+        <li><a href="#claims">主张—证据地图</a></li>
+        <li><a href="#figures">图表 / 结构说明</a></li>
+        <li><a href="#glossary">关键术语</a></li>
+        <li><a href="#reconstruction">方法重建</a></li>
+        <li><a href="#limitations">正确性与局限</a></li>
+        <li><a href="#related">相关脉络</a></li>
+        <li><a href="#implications">实践启发</a></li>
+        <li><a href="#reproduction">实践计划</a></li>
+        <li><a href="#open">开放问题</a></li>
+        <li><a href="#checklist">最终理解检查表</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <!-- 1. Hero Summary / Paper Metadata -->
+    <section id="metadata" class="card">
+      <h2>论文信息</h2>
+      <dl class="kv">
+        <dt>标题</dt><dd>How to Read a Paper</dd>
+        <dt>作者</dt><dd>S. Keshav</dd>
+        <dt>年份</dt><dd>2007</dd>
+        <dt>场合</dt><dd>SIGCOMM Computer Communication Review</dd>
+        
+        
+        
+        <dt>来源类型</dt><dd>paper_screenshot</dd>
+        <dt>阅读模式</dt><dd>screenshot_only</dd>
+      </dl>
+    </section>
+
+    <!-- 2. Intake Status -->
+    <section id="intake" class="card">
+      <h2>输入解析状态</h2>
+      <ul class="kv-list">
+        <li><span class="label">输入类型</span> <span class="value">paper_screenshot</span></li>
+        <li><span class="label">阅读模式</span> <span class="value">screenshot_only</span></li>
+        <li><span class="label">置信度</span> <span class="value badge-confidence badge-confidence-medium">medium</span></li>
+        <li><span class="label">需要确认</span> <span class="value">false</span></li>
+      </ul>
+      
+      <details class="warnings">
+        <summary>警告（5）</summary>
+        <ul><li>Input was a screenshot / OCR transcript. Only what was visible in the screenshot is available.</li><li>OCR / VLM extraction quality is medium — partial text from headings and a few fragments.</li><li>Pass 2 / Pass 3 are explicitly NOT performed.</li><li>All claims are marked [Uncertain] or [Needs verification] — no [Paper evidence] labels are used because the body text was not visible in the screenshot.</li><li>If the user supplies the full PDF later, this page can be re-rendered with reading_mode = full_text.</li></ul>
+      </details>
+      
+      
+      <details class="warnings">
+        <summary>缺失字段</summary>
+        <ul><li>arxiv_id</li><li>doi</li><li>openreview_id</li><li>url</li><li>full_body_text</li><li>full_references</li><li>full_figures</li><li>full_tables</li><li>claims_map_completeness</li><li>method_reconstruction_inputs</li><li>pass2_pass3_inputs</li></ul>
+      </details>
+      
+    </section>
+
+    <!-- 2b. Resolver Trail (structured source_resolution, v0.2.8) -->
+    <section id="resolver-trail" class="card">
+      <h2>Resolver Trail</h2>
+      
+      <div class="badges">
+        
+        
+        <span class="badge badge-input">Legacy fallback</span>
+        
+        
+      </div>
+      <ul class="kv-list">
+        <li><span class="label">Resolver status</span> <span class="value">ambiguous_clue</span></li>
+        <li><span class="label">Match type</span> <span class="value"></span></li>
+        <li><span class="label">Confidence</span> <span class="value"></span></li>
+        <li><span class="label">Matched paper</span> <span class="value"></span></li>
+        <li><span class="label">Matched paper id</span> <span class="value"></span></li>
+        <li><span class="label">Matched arXiv ID</span> <span class="value"></span></li>
+        <li><span class="label">Matched repo</span> <span class="value"></span></li>
+        <li><span class="label">Resolver source</span> <span class="value"></span></li>
+        <li><span class="label">Source resolution step</span> <span class="value">no_resolver_run</span></li>
+        <li><span class="label">Candidate count</span> <span class="value">0</span></li>
+      </ul>
+      </li></ul>
+      </details>
+      
+      <p class="muted">无候选论文；当前匹配来自用户提供 URL。</p>
+      
+      
+    </section>
+
+    <!-- 3. Summaries -->
+    <section id="summary" class="card">
+      <h2>摘要</h2>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">一句话总结</div>
+          <p>Based only on a partial OCR / VLM transcript of a screenshot of S. Keshav's 2007 'How to Read a Paper', the visible portion confirms the title, author, three-pass structure and Five Cs checklist, but the body, references, figures and tables have not been seen.</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">三句话总结</div>
+          <ol><li>What the screenshot shows: the paper is titled 'How to Read a Paper', authored by S. Keshav, dated 2007, published in SIGCOMM CCR; the visible section headings include Abstract, Introduction, The Three-Pass Approach, and The First Pass.</li><li>What the visible method fragments show: the paper proposes a three-pass reading method (bird's-eye, deeper read, reconstruction), and the first pass uses a Five Cs checklist (Category, Context, Correctness, Contributions, Clarity).</li><li>What is NOT visible in the screenshot: the full body, all references, all figures, and all tables. This page therefore does NOT perform Pass 2 / Pass 3; it is a screenshot-only preliminary read.</li></ol>
+        </div>
+        <div class="summary-box summary-wide">
+          <div class="summary-label">十句话总结</div>
+          <ol><li>Input kind = paper_screenshot; reading_mode = screenshot_only; confidence = medium.</li><li>The screenshot OCR'd to: title 'How to Read a Paper', author 'S. Keshav', affiliation 'University of Waterloo' (treat as low confidence), year 2007, venue 'SIGCCR' / 'SIGCOMM CCR'.</li><li>Section headings visible in the screenshot: Abstract, Introduction, The Three-Pass Approach, The First Pass.</li><li>Method fragments visible in the screenshot: 'First pass (5–10 minutes): read title, abstract, intro, section headings, conclusion, references; glance at figures and skim the math.'</li><li>Method fragments visible: 'The first pass answers the Five Cs: Category, Context, Correctness, Contributions, Clarity.'</li><li>Method fragments visible: 'Second pass (~1 hour): read the body with care, skipping proofs.'</li><li>Method fragments visible: 'Third pass (1–4 hours): re-implement the paper as if you were its author.'</li><li>Body, references, figures, and tables are NOT visible in the screenshot — Pass 2 / Pass 3 are explicitly NOT performed.</li><li>All claims below are derived only from visible screenshot fragments and are marked [Uncertain] or [Needs verification].</li><li>Recommended next action: feed the full PDF or full text into this skill to upgrade reading_mode to full_text.</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Paper Map -->
+    <section id="paper-map" class="card">
+      <h2>论文地图</h2>
+      <ul class="tree">
+        
+        <li>
+          <details><summary>1. Abstract</summary>
+            
+        <li>
+          <details><summary>2. Introduction</summary>
+            
+        <li>
+          <details><summary>3. The Three-Pass Approach</summary>
+            
+        <li>
+          <details><summary>4. The First Pass</summary>
+            
+        <li>
+          <details><summary>5. (rest of body — not visible in screenshot)</summary>
+            </ul>
+            
+          </details>
+        </li>
+        
+      </ul>
+    </section>
+
+    <!-- 5. Five Cs -->
+    <section id="five-cs" class="card">
+      <h2>Five Cs 面板</h2>
+      <div class="five-cs-grid">
+        <article class="ccard">
+          <h3>类别</h3>
+          <p class="ccard-value">[Uncertain — visible in screenshot only] Methods / how-to essay. Full body not visible.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>背景</h3>
+          <p class="ccard-value">[Uncertain — visible in screenshot only] SIGCOMM-CCR genre of advice-for-grad-students essays. Full body not visible.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>正确性</h3>
+          <p class="ccard-value">[Needs verification] Cannot assess correctness without the body — the screenshot alone does not show the body or the proof that the method works.</p>
+          
+          
+        </article>
+        <article class="ccard">
+          <h3>清晰度</h3>
+          <p class="ccard-value">[Uncertain — based on visible fragments only] The screenshot fragments are well-formed sentences; clarity of the full body was not assessed.</p>
+          
+          
+        </article>
+        <article class="ccard ccard-wide">
+          <h3>贡献</h3>
+          
+          <ul><li><p class="ccard-value">[Uncertain — visible in screenshot] A three-pass reading method with the three passes named (first / second / third).</p><li><p class="ccard-value">[Uncertain — visible in screenshot] A Five Cs checklist (Category, Context, Correctness, Contributions, Clarity) used in Pass 1.</p><li><p class="ccard-value">[Needs verification] Time budgets (5–10 min, ~1 h, 1–4 h) — visible in the screenshot, but the full rationale is in the body.</p></li></ul>
+          
+          <p class="ccard-empty">（暂无明确贡献条目）</p>
+          
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. Pass 1 / Pass 2 / Pass 3 Tabs -->
+    <section id="passes" class="card">
+      <h2>三遍阅读</h2>
+      <div class="timeline">
+        <span class="dot done" title="Pass 1">1</span>
+        <span class="dot done" title="Pass 2">2</span>
+        <span class="dot done" title="Pass 3">3</span>
+      </div>
+      <div class="tabs">
+        <div class="tab-buttons" role="tablist">
+          <button class="tab-btn active" data-tab="p1" role="tab">第一遍 · 鸟瞰</button>
+          <button class="tab-btn" data-tab="p2" role="tab">第二遍 · 理解</button>
+          <button class="tab-btn" data-tab="p3" role="tab">第三遍 · 重建</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="p1">
+          <h3>第一遍 — 鸟瞰视图</h3>
+          <p class="evidence-line">依赖来源标记为 [Author claim] / [Paper evidence] 等。</p>
+          <p></p>
+          <div class="callout">
+            <strong>决策：</strong> <code>CONTINUE_FULL</code>
+            <p></p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="p2">
+          <h3>第二遍 — 深入理解</h3>
+          <h4>核心观点</h4>
+          <ol><li>[Uncertain — visible in screenshot] Reading research papers is a skill that benefits from being made explicit and structured.</li><li>[Uncertain — visible in screenshot] A three-pass method (bird's-eye, deeper read, reconstruction) structures the time spent on a paper.</li><li>[Uncertain — visible in screenshot] Pass 1 uses a Five Cs checklist to triage.</li><li>[Needs verification] The remaining body content — main ideas beyond the visible fragments — is NOT visible in the screenshot.</li></ol>
+          
+          <h4>关键参考文献</h4>
+          <ul class="refs"><li><strong>(needs body to enumerate)</strong></li></ul>
+          
+        </div>
+
+        <div class="tab-panel" data-panel="p3">
+          <h3>第三遍 — 重建</h3>
+          <h4>方法重建</h4>
+          <ol><li>[unavailable — screenshot-only run] A real method reconstruction requires the full body text. Pass 3 reconstruction is NOT performed in this run.</li><li>[unavailable — screenshot-only run] See the 'Next actions' section below for how to re-render with reading_mode = full_text.</li></ol>
+          
+          <h4>批判性审视要点</h4>
+          <ul><li>[unavailable — screenshot-only run] A real critical review requires the full body.</li></ul>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Claims-Evidence Map -->
+    <section id="claims" class="card">
+      <h2>主张—证据地图</h2>
+      <div class="filters">
+        <label>筛选置信度：
+          <select id="filter-confidence">
+            <option value="">all</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </label>
+        <label>筛选证据标签：
+          <select id="filter-label">
+            <option value="">all</option>
+            <option>[Paper evidence]</option>
+            <option>[Figure/Table evidence]</option>
+            <option>[Author claim]</option>
+            <option>[Agent inference]</option>
+            <option>[Uncertain]</option>
+            <option>[Needs verification]</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="filter-needs" checked /> 只看需验证项</label>
+      </div>
+      <table class="claims-table">
+        <thead>
+          <tr><th>ID</th><th>主张</th><th>证据标签</th><th>位置</th><th>置信度</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr data-confidence="high" data-label="[Uncertain]" data-needs="false">
+            <td><code>C-001</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-uncertain">[Uncertain]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Uncertain]" data-needs="false">
+            <td><code>C-002</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-uncertain">[Uncertain]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Uncertain]" data-needs="true">
+            <td><code>C-003</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-uncertain">[Uncertain]</span></td>
+            <td></td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Uncertain]" data-needs="true">
+            <td><code>C-004</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-uncertain">[Uncertain]</span></td>
+            <td></td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="medium" data-label="[Uncertain]" data-needs="true">
+            <td><code>C-005</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-uncertain">[Uncertain]</span></td>
+            <td></td>
+            <td><span class="conf conf-medium">medium</span></td>
+          </tr>
+          
+          <tr data-confidence="high" data-label="[Needs verification]" data-needs="false">
+            <td><code>C-006</code></td>
+            <td>(missing)</td>
+            <td><span class="ev-label ev-needs-verification">[Needs verification]</span></td>
+            <td></td>
+            <td><span class="conf conf-high">high</span></td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Figures and Tables Explanation -->
+    <section id="figures" class="card">
+      <h2>图表 / 结构说明</h2>
+      
+      <div class="accordion">
+        
+        <details>
+          <summary>
+            <span class="fig-kind fig-note">note</span>
+            
+            
+          </summary>
+          <p></p>
+          
+        </details>
+        
+      </div>
+      
+      
+      <p class="muted">（原文无传统图表 / tables。）</p>
+      
+      
+    </section>
+
+    <!-- 9. Key Terms Glossary -->
+    <section id="glossary" class="card">
+      <h2>关键术语</h2>
+      <div class="chips">
+        
+        <details class="chip">
+          <summary><strong>Three-pass method</strong></summary>
+          <div class="chip-body">
+            <p>Reading procedure split into three passes (first / second / third). Visible in the screenshot section heading 'The Three-Pass Approach'.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>First pass (Pass 1)</strong></summary>
+          <div class="chip-body">
+            <p>Bird's-eye view of the paper. Visible in the screenshot as a heading + visible fragments about 5–10 min and Five Cs.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Second pass (Pass 2)</strong></summary>
+          <div class="chip-body">
+            <p>Deeper read of the body. Visible in the screenshot as a fragment (~1 hour, skipping proofs).</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Third pass (Pass 3)</strong></summary>
+          <div class="chip-body">
+            <p>Reconstruction of the paper. Visible in the screenshot as a fragment (1–4 hours, re-implement as author).</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>Five Cs</strong></summary>
+          <div class="chip-body">
+            <p>Visible in the screenshot: Category, Context, Correctness, Contributions, Clarity.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>screenshot_only</strong></summary>
+          <div class="chip-body">
+            <p>This page's reading_mode. Only OCR / VLM-visible text was used. The body was not available.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>[Uncertain]</strong></summary>
+          <div class="chip-body">
+            <p>Evidence label used in this run for claims grounded in OCR / VLM-visible fragments only.</p>
+          </div>
+        </details>
+        
+        <details class="chip">
+          <summary><strong>[Needs verification]</strong></summary>
+          <div class="chip-body">
+            <p>Evidence label used for claims that need confirmation from the body before they can be treated as solid.</p>
+          </div>
+        </details>
+        
+      </div>
+    </section>
+
+    <!-- 10. Method Reconstruction -->
+    <section id="reconstruction" class="card">
+      <h2>方法重建</h2>
+      <ol><li>[unavailable — screenshot-only run] A real method reconstruction requires the full body text. Pass 3 reconstruction is NOT performed in this run.</li><li>[unavailable — screenshot-only run] See the 'Next actions' section below for how to re-render with reading_mode = full_text.</li></ol>
+    </section>
+
+    <!-- 11. Correctness and Limitations -->
+    <section id="limitations" class="card">
+      <h2>正确性与局限</h2>
+      <ul><li>Screenshot-only run. Body, references, figures and tables are NOT visible in the screenshot.</li><li>OCR / VLM extraction quality is medium — smaller text may be mis-read.</li><li>Pass 2 / Pass 3 are explicitly NOT performed.</li><li>All claims are [Uncertain] or [Needs verification].</li><li>Affiliation text from the screenshot is treated as low confidence (OCR-dependent).</li><li>Re-render with reading_mode = full_text to upgrade.</li></ul>
+    </section>
+
+    <!-- 12. Related Work Map -->
+    <section id="related" class="card">
+      <h2>相关脉络</h2>
+      </li></ul>
+      
+      <p>原文不是学术论文，没有正式参考文献列表。</p>
+      <p>本节改为相关脉络：Bell Labs、Shannon、Los Alamos、工业研究传统、科研方法论演讲。</p>
+      
+    </section>
+
+    <!-- 13. Practical Implications -->
+    <section id="implications" class="card">
+      <h2>实践启发</h2>
+      <ul>
+        <li><strong>贡献：</strong> [Uncertain — visible in screenshot] A three-pass reading method with the three passes named (first / second / third).</li><li><strong>贡献：</strong> [Uncertain — visible in screenshot] A Five Cs checklist (Category, Context, Correctness, Contributions, Clarity) used in Pass 1.</li><li><strong>贡献：</strong> [Needs verification] Time budgets (5–10 min, ~1 h, 1–4 h) — visible in the screenshot, but the full rationale is in the body.</li>
+        <li><strong>不适用的地方：</strong> Screenshot-only run. Body, references, figures and tables are NOT visible in the screenshot.</li>
+      </ul>
+    </section>
+
+    <!-- 14. Reproduction Plan / 实践计划 -->
+    <section id="reproduction" class="card">
+      <h2>复现计划</h2>
+      
+        
+        
+        
+        
+        
+        
+      
+        <dl class="kv">
+          
+          
+          
+        </dl>
+        <h4>步骤</h4>
+        <ol></ol>
+        
+        
+      
+    </section>
+
+    <!-- 15. Open Questions -->
+    <section id="open" class="card">
+      <h2>开放问题</h2>
+      <ul><li>What is the full body of the paper, beyond the visible fragments?</li><li>What references does the paper cite?</li><li>Does the paper address modern reading aids (LLMs, semantic search)?</li><li>What limitations does the paper acknowledge in the body?</li><li>What is the exact wording of the logbook advice?</li><li>Does the paper have any figures or tables beyond the title-page affiliation line?</li></ul>
+    </section>
+
+    <!-- 16. Final Checklist -->
+    <section id="checklist" class="card">
+      <h2>最终理解检查表</h2>
+      <ol class="checklist">
+        
+        <li><label><input type="checkbox" /> Did I read the full paper or only a partial screenshot?</label></li>
+        
+        <li><label><input type="checkbox" /> Am I clear about the reading mode in the hero badge (screenshot_only)?</label></li>
+        
+        <li><label><input type="checkbox" /> Have I marked every interpretive claim with an evidence label?</label></li>
+        
+        <li><label><input type="checkbox" /> Did I avoid pretending that I read Pass 2 / Pass 3 content?</label></li>
+        
+        <li><label><input type="checkbox" /> Did I record the missing fields explicitly (full_body, references, figures, tables)?</label></li>
+        
+        <li><label><input type="checkbox" /> Have I avoided using [Paper evidence] for content beyond the visible screenshot fragments?</label></li>
+        
+        <li><label><input type="checkbox" /> Did I record the screenshot-only decision (SEEK_FULL_TEXT) and a rationale?</label></li>
+        
+        <li><label><input type="checkbox" /> Do I know what I would need to do to upgrade this page to full_text mode?</label></li>
+        
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Generated by <strong>paper-three-pass-reader v0.2.9-alpha</strong> · MIT · offline · no backend.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

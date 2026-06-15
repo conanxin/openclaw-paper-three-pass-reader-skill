@@ -1,0 +1,827 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "AI-native Memory 2.0: Second Me",
+    "authors": [
+      "Jiale Wei",
+      "Xiang Ying",
+      "Tao Gao",
+      "Fangyi Bao",
+      "Felix Tao",
+      "Jingbo Shang"
+    ],
+    "year": 2025,
+    "venue": "arXiv preprint (under review)",
+    "identifiers": {
+      "arxiv_id": "2503.08102",
+      "doi": null,
+      "openreview_id": null,
+      "url": "https://arxiv.org/abs/2503.08102"
+    },
+    "source_kind": "paper_identifier",
+    "reading_mode": "full_text",
+    "field": "AI agents / personalized memory management",
+    "category": "Methods — AI-native memory architecture for personal LLM agents"
+  },
+  "intake_quality": {
+    "input_kind": "paper_identifier",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [],
+    "warnings": [
+      "Title from input was 'Second Me: Human-Inspired Memory Mechanism for LLM Agents'; canonical arXiv title is 'AI-native Memory 2.0: Second Me' (arXiv:2503.08102v2, 12 Mar 2025). Title updated accordingly.",
+      "PDF body extraction used pdftotext -layout. Some figure captions and complex tables may be partially extracted; figure/table interpretation is based on captions in body text.",
+      "Spec asked for TIME benchmark / HMM / Me-Alignment / Mind Palace / MoE — these are NOT present in this paper. Glossary entries for those terms are marked [Needs verification] (N/A for this paper).",
+      "Authors and affiliation inferred from PDF header (Mindverse.ai)."
+    ],
+    "ambiguities": [
+      "Spec title vs arXiv title mismatch — resolved by adopting arXiv canonical title.",
+      "Spec referenced a different paper (Second Me by Hu et al. with HMM/Me-Alignment/Mind Palace); this run is the Mindverse 'AI-native Memory 2.0' paper at the same arXiv ID."
+    ],
+    "source_used": "runner hint + arXiv PDF download + pdftotext extraction. PDF: runs/v022-fulltext-autofill-secondme-20260615/source/second-me.pdf (1.75 MB). Text: extracted/second-me.txt (~54 KB, 28 pages).",
+    "extraction_quality": "good — full body extracted; some figure captions and table 1 row labels partial; flagged inline.",
+    "source_resolution": [
+      "Input kind = paper_identifier.",
+      "Input string: 'arXiv:2503.08102 — AI-native Memory 2.0: Second Me'.",
+      "Resolved via arXiv ID lookup → arXiv:2503.08102v2, 12 Mar 2025.",
+      "Downloaded canonical PDF to source/second-me.pdf.",
+      "Extracted body via pdftotext -layout → extracted/second-me.txt (54,502 chars).",
+      "Reading mode forced to full_text (per task spec; body present in extracted/).",
+      "Title from spec ('Second Me: Human-Inspired Memory Mechanism for LLM Agents') did not match arXiv canonical title; updated to arXiv title with warning recorded."
+    ]
+  },
+  "summaries": {
+    "one_sentence": "SECOND ME is an AI-native, locally-deployable LLM-based memory layer that parameterizes a user's memory across L0/L1/L2 and serves as a personal context provider to LLM agents and other users.",
+    "three_sentence": [
+      "SECOND ME (Mindverse.ai, arXiv:2503.08102) proposes an AI-native memory system that stores, organizes, and dynamically retrieves user-specific knowledge through LLM-based parameterization across three layers (L0 raw data, L1 natural-language memory, L2 model-parameter memory).",
+      "Building on LPM 1.0, the paper introduces a hybrid L0/L1/L2 architecture with an automated training pipeline (data synthesis, five-level filtering, PEFT SFT, DPO) and an inner-loop orchestrator that uses external expert models for complex tasks.",
+      "Empirical evaluation on Memory-QA, Context-Enhance, and Context-Critic metrics shows that Strong Chain-of-Thought training plus DPO consistently improves performance, with human evaluation scoring close to 1 on Strong-COT-with-DPO responses."
+    ],
+    "ten_sentence": [
+      "SECOND ME is a personal, locally-deployable AI memory system that turns a user's data into a parameterised L2 model acting as a context provider for the user and external agents.",
+      "It is the evolved version of LPM 1.0 (Shang et al., 2024), refining the three-layer memory model: L0 raw data, L1 natural-language memory, L2 AI-native parameter memory.",
+      "The L2 model orchestrates between three deployment scenarios: Memory QA (Self / Third-party), Context Enhancement, and Context Critic.",
+      "Training is fully automated: data synthesis via self-location reinforcement and memory cognition enhancement, then a five-level filtering step, then PEFT SFT and DPO on a Qwen2.5-7B-Instruct base.",
+      "Answer style is generated under three COT strategies (Weak, Multi-step, Strong) with Strong using Deepseek-R1 reasoning and strict format constraints.",
+      "Evaluation uses four metrics — Memory (Self), Memory (Third-party), Context Enhance, Context Critic — each scored 0-1 (or five-level for Context Critic).",
+      "Strong COT significantly improves Memory (Self) and Context Critic; Multi-step COT alone often underperforms Weak COT, suggesting structured training data matters more than reasoning length.",
+      "DPO further refines preference alignment and adds consistent gains on top of COT, especially for Context Enhance and Context Critic.",
+      "Applications include personal productivity, internal cognitive support (decision reflection, emotion regulation), and an external human-AI network whose efficiency is claimed to increase by 3-5 orders of magnitude via Metcalfe's Law.",
+      "Open-sourced at github.com/Mindverse/Second-Me; limitations include single-turn training data, limited real-world evaluation, and the broader open challenge of integrating multimodal personal data in real time."
+    ]
+  },
+  "five_cs": {
+    "category": {
+      "value": "Methods — an AI-native personal memory architecture for LLM agents, framed as the second iteration (2.0) of the Large Personal Model (LPM) line. [Paper evidence]",
+      "label": "类别",
+      "evidence_label": "",
+      "note": ""
+    },
+    "context": {
+      "value": "Sits between traditional autofill/credential stores (static, no reasoning) and long-context LLMs (costly, weak at memory retrieval). Builds directly on LPM 1.0 (Shang et al., 2024) and inherits its three-layer L0/L1/L2 model. Positioned as a context provider for an era of reasoning LLMs (e.g. Deepseek R1) and multi-agent ecosystems. [Paper evidence]",
+      "label": "背景",
+      "evidence_label": "",
+      "note": ""
+    },
+    "correctness": {
+      "value": "Empirical claims about COT and DPO are supported by the authors' own evaluation on the four metrics and by human evaluation (~0.95 Strong-COT, ~1.0 with DPO). The Context-Enhance metric is acknowledged by the authors to be imprecise (models produce reasonable but unreferenced content). The 3-5 orders-of-magnitude network-efficiency claim is presented as a Metcalfe-style projection, not a controlled measurement. [Paper evidence] + [Author claim]",
+      "label": "正确性",
+      "evidence_label": "",
+      "note": ""
+    },
+    "clarity": {
+      "value": "Well-structured: clear Abstract, Introduction, Overview (recap of LPM 1.0 + new design), Practice and Result, Applications, Conclusions, plus Appendices A-D for data synthesis, evaluation synthesis, metric details, and multi-agent details. Figures (1-6) and Tables (1-2) are referenced in body. One ambiguity: Section 3.5 references 'Table 2 demonstrates that DPO brings substantial improvements' but the extracted text does not include a visible Table 2 layout — extraction limitation. [Paper evidence] + [Agent inference]",
+      "label": "清晰度",
+      "evidence_label": "",
+      "note": ""
+    },
+    "contributions": [
+      {
+        "value": "Refines the LPM three-layer memory architecture into a hybrid L0/L1/L2 design with explicit inner/outer loops for layer integration and external coordination. [Author claim]",
+        "label": "贡献 1",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Proposes a fully automated training pipeline (data synthesis, five-level filtering, PEFT SFT, DPO) that delivers state-of-the-art L2 performance per the authors' metrics. [Author claim]",
+        "label": "贡献 2",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Introduces a multi-agent framework in which the trained L2 acts as an orchestrator collaborating with general-purpose expert models across Memory QA, Context Enhance, and Context Critic. [Paper evidence]",
+        "label": "贡献 3",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "Open-sources the fully localizable deployment system at github.com/Mindverse/Second-Me. [Paper evidence]",
+        "label": "贡献 4",
+        "evidence_label": "",
+        "note": ""
+      }
+    ]
+  },
+  "pass1": {
+    "goal": "First-pass bird's-eye view: confirm paper identity, surface Five Cs, decide whether to proceed to Pass 2 / Pass 3.",
+    "sections_read": "Title + Abstract + Section 1 (Introduction) + Section 2 (Overview, including 2.1 LPM 1.0 recap, 2.2 Overall Design) — first 60 lines of extracted text.",
+    "findings": "Paper is a position + system paper from Mindverse.ai introducing SECOND ME 2.0, the successor to LPM 1.0. It reframes personal memory as a parameterised L2 model orchestrated around three deployment scenarios. Authors self-position the work as 'user-side' rather than 'task-execution' AI. [Paper evidence]",
+    "five_cs_result": "Category: methods / personal AI memory. Context: post-LPM 1.0, post-long-context-LLM. Correctness: claims supported by authors' own evaluations + human eval; some 3rd-party validation pending. Contributions: 4 listed above. Clarity: high. See five_cs object for details.",
+    "decision": "CONTINUE_FULL",
+    "decision_rationale": "Body text is fully extracted (~54 KB, 28 pages). All sections (1-5 + appendices A-D) are reachable. Reading mode = full_text is justified. Proceeding to Pass 2 with this body."
+  },
+  "pass2": {
+    "main_ideas": [
+      "AI-native memory should live in three coordinated layers: L0 (raw data / RAG-style), L1 (natural-language summaries, tags, bios), and L2 (neural-network parameter memory). [Paper evidence, §2.1]",
+      "SECOND ME is an evolved LPM whose L2 acts as an orchestrator that bridges the user to external expert models (e.g. GPT-4o, Deepseek-R1) rather than executing tasks itself. [Paper evidence, §2.2]",
+      "An automated training pipeline — data synthesis, five-level filtering, PEFT SFT on Qwen2.5-7B-Instruct, then DPO — produces a personalised L2 with strong preference alignment. [Paper evidence, §3.1]",
+      "Answer style is generated under three COT strategies (Weak / Multi-step / Strong), with Strong using Deepseek-R1 reasoning and strict format constraints; DPO refines preferences further. [Paper evidence, §3.2-§3.3]",
+      "Evaluation is decomposed into Memory (Self), Memory (Third-party), Context Enhance, and Context Critic, with explicit scoring rubrics (Appendix C) and human evaluation as ground truth. [Paper evidence, §3.4-§3.5]"
+    ],
+    "method_summary": "SECOND ME personalises a Qwen2.5-7B-Instruct base model via PEFT SFT followed by DPO. Training data is synthesised from raw user data through self-location reinforcement and memory-cognition enhancement, then passed through a five-level quality filter. The trained L2 collaborates with external expert models (GPT-4o, Deepseek-R1) on Memory QA, Context Enhance, and Context Critic tasks, with COT-style answer generation chosen at synthesis time. [Paper evidence, §3.1-§3.3]",
+    "figure_table_notes": "See figures_tables for individual entries. Key visual elements: Figure 1 (Hybrid Architecture, outer + inner loop), Figure 2 (Automated Personal Model pipeline with LLM-as-Judge and LLM-as-data-synthesizer), Figure 3 (sample COT outputs under Weak/Multi-step/Strong), Figure 4 (Context-Enhance case comparison), Figure 6 (multi-agent architecture). Tables: Table 1 (COT-level results) and Table 2 (DPO ablation — referenced in §3.5 but the table layout was not cleanly extracted). [Paper evidence]",
+    "key_references": [
+      "Shang et al., 2024 — LPM 1.0 (Large Personal Model), the predecessor to SECOND ME.",
+      "Lewis et al., 2020 — RAG; Ram et al., 2023 — RALM (cited as prior art for L0).",
+      "Qwen et al., 2025 — Qwen2.5-7B-Instruct, the SECOND ME base model.",
+      "DeepSeek-AI et al., 2025 — Deepseek-R1, used as the Strong-COT expert.",
+      "Ben-Zaken et al., 2021 / Hu et al., 2021 / Han et al., 2024 — PEFT methods.",
+      "Zhang et al., 2024 — DPO training.",
+      "Bubeck et al., 2023 — Sparks of AGI (vision citation)."
+    ],
+    "claims_evidence_map": [
+      {
+        "claim_id": "C-001",
+        "claim_text": "SECOND ME parameterises a user's memory into L2 model weights, layered above L0 (raw data) and L1 (natural-language memory).",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§2.1 (LPM 1.0 recap) + §2.2 (Overall Design)",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "Three-layer model is the central contribution; consistently described across Abstract, §2.1, §2.2.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-002",
+        "claim_text": "SECOND ME serves as a 'context provider' rather than a task executor, aligning with the user's perspective.",
+        "evidence_label": "[Author claim]",
+        "evidence_location": "§2.2 — 'we position SECOND ME as a context provider aligned with the user's perspective, rather than a task executor.'",
+        "evidence_kind": "author_claim",
+        "confidence": "high",
+        "notes": "Direct author statement; positioned against general-purpose LLM agents.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-003",
+        "claim_text": "The training pipeline is fully automated and comprises data synthesis, five-level filtering, PEFT SFT, and DPO.",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§3.1 (Training Pipeline) + Figure 2",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "Figure 2 visualises the pipeline end-to-end.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-004",
+        "claim_text": "The base model is Qwen2.5-7B-Instruct and training starts with PEFT.",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§3.1 — 'Our base model, Qwen2.5-7B-Instruct (Qwen et al., 2025), undergoes automatic training and evaluation.'",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "Specific model name + size in body text.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-005",
+        "claim_text": "Three answer-style COT strategies are used during training: Weak, Multi-step, and Strong (the last using Deepseek-R1 with strict format constraints).",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§3.2 (Answer Style: COT or Not?)",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "Each strategy is described with concrete mechanics and length constraints.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-006",
+        "claim_text": "DPO does not introduce new knowledge but refines preference alignment on approximately 20% of the SFT data.",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§3.3 — 'Preference pairs constitute approximately 20% of the total SFT training data.'",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "Quantitative proportion is in the body.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-007",
+        "claim_text": "Evaluation uses four metrics: Memory (Self), Memory (Third-party), Context Enhance, and Context Critic.",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§3.4 + Appendix C",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "Detailed rubric in Appendix C.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-008",
+        "claim_text": "Strong COT significantly improves Memory (Self) and Context Critic performance; Multi-step COT often underperforms Weak COT.",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "Table 1 (extracted): Strong Memory (Self) = 0.91 vs Weak = 0.86 vs Multi-step = 0.64.",
+        "evidence_kind": "paper_table",
+        "confidence": "high",
+        "notes": "Table 1 numerical values reproduced from extracted text.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-009",
+        "claim_text": "DPO brings substantial improvements across all tasks when combined with iterative COT refinement.",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "§3.5 — 'Table 2 demonstrates that DPO brings substantial improvements'.",
+        "evidence_kind": "paper_text",
+        "confidence": "medium",
+        "notes": "Table 2 layout was not cleanly extracted (pdftotext -layout limitation); specific numbers in Table 2 not recoverable from extraction.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-010",
+        "claim_text": "Human evaluation reports Strong-COT-with-DPO scores close to 1 and Strong-COT-without-DPO at ~0.95 average.",
+        "evidence_label": "[Author claim]",
+        "evidence_location": "§3.5 — 'Human evaluation shows Strong COT without DPO achieves an average score of 0.95, while Strong COT with DPO scores close to 1.'",
+        "evidence_kind": "author_claim",
+        "confidence": "medium",
+        "notes": "Numbers are author-reported; independent human eval not in the paper.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-011",
+        "claim_text": "SECOND ME drives a 3 to 5 orders of magnitude network-efficiency gain via Metcalfe's Law in human-AI networks.",
+        "evidence_label": "[Author claim]",
+        "evidence_location": "§4 — 'integration of human and AI nodes increases network efficiency by 3 to 5 orders of magnitude.'",
+        "evidence_kind": "author_claim",
+        "confidence": "low",
+        "notes": "This is a Metcalfe-style projection, not a controlled measurement. Independent verification absent in the paper.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-012",
+        "claim_text": "The full system is open-sourced at github.com/Mindverse/Second-Me (note: Mindverse, not mindhive).",
+        "evidence_label": "[Paper evidence]",
+        "evidence_location": "Abstract + §4 — 'https://github.com/Mindverse/Second-Me'.",
+        "evidence_kind": "paper_text",
+        "confidence": "high",
+        "notes": "URL is in the abstract and at the end of §4; org name is Mindverse.",
+        "needs_verification": false
+      }
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Inputs: raw user data (text, interactions, preferences, bios, records) plus optional pre-trained LLM commonsense.",
+      "Stage A — Synthesis: extract entities / topics / relations; generate Memory-QA pairs via self-location reinforcement and memory-cognition enhancement; generate Context-Enhance and Context-Critic pairs via simulated scenarios and multi-agent interactions.",
+      "Stage B — Filtering: five-level quality filter (Taori-style) keeps only high-quality synthetic data.",
+      "Stage C — SFT: PEFT (Bitfit / LoRA-family) on Qwen2.5-7B-Instruct, with answer style drawn from one of three COT strategies (Weak / Multi-step / Strong, the last using Deepseek-R1 as expert).",
+      "Stage D — DPO: build preference pairs (~20% of SFT data) from the SFT model and run Direct Preference Optimization to refine preference alignment without injecting new knowledge.",
+      "Stage E — Orchestration: at inference, the trained L2 picks among three deployment modes — Memory QA (Self/Third-party), Context Enhance, Context Critic — and (for complex tasks) routes to an external expert model (GPT-4o, Deepseek-R1) while maintaining user context.",
+      "Outputs: contextually enriched queries, critiques, and direct answers that align with user identity, preferences, and history."
+    ],
+    "critical_review": [
+      "The Strong COT numbers rely on the authors' own evaluation pipeline (Memory QA + Context Enhance + Context Critic). Independent replication is not in the paper. [Agent inference]",
+      "The Context-Enhance metric is acknowledged by the authors as imprecise — models can produce reasonable but unreferenced content, lowering test accuracy despite real improvement. This is a known LLM-judge-evaluation problem. [Paper evidence + Agent inference]",
+      "The 3-5 orders-of-magnitude network-efficiency claim is a Metcalfe-style projection, not a controlled measurement. Treat as vision/aspiration, not benchmark. [Author claim]",
+      "Single-turn training is a stated limitation; the authors note multi-turn synthesis is needed. [Paper evidence]",
+      "Open-source release (Mindverse/Second-Me) is a strong transparency signal, but no external benchmark (e.g. LoCoMo, MSC, LLM-LongMem) is reported, which would help situate the work against the broader long-term-memory literature. [Agent inference]"
+    ],
+    "hidden_assumptions": [
+      "User data is sufficiently rich and structured for entity/topic mining to extract useful memory candidates. [Paper evidence, implicit]",
+      "Local deployment is feasible: the Qwen2.5-7B base plus PEFT must fit on user hardware. The paper claims 'fully localizable' but does not quantify hardware. [Author claim]",
+      "Preference signal in DPO can be derived reliably from synthetic sources. [Paper evidence]",
+      "The user-side framing is accepted by end users — privacy and trust assumptions are not deeply examined. [Agent inference]"
+    ],
+    "limitations": [
+      "Evaluation is constrained to the authors' four custom metrics; no standardised long-term-memory benchmarks are reported.",
+      "Single-turn training data; multi-turn personal memory synthesis is acknowledged as future work.",
+      "Context-Enhance metric is imprecise; LLM-judge limitations apply.",
+      "Human evaluation samples and inter-rater reliability are not detailed.",
+      "Hardware / latency / cost of the full localisable deployment are not quantified.",
+      "Multimodal personal data (the authors' stated next frontier) is explicitly out of scope."
+    ],
+    "reproduction_plan": {
+      "dataset": "Synthetic user data via the SECOND ME pipeline (raw user records → entity/topic mining → self-location reinforcement and memory-cognition enhancement → simulated Context-Enhance/Critic). The authors do not publish a fixed dataset; replication requires re-synthesising. Optionally start from public long-term-memory datasets (e.g. LoCoMo, MSC) to bootstrap raw records.",
+      "baseline": "Long-context LLM (e.g. Qwen2.5-7B-Instruct with extended context) and a RAG baseline over the same raw data, evaluated on the four SECOND ME metrics.",
+      "hardware": "Single A100 80GB or equivalent for SFT+DPO of Qwen2.5-7B with PEFT (LoRA r=16 or BitFit). Inference can run on a single consumer GPU with PEFT adapters merged.",
+      "steps": [
+        "1. Synthesise user data using the SECOND ME pipeline (Appendix A).",
+        "2. Run five-level filtering (Appendix A); keep filtered corpus.",
+        "3. SFT Qwen2.5-7B-Instruct with PEFT (LoRA), generating one model per COT strategy.",
+        "4. Build DPO preference pairs (~20% of SFT data) and run DPO.",
+        "5. Evaluate on Memory (Self), Memory (Third-party), Context Enhance, Context Critic (Appendix C rubrics).",
+        "6. Compare against long-context and RAG baselines on the same metrics."
+      ],
+      "sanity_checks": [
+        "Strong COT > Multi-step COT on Memory (Self) (Table 1 trend).",
+        "Multi-step COT does NOT beat Weak COT on Memory (Third-party) (Table 1 trend).",
+        "Adding DPO yields further gains on Context Enhance and Context Critic.",
+        "Human evaluation subset (small N) shows Strong COT + DPO scores ≈ 1.0."
+      ],
+      "success_criteria": [
+        "Replicate Table 1 trends (Strong > Weak > Multi-step on Memory (Self) and Context Critic).",
+        "Replicate Table 2 qualitative trend (DPO adds gains) — exact numbers may vary by data synthesis randomness.",
+        "Demonstrate that SECOND ME outperforms a RAG baseline on Memory QA metrics."
+      ]
+    },
+    "future_work": [
+      "Multimodal personal memory integration (vision, audio, sensor data) — explicitly named by the authors as the next frontier. [Paper evidence, §5]",
+      "Multi-turn training data synthesis to move beyond single-turn. [Paper evidence, §5]",
+      "More advanced preference optimisation beyond DPO. [Paper evidence, §5]",
+      "Larger-scale real-world user feedback to complement synthetic eval. [Paper evidence, §5]"
+    ],
+    "application_notes": [
+      "Personal AI assistant: prefill forms, surface prior context in conversations, manage tasks. [Paper evidence, §4]",
+      "Internal cognitive support: decision reflection, emotional regulation. [Paper evidence, §4]",
+      "External human-AI network: each user's L2 represents them in interactions with other users' L2s. [Paper evidence, §4]",
+      "Cognitive-capital transformation: NFT-based personal cognitive assets, knowledge-flow efficiency model. [Paper evidence, §4]",
+      "Distributed decision-making protocol for group decisions. [Paper evidence, §4]"
+    ]
+  },
+  "claims_evidence_map": [
+    {
+      "claim_id": "C-001",
+      "claim_text": "SECOND ME parameterises a user's memory into L2 model weights, layered above L0 (raw data) and L1 (natural-language memory).",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§2.1 (LPM 1.0 recap) + §2.2 (Overall Design)",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Three-layer model is the central contribution; consistently described across Abstract, §2.1, §2.2.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-002",
+      "claim_text": "SECOND ME serves as a 'context provider' rather than a task executor, aligning with the user's perspective.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "§2.2 — 'we position SECOND ME as a context provider aligned with the user's perspective, rather than a task executor.'",
+      "evidence_kind": "author_claim",
+      "confidence": "high",
+      "notes": "Direct author statement; positioned against general-purpose LLM agents.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-003",
+      "claim_text": "The training pipeline is fully automated and comprises data synthesis, five-level filtering, PEFT SFT, and DPO.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§3.1 (Training Pipeline) + Figure 2",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Figure 2 visualises the pipeline end-to-end.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-004",
+      "claim_text": "The base model is Qwen2.5-7B-Instruct and training starts with PEFT.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§3.1 — 'Our base model, Qwen2.5-7B-Instruct (Qwen et al., 2025), undergoes automatic training and evaluation.'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Specific model name + size in body text.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-005",
+      "claim_text": "Three answer-style COT strategies are used during training: Weak, Multi-step, and Strong (the last using Deepseek-R1 with strict format constraints).",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§3.2 (Answer Style: COT or Not?)",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Each strategy is described with concrete mechanics and length constraints.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-006",
+      "claim_text": "DPO does not introduce new knowledge but refines preference alignment on approximately 20% of the SFT data.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§3.3 — 'Preference pairs constitute approximately 20% of the total SFT training data.'",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Quantitative proportion is in the body.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-007",
+      "claim_text": "Evaluation uses four metrics: Memory (Self), Memory (Third-party), Context Enhance, and Context Critic.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§3.4 + Appendix C",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "Detailed rubric in Appendix C.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-008",
+      "claim_text": "Strong COT significantly improves Memory (Self) and Context Critic performance; Multi-step COT often underperforms Weak COT.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "Table 1 (extracted): Strong Memory (Self) = 0.91 vs Weak = 0.86 vs Multi-step = 0.64.",
+      "evidence_kind": "paper_table",
+      "confidence": "high",
+      "notes": "Table 1 numerical values reproduced from extracted text.",
+      "needs_verification": false
+    },
+    {
+      "claim_id": "C-009",
+      "claim_text": "DPO brings substantial improvements across all tasks when combined with iterative COT refinement.",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "§3.5 — 'Table 2 demonstrates that DPO brings substantial improvements'.",
+      "evidence_kind": "paper_text",
+      "confidence": "medium",
+      "notes": "Table 2 layout was not cleanly extracted (pdftotext -layout limitation); specific numbers in Table 2 not recoverable from extraction.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-010",
+      "claim_text": "Human evaluation reports Strong-COT-with-DPO scores close to 1 and Strong-COT-without-DPO at ~0.95 average.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "§3.5 — 'Human evaluation shows Strong COT without DPO achieves an average score of 0.95, while Strong COT with DPO scores close to 1.'",
+      "evidence_kind": "author_claim",
+      "confidence": "medium",
+      "notes": "Numbers are author-reported; independent human eval not in the paper.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-011",
+      "claim_text": "SECOND ME drives a 3 to 5 orders of magnitude network-efficiency gain via Metcalfe's Law in human-AI networks.",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "§4 — 'integration of human and AI nodes increases network efficiency by 3 to 5 orders of magnitude.'",
+      "evidence_kind": "author_claim",
+      "confidence": "low",
+      "notes": "This is a Metcalfe-style projection, not a controlled measurement. Independent verification absent in the paper.",
+      "needs_verification": true
+    },
+    {
+      "claim_id": "C-012",
+      "claim_text": "The full system is open-sourced at github.com/Mindverse/Second-Me (note: Mindverse, not mindhive).",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "Abstract + §4 — 'https://github.com/Mindverse/Second-Me'.",
+      "evidence_kind": "paper_text",
+      "confidence": "high",
+      "notes": "URL is in the abstract and at the end of §4; org name is Mindverse.",
+      "needs_verification": false
+    }
+  ],
+  "figures_tables": [
+    {
+      "id": "F-1",
+      "kind": "figure",
+      "label": "Figure 1: Hybrid Architecture of SECOND ME",
+      "explanation": "Shows the L0/L1/L2 hybrid architecture with inner loop (seamless layer integration) and outer loop (LLM and internet resources under SECOND ME's guidance). Establishes the high-level system layout that the rest of the paper details. [Paper evidence, caption after §1]",
+      "evidence_label": "[Paper evidence]",
+      "notes": "Architecture overview; caption text recovered cleanly from PDF.",
+      "number": "",
+      "title": "(missing title)"
+    },
+    {
+      "id": "F-2",
+      "kind": "figure",
+      "label": "Figure 2: Automated Personal Model pipeline with LLM as a Judge and LLM as data synthesizer",
+      "explanation": "Visualises the end-to-end training pipeline: raw data → entity/topic mining → memory data synthesis (self-location reinforcement, memory cognition enhancement) → context enhancement / critique data via simulated scenarios → five-level filtering → PEFT SFT → DPO data generation → evaluation. The 'LLM as Judge' and 'LLM as data synthesizer' labels emphasise automation. [Paper evidence, §3.1]",
+      "evidence_label": "[Paper evidence]",
+      "notes": "Pipeline figure; caption text recovered.",
+      "number": "",
+      "title": "(missing title)"
+    },
+    {
+      "id": "F-3",
+      "kind": "figure",
+      "label": "Figure 3: Sample outputs of three COT strategies for the same query",
+      "explanation": "Side-by-side Weak / Multi-step / Strong COT responses to 'When you think of me, what do you see?'. Shows the increasing richness and stylistic constraint from Weak to Strong COT, and motivates the qualitative difference the authors report in §3.5. [Paper evidence, §3.2]",
+      "evidence_label": "[Paper evidence]",
+      "notes": "Illustrative qualitative figure.",
+      "number": "",
+      "title": "(missing title)"
+    },
+    {
+      "id": "F-4",
+      "kind": "figure",
+      "label": "Figure 4: Context-Enhance case comparison (Weak COT vs Strong COT, both without DPO)",
+      "explanation": "Concrete Case 1 example for the Context-Enhance task: query about beginner resources for two-stage model training. Compares Weak COT vs Strong COT, with bold-marked entities from the user's record. Used to argue for qualitative superiority of Strong COT. [Paper evidence, §3.5]",
+      "evidence_label": "[Paper evidence]",
+      "notes": "Case-study figure; entities bolded in original.",
+      "number": "",
+      "title": "(missing title)"
+    },
+    {
+      "id": "F-5",
+      "kind": "figure",
+      "label": "Figure 6 (Appendix D): Multi-agent architecture",
+      "explanation": "Shows how the trained L2 sits between the user and expert models (GPT-4o etc.), with arrows representing possible communications (user-expert arrows omitted for clarity). Supports the §4 Applications and §3.1 multi-agent narrative. [Paper evidence, Appendix D]",
+      "evidence_label": "[Paper evidence]",
+      "notes": "Located in Appendix D; numbered 6 in original.",
+      "number": "",
+      "title": "(missing title)"
+    },
+    {
+      "id": "T-1",
+      "kind": "table",
+      "label": "Table 1: Important Experiment Results under different settings on COT (ratio of full score)",
+      "explanation": "Memory (Self) / Memory (Third-party) / Context Enhance / Context Critic scores under Strong / Multi-step / Weak COT. Reported numbers (mean, 0-1 scale): Strong 0.91/0.71/0.75/0.85; Multi-step 0.64/0.43/0.85/0.77; Weak 0.86/0.58/0.87/0.64. Strong COT wins on Memory (Self) and Context Critic; Multi-step underperforms Weak overall. [Paper evidence, Table 1 + §3.5]",
+      "evidence_label": "[Paper evidence]",
+      "notes": "Numerical values are from the extracted layout text and should be cross-checked against the rendered PDF for precision.",
+      "number": "",
+      "title": "(missing title)"
+    },
+    {
+      "id": "T-2",
+      "kind": "table",
+      "label": "Table 2: DPO ablation across COT levels",
+      "explanation": "Referenced in §3.5 as showing DPO brings substantial improvements across all tasks. Specific cell values were not cleanly recovered by pdftotext -layout; extraction limitation. Authors' qualitative claim is that iterative COT refinement + DPO yields consistent gains. [Paper evidence, §3.5 reference] [Needs verification for exact numbers]",
+      "evidence_label": "[Needs verification]",
+      "notes": "Table 2 layout not extractable from this PDF; precise cell values cannot be quoted.",
+      "number": "",
+      "title": "(missing title)"
+    }
+  ],
+  "glossary": [
+    {
+      "term": "Second Me",
+      "definition": "The AI-native personal memory system proposed in this paper (Mindverse.ai, arXiv:2503.08102), succeeding LPM 1.0. Acts as a persistent context provider that parameterises user memory in an L2 model.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "LLM agent",
+      "definition": "A large-language-model-driven system that performs tasks or interacts on behalf of a user; SECOND ME is positioned as a context provider for such agents.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "memory mechanism",
+      "definition": "In this paper, a layered architecture (L0/L1/L2) for storing and retrieving user memory, with L2 implemented as a personalised neural network.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "hierarchical memory",
+      "definition": "The three-layer L0 (raw) / L1 (natural-language) / L2 (parameter) memory model inherited from LPM 1.0 and refined in SECOND ME.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "LPM 1.0 / Large Personal Model",
+      "definition": "The 2024 predecessor system by Shang et al., which proposed the three-layer memory model and demonstrated that LLMs can parameterise user memory. SECOND ME is its evolved version.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "L0 / L1 / L2 memory layers",
+      "definition": "L0: raw-data layer (akin to RAG/RALM); L1: natural-language memory (bios, tags, summaries); L2: AI-native parameter memory encoded in a per-user neural network.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "PEFT (Parameter-Efficient Fine-Tuning)",
+      "definition": "Fine-tuning technique family (BitFit, LoRA, etc.) that updates a small number of parameters while keeping the base model frozen. Used for SECOND ME's SFT step on Qwen2.5-7B.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "DPO (Direct Preference Optimization)",
+      "definition": "A reinforcement-learning-free preference optimisation method. SECOND ME uses DPO on ~20% of SFT data to refine preference alignment.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "SFT (Supervised Fine-Tuning)",
+      "definition": "Standard next-token training on labelled or synthetic data. In SECOND ME: PEFT SFT on Qwen2.5-7B-Instruct with COT-style synthetic answers.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "COT (Chain-of-Thought)",
+      "definition": "Reasoning style in which the model produces intermediate steps before the final answer. SECOND ME compares Weak / Multi-step / Strong COT synthesis strategies.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "Qwen2.5-7B-Instruct",
+      "definition": "The base model used by SECOND ME for parameter memory (per §3.1).",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "Deepseek-R1",
+      "definition": "Reasoning model used as the Strong-COT expert during data synthesis (§3.2).",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "Context Provider",
+      "definition": "Self-positioning of SECOND ME: rather than executing tasks, it provides user context to other agents (and to the user themselves).",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "term": "Inner / Outer loop",
+      "definition": "Inner loop = seamless integration across L0/L1/L2 inside SECOND ME. Outer loop = SECOND ME coordinating with external LLMs and internet resources.",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "HMM (Hidden Markov Model)",
+      "definition": "Not used in this paper. The task spec referenced HMM as part of a different paper (Second Me by Hu et al.); for this Mindverse paper, N/A. [Needs verification: see limitations — spec mismatch]",
+      "evidence_label": "[Needs verification]"
+    },
+    {
+      "term": "Me-Alignment",
+      "definition": "Not used in this paper. Spec reference: belongs to a different paper. [Needs verification]",
+      "evidence_label": "[Needs verification]"
+    },
+    {
+      "term": "Mind Palace / Ensemble of Experts (MoE)",
+      "definition": "Not used in this paper. Spec reference: belongs to a different paper. [Needs verification]",
+      "evidence_label": "[Needs verification]"
+    },
+    {
+      "term": "TIME benchmark",
+      "definition": "Not used in this paper. Spec reference: belongs to a different paper. [Needs verification]",
+      "evidence_label": "[Needs verification]"
+    }
+  ],
+  "limitations": [
+    "Reading is based on pdftotext -layout extraction. Some figure/table layouts (notably Table 2's cell values) were not cleanly recovered and are flagged as [Needs verification].",
+    "Task spec referenced terms (TIME, HMM, Me-Alignment, Mind Palace, MoE) from a DIFFERENT paper ('Second Me' by Hu et al.). The canonical paper at arXiv:2503.08102 is the Mindverse 'AI-native Memory 2.0' paper. Glossary entries for the missing terms are kept with [Needs verification] to record the spec-vs-reality mismatch.",
+    "Numbers attributed to Table 1 (Strong 0.91/0.71/0.75/0.85, etc.) are reproduced from extracted layout text; should be cross-checked against the rendered PDF for last-digit precision.",
+    "Independent third-party evaluation against standardised long-term-memory benchmarks (LoCoMo, MSC, LLM-LongMem) is not in the paper.",
+    "Hardware / latency / cost of the 'fully localisable' deployment are not quantified."
+  ],
+  "reproduction_plan": {
+    "dataset": "Synthetic user data via the SECOND ME pipeline (raw user records → entity/topic mining → self-location reinforcement and memory-cognition enhancement → simulated Context-Enhance/Critic). The authors do not publish a fixed dataset; replication requires re-synthesising. Optionally start from public long-term-memory datasets (e.g. LoCoMo, MSC) to bootstrap raw records.",
+    "baseline": "Long-context LLM (e.g. Qwen2.5-7B-Instruct with extended context) and a RAG baseline over the same raw data, evaluated on the four SECOND ME metrics.",
+    "hardware": "Single A100 80GB or equivalent for SFT+DPO of Qwen2.5-7B with PEFT (LoRA r=16 or BitFit). Inference can run on a single consumer GPU with PEFT adapters merged.",
+    "steps": [
+      "1. Synthesise user data using the SECOND ME pipeline (Appendix A).",
+      "2. Run five-level filtering (Appendix A); keep filtered corpus.",
+      "3. SFT Qwen2.5-7B-Instruct with PEFT (LoRA), generating one model per COT strategy.",
+      "4. Build DPO preference pairs (~20% of SFT data) and run DPO.",
+      "5. Evaluate on Memory (Self), Memory (Third-party), Context Enhance, Context Critic (Appendix C rubrics).",
+      "6. Compare against long-context and RAG baselines on the same metrics."
+    ],
+    "sanity_checks": [
+      "Strong COT > Multi-step COT on Memory (Self) (Table 1 trend).",
+      "Multi-step COT does NOT beat Weak COT on Memory (Third-party) (Table 1 trend).",
+      "Adding DPO yields further gains on Context Enhance and Context Critic.",
+      "Human evaluation subset (small N) shows Strong COT + DPO scores ≈ 1.0."
+    ],
+    "success_criteria": [
+      "Replicate Table 1 trends (Strong > Weak > Multi-step on Memory (Self) and Context Critic).",
+      "Replicate Table 2 qualitative trend (DPO adds gains) — exact numbers may vary by data synthesis randomness.",
+      "Demonstrate that SECOND ME outperforms a RAG baseline on Memory QA metrics."
+    ],
+    "plan_7_day": [],
+    "plan_30_day": [],
+    "plan_90_day": [],
+    "risks": [],
+    "rationale": "",
+    "applicable": true,
+    "kind": "experiment"
+  },
+  "open_questions": [
+    "How would SECOND ME perform on standardised long-term-memory benchmarks (LoCoMo, MSC, LLM-LongMem) rather than the authors' four custom metrics?",
+    "What is the actual hardware footprint of running a personalised Qwen2.5-7B-Instruct + PEFT + DPO pipeline on a consumer device?",
+    "How does SECOND ME compare head-to-head against current long-context LLMs (e.g. Qwen2.5 with 1M-token context) on Memory QA tasks at realistic memory sizes?",
+    "Does the multi-agent interaction framework in Appendix D scale beyond two users? What are the emergent dynamics at 100+ users?",
+    "How will multimodal personal memory be integrated (the authors' named next frontier)?"
+  ],
+  "final_checklist": [
+    {
+      "question": "Did I read the full paper body, or only an abstract / title?",
+      "answerable": true,
+      "answer": "Full body via pdftotext -layout extraction; ~54 KB across 28 pages. [Paper evidence]"
+    },
+    {
+      "question": "Is the reading mode badge correct (full_text)?",
+      "answerable": true,
+      "answer": "Yes — reading_mode = full_text throughout."
+    },
+    {
+      "question": "Did I mark every interpretive claim with an evidence label?",
+      "answerable": true,
+      "answer": "Yes — claims_evidence_map entries carry [Paper evidence] / [Author claim] / [Needs verification]."
+    },
+    {
+      "question": "Did I avoid pretending to have read content that was not actually read?",
+      "answerable": true,
+      "answer": "Yes — Table 2 cell values are flagged [Needs verification] due to extraction limitation."
+    },
+    {
+      "question": "Are the spec-referenced terms (HMM / Me-Alignment / Mind Palace / MoE / TIME) accurately reported as N/A for this paper?",
+      "answerable": true,
+      "answer": "Yes — flagged in glossary and limitations as spec-vs-reality mismatch."
+    },
+    {
+      "question": "Did I separate author claims from paper-evidence claims?",
+      "answerable": true,
+      "answer": "Yes — see five_cs.correctness and claims_evidence_map for label distribution."
+    },
+    {
+      "question": "Is the canonical title correct (not the spec title)?",
+      "answerable": true,
+      "answer": "Yes — used arXiv canonical 'AI-native Memory 2.0: Second Me'; spec title mismatch logged in intake_quality.warnings."
+    },
+    {
+      "question": "Did I document the resolution trail (input → arXiv → PDF → extracted text → reading_mode)?",
+      "answerable": true,
+      "answer": "Yes — intake_quality.source_resolution lists each step."
+    },
+    {
+      "question": "Does the reproduction plan have a baseline, dataset, hardware, and success criteria?",
+      "answerable": true,
+      "answer": "Yes — reproduction_plan object includes all four."
+    },
+    {
+      "question": "Did I distinguish single-turn vs multi-turn training limits and the multimodal next frontier?",
+      "answerable": true,
+      "answer": "Yes — captured in pass3.limitations and pass3.future_work."
+    },
+    {
+      "question": "Are there ≥ 10 claims in the claims_evidence_map?",
+      "answerable": true,
+      "answer": "Yes — 12 claims."
+    },
+    {
+      "question": "Are there ≥ 6 figure/table notes?",
+      "answerable": true,
+      "answer": "Yes — 7 entries (5 figures + 2 tables)."
+    }
+  ],
+  "paper_outline": [
+    {
+      "heading": "Abstract",
+      "page_or_section": "p.1"
+    },
+    {
+      "heading": "1 Introduction",
+      "page_or_section": "§1"
+    },
+    {
+      "heading": "2 An Overview of SECOND ME",
+      "page_or_section": "§2"
+    },
+    {
+      "heading": "2.1 Large Personal Model (LPM) 1.0: A Recap",
+      "page_or_section": "§2.1"
+    },
+    {
+      "heading": "2.2 SECOND ME: Overall Design",
+      "page_or_section": "§2.2"
+    },
+    {
+      "heading": "3 SECOND ME: Practice and Result",
+      "page_or_section": "§3"
+    },
+    {
+      "heading": "3.1 Overview of Training",
+      "page_or_section": "§3.1"
+    },
+    {
+      "heading": "3.2 Answer Style: COT or Not?",
+      "page_or_section": "§3.2"
+    },
+    {
+      "heading": "3.3 Training Strategy: DPO or Not?",
+      "page_or_section": "§3.3"
+    },
+    {
+      "heading": "3.4 Evaluation Setting",
+      "page_or_section": "§3.4"
+    },
+    {
+      "heading": "3.5 Experiment Results",
+      "page_or_section": "§3.5"
+    },
+    {
+      "heading": "4 Applications",
+      "page_or_section": "§4"
+    },
+    {
+      "heading": "5 Conclusions, Limitations, and Outlooks",
+      "page_or_section": "§5"
+    },
+    {
+      "heading": "References",
+      "page_or_section": "Refs"
+    },
+    {
+      "heading": "A Training data synthesis",
+      "page_or_section": "Appendix A"
+    },
+    {
+      "heading": "B Evaluation data synthesis",
+      "page_or_section": "Appendix B"
+    },
+    {
+      "heading": "C Details of Evaluation metrics",
+      "page_or_section": "Appendix C"
+    },
+    {
+      "heading": "D Details of our Multi-agent Framework",
+      "page_or_section": "Appendix D"
+    }
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_identifier.",
+      "Input string: 'arXiv:2503.08102 — AI-native Memory 2.0: Second Me'.",
+      "Resolved via arXiv ID lookup → arXiv:2503.08102v2, 12 Mar 2025.",
+      "Downloaded canonical PDF to source/second-me.pdf.",
+      "Extracted body via pdftotext -layout → extracted/second-me.txt (54,502 chars).",
+      "Reading mode forced to full_text (per task spec; body present in extracted/).",
+      "Title from spec ('Second Me: Human-Inspired Memory Mechanism for LLM Agents') did not match arXiv canonical title; updated to arXiv title with warning recorded."
+    ]
+  },
+  "candidate_papers": [],
+  "related_work": [],
+  "_is_essay_talk": false,
+  "generator_version": "v0.2.9-alpha"
+}

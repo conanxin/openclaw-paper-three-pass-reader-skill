@@ -1,0 +1,11 @@
+{
+  "steps": [
+    "Input kind = paper_identifier.",
+    "Input string: 'arXiv:2503.08102 — AI-native Memory 2.0: Second Me'.",
+    "Resolved via arXiv ID lookup → arXiv:2503.08102v2, 12 Mar 2025.",
+    "Downloaded canonical PDF to source/second-me.pdf.",
+    "Extracted body via pdftotext -layout → extracted/second-me.txt (54,502 chars).",
+    "Reading mode forced to full_text (per task spec; body present in extracted/).",
+    "Title from spec ('Second Me: Human-Inspired Memory Mechanism for LLM Agents') did not match arXiv canonical title; updated to arXiv title with warning recorded."
+  ]
+}

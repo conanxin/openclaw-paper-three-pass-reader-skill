@@ -1,0 +1,189 @@
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-06-15T22:43:49.172834Z",
+  "status": "WARN",
+  "site_root": "https://conanxin.github.io/paper-reading-pages",
+  "manifest_url": "https://conanxin.github.io/paper-reading-pages/published_pages.json",
+  "manifest_ok": true,
+  "pages_total": 10,
+  "pages_checked": 10,
+  "pages_pass": 9,
+  "pages_warn": 1,
+  "pages_fail": 0,
+  "issues_by_severity": {
+    "error": 0,
+    "warning": 3,
+    "info": 8
+  },
+  "pages": [
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/",
+      "slug": "index",
+      "title": "Paper Reading Pages — index",
+      "http_status": 200,
+      "fetched_bytes": 2736,
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "missing_resolver_trail",
+          "message": "页面缺少 Resolver Trail / 解析状态 区段,可能是 v0.2.7 之前渲染的旧页面。",
+          "recommendation": "重新用 v0.2.8+ renderer 渲染;source_resolution_utils 会输出 Resolver status / Confidence / Matched paper 等。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_claims_section",
+          "message": "页面缺少 Claims / Evidence 区段。",
+          "recommendation": "确认 paper_reading.json 含 claims_evidence_map,重新渲染。"
+        },
+        {
+          "severity": "warning",
+          "code": "missing_glossary",
+          "message": "页面缺少 Glossary / 关键术语 区段。",
+          "recommendation": "如果页面是 screenshot_only,可忽略;否则补 paper_reading.json 的 glossary 字段并重新渲染。"
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/you-and-your-research-cn/",
+      "slug": "you-and-your-research-cn",
+      "title": "You and Your Research — 三遍阅读法",
+      "http_status": 200,
+      "fetched_bytes": 27987,
+      "issues": [],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/attention-is-all-you-need/",
+      "slug": "attention-is-all-you-need",
+      "title": "Attention Is All You Need — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 44601,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-title-attention-is-all-you-need/",
+      "slug": "weakinput-title-attention-is-all-you-need",
+      "title": "Attention Is All You Need — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 44770,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-abstract-how-to-read-a-paper/",
+      "slug": "weakinput-abstract-how-to-read-a-paper",
+      "title": "How to Read a Paper — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 22089,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-screenshot-how-to-read-a-paper/",
+      "slug": "weakinput-screenshot-how-to-read-a-paper",
+      "title": "How to Read a Paper — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 23364,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/weakinput-repo-bert/",
+      "slug": "weakinput-repo-bert",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 34782,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/runner-title-attention/",
+      "slug": "runner-title-attention",
+      "title": "Attention Is All You Need — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 14112,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/second-me-fulltext-autofill/",
+      "slug": "second-me-fulltext-autofill",
+      "title": "AI-native Memory 2.0: Second Me — Three-Pass Reading",
+      "http_status": 200,
+      "fetched_bytes": 42986,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/second-me-human-inspired-memory-cn/",
+      "slug": "second-me-human-inspired-memory-cn",
+      "title": "Second Me: Human-Inspired Memory Mechanism for LLM Agents — 三遍阅读法",
+      "http_status": 200,
+      "fetched_bytes": 31266,
+      "issues": [
+        {
+          "severity": "info",
+          "code": "no_visible_claim_id",
+          "message": "页面没有可见的 claim ID (例如 C01/C02)。",
+          "recommendation": "如果页面是弱输入(screenshot_only/abstract_only),可忽略;否则检查 paper_reading.json 的 claim id 字段。"
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "recommendations": [
+    "1 页面缺 Resolver Trail — v0.2.8 之前渲染,建议在 v0.2.11+ 分批重渲染。",
+    "1 页面缺 Glossary — 检查 paper_reading.json 的 glossary 字段。"
+  ]
+}

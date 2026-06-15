@@ -1,0 +1,50 @@
+[
+  {
+    "question": "Can I state the paper's main contribution in one sentence?",
+    "answerable": true
+  },
+  {
+    "question": "Can I write the equation for Scaled Dot-Product Attention from memory?",
+    "answerable": true
+  },
+  {
+    "question": "Can I name at least two reasons why the √dₖ scaling factor is necessary?",
+    "answerable": true
+  },
+  {
+    "question": "Can I describe the encoder layer in terms of sub-layers, residual connections, and layer normalisation?",
+    "answerable": true
+  },
+  {
+    "question": "Can I describe the decoder layer and how it differs from the encoder?",
+    "answerable": true
+  },
+  {
+    "question": "Can I explain why positional encodings are needed at all?",
+    "answerable": true
+  },
+  {
+    "question": "Can I quote the BLEU numbers from Table 2 and the training cost from the abstract?",
+    "answerable": true
+  },
+  {
+    "question": "Can I name at least two limitations of the Transformer that are not addressed in this paper?",
+    "answerable": true
+  },
+  {
+    "question": "Can I list the hyperparameters of the base model (N, d_model, d_ff, h, d_k)?",
+    "answerable": true
+  },
+  {
+    "question": "Can I describe a single sanity check that would catch a mis-implementation?",
+    "answerable": true
+  },
+  {
+    "question": "Have I marked every interpretive statement with an evidence label?",
+    "answerable": true
+  },
+  {
+    "question": "Have I honestly recorded the reading mode as full_text?",
+    "answerable": true
+  }
+]

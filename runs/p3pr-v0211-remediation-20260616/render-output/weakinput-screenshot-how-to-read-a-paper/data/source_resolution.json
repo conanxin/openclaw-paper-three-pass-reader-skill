@@ -1,0 +1,11 @@
+{
+  "steps": [
+    "Input kind = paper_screenshot; only an OCR / VLM transcript of a partial screenshot was supplied.",
+    "Title 'How to Read a Paper' + author 'S. Keshav' + year 2007 + venue 'SIGCOMM CCR' visible in the screenshot → high-confidence identification of S. Keshav, SIGCOMM Computer Communication Review 37(4), 2007.",
+    "Visible section headings: Abstract, Introduction, The Three-Pass Approach, The First Pass.",
+    "Visible method fragments: three-pass structure; Pass 1 = bird's-eye; Pass 2 = deeper read; Pass 3 = reconstruction; Five Cs = Category, Context, Correctness, Contributions, Clarity.",
+    "Body, references, figures, tables are NOT visible in the screenshot.",
+    "OCR / VLM extraction quality is medium.",
+    "No PDF was fetched. reading_mode = screenshot_only."
+  ]
+}

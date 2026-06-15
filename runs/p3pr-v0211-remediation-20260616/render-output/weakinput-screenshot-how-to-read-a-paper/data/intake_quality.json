@@ -1,0 +1,40 @@
+{
+  "input_kind": "paper_screenshot",
+  "reading_mode": "screenshot_only",
+  "confidence": "medium",
+  "needs_confirmation": false,
+  "missing_fields": [
+    "arxiv_id",
+    "doi",
+    "openreview_id",
+    "url",
+    "full_body_text",
+    "full_references",
+    "full_figures",
+    "full_tables",
+    "claims_map_completeness",
+    "method_reconstruction_inputs",
+    "pass2_pass3_inputs"
+  ],
+  "warnings": [
+    "Input was a screenshot / OCR transcript. Only what was visible in the screenshot is available.",
+    "OCR / VLM extraction quality is medium — partial text from headings and a few fragments.",
+    "Pass 2 / Pass 3 are explicitly NOT performed.",
+    "All claims are marked [Uncertain] or [Needs verification] — no [Paper evidence] labels are used because the body text was not visible in the screenshot.",
+    "If the user supplies the full PDF later, this page can be re-rendered with reading_mode = full_text."
+  ],
+  "ambiguities": [
+    "Visible 'University of Waterloo' affiliation is from the screenshot but the abstract-only Keshav data showed 'Cornell University' / no affiliation — affiliation is not asserted in this run; treat as low-confidence."
+  ],
+  "source_used": "User-supplied OCR / VLM transcript (see inputs/screenshot-only-how-to-read-a-paper.md).",
+  "extraction_quality": "medium",
+  "source_resolution": [
+    "Input kind = paper_screenshot; only an OCR / VLM transcript of a partial screenshot was supplied.",
+    "Title 'How to Read a Paper' + author 'S. Keshav' + year 2007 + venue 'SIGCOMM CCR' visible in the screenshot → high-confidence identification of S. Keshav, SIGCOMM Computer Communication Review 37(4), 2007.",
+    "Visible section headings: Abstract, Introduction, The Three-Pass Approach, The First Pass.",
+    "Visible method fragments: three-pass structure; Pass 1 = bird's-eye; Pass 2 = deeper read; Pass 3 = reconstruction; Five Cs = Category, Context, Correctness, Contributions, Clarity.",
+    "Body, references, figures, tables are NOT visible in the screenshot.",
+    "OCR / VLM extraction quality is medium (visible fragments are legible; some smaller text may have been mis-read).",
+    "No PDF was fetched. reading_mode = screenshot_only."
+  ]
+}

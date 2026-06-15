@@ -1,0 +1,54 @@
+[
+  {
+    "title": "1. Introduction",
+    "subsections": []
+  },
+  {
+    "title": "2. Background",
+    "subsections": []
+  },
+  {
+    "title": "3. Model Architecture",
+    "subsections": [
+      "3.1 Encoder and Decoder Stacks",
+      "3.2 Attention",
+      "3.2.1 Scaled Dot-Product Attention",
+      "3.2.2 Multi-Head Attention",
+      "3.2.3 Applications of Attention in our Model",
+      "3.2.4 (inside Why Self-Attention) Internal structure",
+      "3.3 Position-wise Feed-Forward Networks",
+      "3.4 Embeddings and Softmax",
+      "3.5 Positional Encoding",
+      "3.6 Training"
+    ]
+  },
+  {
+    "title": "4. Why Self-Attention",
+    "subsections": []
+  },
+  {
+    "title": "5. Training",
+    "subsections": [
+      "5.1 Training Data and Batching",
+      "5.2 Hardware and Schedule",
+      "5.3 Optimizer",
+      "5.4 Regularization"
+    ]
+  },
+  {
+    "title": "6. Results",
+    "subsections": [
+      "6.1 Machine Translation",
+      "6.2 Model Variations",
+      "6.3 English Constituency Parsing"
+    ]
+  },
+  {
+    "title": "7. Conclusion",
+    "subsections": []
+  },
+  {
+    "title": "References",
+    "subsections": []
+  }
+]

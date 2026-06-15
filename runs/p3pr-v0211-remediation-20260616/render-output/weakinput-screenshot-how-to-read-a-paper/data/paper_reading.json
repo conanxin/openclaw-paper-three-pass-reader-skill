@@ -1,0 +1,498 @@
+{
+  "schema_version": "0.1.0",
+  "paper_metadata": {
+    "title": "How to Read a Paper",
+    "authors": [
+      "S. Keshav"
+    ],
+    "year": 2007,
+    "venue": "SIGCOMM Computer Communication Review",
+    "identifiers": {
+      "arxiv_id": null,
+      "doi": null,
+      "openreview_id": null,
+      "url": null
+    },
+    "source_kind": "paper_screenshot",
+    "reading_mode": "screenshot_only",
+    "field": "Research methodology / scientific communication",
+    "category": "Methods / how-to essay"
+  },
+  "intake_quality": {
+    "input_kind": "paper_screenshot",
+    "reading_mode": "screenshot_only",
+    "confidence": "medium",
+    "needs_confirmation": false,
+    "missing_fields": [
+      "arxiv_id",
+      "doi",
+      "openreview_id",
+      "url",
+      "full_body_text",
+      "full_references",
+      "full_figures",
+      "full_tables",
+      "claims_map_completeness",
+      "method_reconstruction_inputs",
+      "pass2_pass3_inputs"
+    ],
+    "warnings": [
+      "Input was a screenshot / OCR transcript. Only what was visible in the screenshot is available.",
+      "OCR / VLM extraction quality is medium — partial text from headings and a few fragments.",
+      "Pass 2 / Pass 3 are explicitly NOT performed.",
+      "All claims are marked [Uncertain] or [Needs verification] — no [Paper evidence] labels are used because the body text was not visible in the screenshot.",
+      "If the user supplies the full PDF later, this page can be re-rendered with reading_mode = full_text."
+    ],
+    "ambiguities": [
+      "Visible 'University of Waterloo' affiliation is from the screenshot but the abstract-only Keshav data showed 'Cornell University' / no affiliation — affiliation is not asserted in this run; treat as low-confidence."
+    ],
+    "source_used": "User-supplied OCR / VLM transcript (see inputs/screenshot-only-how-to-read-a-paper.md).",
+    "extraction_quality": "medium",
+    "source_resolution": [
+      "Input kind = paper_screenshot; only an OCR / VLM transcript of a partial screenshot was supplied.",
+      "Title 'How to Read a Paper' + author 'S. Keshav' + year 2007 + venue 'SIGCOMM CCR' visible in the screenshot → high-confidence identification of S. Keshav, SIGCOMM Computer Communication Review 37(4), 2007.",
+      "Visible section headings: Abstract, Introduction, The Three-Pass Approach, The First Pass.",
+      "Visible method fragments: three-pass structure; Pass 1 = bird's-eye; Pass 2 = deeper read; Pass 3 = reconstruction; Five Cs = Category, Context, Correctness, Contributions, Clarity.",
+      "Body, references, figures, tables are NOT visible in the screenshot.",
+      "OCR / VLM extraction quality is medium (visible fragments are legible; some smaller text may have been mis-read).",
+      "No PDF was fetched. reading_mode = screenshot_only."
+    ]
+  },
+  "summaries": {
+    "one_sentence": "Based only on a partial OCR / VLM transcript of a screenshot of S. Keshav's 2007 'How to Read a Paper', the visible portion confirms the title, author, three-pass structure and Five Cs checklist, but the body, references, figures and tables have not been seen.",
+    "three_sentence": [
+      "What the screenshot shows: the paper is titled 'How to Read a Paper', authored by S. Keshav, dated 2007, published in SIGCOMM CCR; the visible section headings include Abstract, Introduction, The Three-Pass Approach, and The First Pass.",
+      "What the visible method fragments show: the paper proposes a three-pass reading method (bird's-eye, deeper read, reconstruction), and the first pass uses a Five Cs checklist (Category, Context, Correctness, Contributions, Clarity).",
+      "What is NOT visible in the screenshot: the full body, all references, all figures, and all tables. This page therefore does NOT perform Pass 2 / Pass 3; it is a screenshot-only preliminary read."
+    ],
+    "ten_sentence": [
+      "Input kind = paper_screenshot; reading_mode = screenshot_only; confidence = medium.",
+      "The screenshot OCR'd to: title 'How to Read a Paper', author 'S. Keshav', affiliation 'University of Waterloo' (treat as low confidence), year 2007, venue 'SIGCCR' / 'SIGCOMM CCR'.",
+      "Section headings visible in the screenshot: Abstract, Introduction, The Three-Pass Approach, The First Pass.",
+      "Method fragments visible in the screenshot: 'First pass (5–10 minutes): read title, abstract, intro, section headings, conclusion, references; glance at figures and skim the math.'",
+      "Method fragments visible: 'The first pass answers the Five Cs: Category, Context, Correctness, Contributions, Clarity.'",
+      "Method fragments visible: 'Second pass (~1 hour): read the body with care, skipping proofs.'",
+      "Method fragments visible: 'Third pass (1–4 hours): re-implement the paper as if you were its author.'",
+      "Body, references, figures, and tables are NOT visible in the screenshot — Pass 2 / Pass 3 are explicitly NOT performed.",
+      "All claims below are derived only from visible screenshot fragments and are marked [Uncertain] or [Needs verification].",
+      "Recommended next action: feed the full PDF or full text into this skill to upgrade reading_mode to full_text."
+    ]
+  },
+  "five_cs": {
+    "category": {
+      "value": "[Uncertain — visible in screenshot only] Methods / how-to essay. Full body not visible.",
+      "label": "类别",
+      "evidence_label": "",
+      "note": ""
+    },
+    "context": {
+      "value": "[Uncertain — visible in screenshot only] SIGCOMM-CCR genre of advice-for-grad-students essays. Full body not visible.",
+      "label": "背景",
+      "evidence_label": "",
+      "note": ""
+    },
+    "correctness": {
+      "value": "[Needs verification] Cannot assess correctness without the body — the screenshot alone does not show the body or the proof that the method works.",
+      "label": "正确性",
+      "evidence_label": "",
+      "note": ""
+    },
+    "clarity": {
+      "value": "[Uncertain — based on visible fragments only] The screenshot fragments are well-formed sentences; clarity of the full body was not assessed.",
+      "label": "清晰度",
+      "evidence_label": "",
+      "note": ""
+    },
+    "contributions": [
+      {
+        "value": "[Uncertain — visible in screenshot] A three-pass reading method with the three passes named (first / second / third).",
+        "label": "贡献 1",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "[Uncertain — visible in screenshot] A Five Cs checklist (Category, Context, Correctness, Contributions, Clarity) used in Pass 1.",
+        "label": "贡献 2",
+        "evidence_label": "",
+        "note": ""
+      },
+      {
+        "value": "[Needs verification] Time budgets (5–10 min, ~1 h, 1–4 h) — visible in the screenshot, but the full rationale is in the body.",
+        "label": "贡献 3",
+        "evidence_label": "",
+        "note": ""
+      }
+    ]
+  },
+  "pass1": {
+    "goal": "Preliminary Pass 1 from visible screenshot fragments only. Real Pass 1 needs the body.",
+    "sections_read": [
+      "title (visible in screenshot)",
+      "author block (visible in screenshot)",
+      "section headings: Abstract, Introduction, The Three-Pass Approach, The First Pass (visible in screenshot)",
+      "method fragments visible in the First Pass section"
+    ],
+    "findings": "Paper is identifiable with high confidence from title + author + year + venue. Visible structure is consistent with the well-known three-pass method. Body is NOT visible — a real Pass 1 cannot be done yet.",
+    "five_cs_result": "Five Cs filled in preliminary form. Each entry is labelled [Uncertain] or [Needs verification] because the screenshot alone does not give enough evidence to assess them rigorously.",
+    "decision": "CONTINUE_FULL",
+    "rationale": "The visible fragments confirm this is the well-known Keshav paper and that the method is the three-pass method, but a complete read requires the body. The skill recommends: obtain the full PDF, then re-run with reading_mode = full_text."
+  },
+  "pass2": {
+    "main_ideas": [
+      "[Uncertain — visible in screenshot] Reading research papers is a skill that benefits from being made explicit and structured.",
+      "[Uncertain — visible in screenshot] A three-pass method (bird's-eye, deeper read, reconstruction) structures the time spent on a paper.",
+      "[Uncertain — visible in screenshot] Pass 1 uses a Five Cs checklist to triage.",
+      "[Needs verification] The remaining body content — main ideas beyond the visible fragments — is NOT visible in the screenshot."
+    ],
+    "method_summary": "[Uncertain — visible in screenshot fragments only] Three-pass method (first / second / third) with a Five Cs checklist for Pass 1. The full method, equations, and ablations are in the body — not visible in the screenshot.",
+    "figure_table_notes": "[Uncertain — needs body] The paper is known to contain no figures and ~6 references, but the body was not visible in the screenshot.",
+    "key_references": [
+      {
+        "title": "(needs body to enumerate)",
+        "authors": [],
+        "year": null,
+        "why": "[Needs verification] — the paper's reference list was not visible in the screenshot."
+      }
+    ],
+    "claims_evidence_map": [
+      {
+        "claim_id": "C-001",
+        "claim": "Title: How to Read a Paper; Author: S. Keshav; Year: 2007; Venue: SIGCOMM CCR.",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Title page (visible in screenshot)",
+        "evidence": "Direct observation of the screenshot's title block via OCR / VLM.",
+        "confidence": "high",
+        "comment": "OCR of visible title page. Identification is high confidence. Affiliation text is medium confidence (OCR-dependent).",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-002",
+        "claim": "The paper proposes a three-pass reading method.",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Section heading 'The Three-Pass Approach' (visible in screenshot)",
+        "evidence": "Section heading visible in the screenshot.",
+        "confidence": "high",
+        "comment": "OCR of a visible heading.",
+        "needs_verification": false
+      },
+      {
+        "claim_id": "C-003",
+        "claim": "Pass 1 = bird's-eye view of the paper.",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Section 'The First Pass' (visible in screenshot)",
+        "evidence": "Visible text fragment: 'First pass (5–10 minutes): read title, abstract, intro, section headings, conclusion, references; glance at figures and skim the math.'",
+        "confidence": "medium",
+        "comment": "OCR of a visible fragment. Time budget is part of the visible text, but the rest of the body is not visible.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-004",
+        "claim": "Pass 1 uses the Five Cs checklist: Category, Context, Correctness, Contributions, Clarity.",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Section 'The First Pass' (visible in screenshot)",
+        "evidence": "Visible text fragment names the Five Cs explicitly.",
+        "confidence": "medium",
+        "comment": "OCR of a visible fragment.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-005",
+        "claim": "Pass 2 takes ~1 hour; Pass 3 takes 1–4 hours and reconstructs the paper.",
+        "evidence_label": "[Uncertain]",
+        "section_or_page": "Body (partially visible in screenshot)",
+        "evidence": "Visible fragments: 'Second pass (~1 hour): read the body with care, skipping proofs.' and 'Third pass (1–4 hours): re-implement the paper as if you were its author.'",
+        "confidence": "medium",
+        "comment": "OCR of visible fragments.",
+        "needs_verification": true
+      },
+      {
+        "claim_id": "C-006",
+        "claim": "Full body text, references, figures, and tables are available.",
+        "evidence_label": "[Needs verification]",
+        "section_or_page": "n/a — this claim is FALSE in this run",
+        "evidence": "NOT visible in the screenshot. This claim is being recorded only to be marked false, so the page is honest about the missing body.",
+        "confidence": "high",
+        "comment": "Assertion that the body is missing.",
+        "needs_verification": false
+      }
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "[unavailable — screenshot-only run] A real method reconstruction requires the full body text. Pass 3 reconstruction is NOT performed in this run.",
+      "[unavailable — screenshot-only run] See the 'Next actions' section below for how to re-render with reading_mode = full_text."
+    ],
+    "critical_review": [
+      "[unavailable — screenshot-only run] A real critical review requires the full body."
+    ],
+    "hidden_assumptions": [
+      "[unavailable — screenshot-only run] Identifying hidden assumptions requires the full body."
+    ],
+    "limitations": [
+      "Screenshot-only run. Body is NOT visible.",
+      "OCR / VLM extraction quality is medium — some text may be mis-read.",
+      "Pass 2 / Pass 3 are explicitly NOT performed.",
+      "Five Cs entries are preliminary; need the body to ground them.",
+      "Re-render with reading_mode = full_text to upgrade."
+    ],
+    "reproduction_plan": {
+      "dataset": "[unavailable — screenshot-only run]",
+      "baseline": "[unavailable — screenshot-only run]",
+      "hardware": "[unavailable — screenshot-only run]",
+      "steps": [
+        "Obtain the full PDF of S. Keshav, 'How to Read a Paper', SIGCOMM CCR 37(4), 2007.",
+        "Re-run this skill with the same paper title / identifier, but with reading_mode upgraded to full_text after the body is obtained.",
+        "Re-render the page; Pass 2 / Pass 3 will then be available."
+      ],
+      "sanity_checks": [
+        "Re-render must show 'full_text' reading mode in the hero badge.",
+        "Five Cs entries must no longer carry the 'preliminary (screenshot-only)' tag.",
+        "All claims should carry evidence labels grounded in the body."
+      ],
+      "success_criteria": [
+        "Pass 2 main ideas derived from the actual body.",
+        "Pass 3 reconstruction steps derived from the actual body.",
+        "No claim is still labelled [Needs verification] after re-render."
+      ]
+    },
+    "future_work": [
+      "[unavailable — screenshot-only run]"
+    ],
+    "application_notes": [
+      "The skill's honest behaviour on screenshot-only input is to NOT pretend to have read the body.",
+      "Re-rendering with the full PDF upgrades the page automatically."
+    ]
+  },
+  "glossary": [
+    {
+      "term": "Three-pass method",
+      "definition": "Reading procedure split into three passes (first / second / third). Visible in the screenshot section heading 'The Three-Pass Approach'."
+    },
+    {
+      "term": "First pass (Pass 1)",
+      "definition": "Bird's-eye view of the paper. Visible in the screenshot as a heading + visible fragments about 5–10 min and Five Cs."
+    },
+    {
+      "term": "Second pass (Pass 2)",
+      "definition": "Deeper read of the body. Visible in the screenshot as a fragment (~1 hour, skipping proofs)."
+    },
+    {
+      "term": "Third pass (Pass 3)",
+      "definition": "Reconstruction of the paper. Visible in the screenshot as a fragment (1–4 hours, re-implement as author)."
+    },
+    {
+      "term": "Five Cs",
+      "definition": "Visible in the screenshot: Category, Context, Correctness, Contributions, Clarity."
+    },
+    {
+      "term": "screenshot_only",
+      "definition": "This page's reading_mode. Only OCR / VLM-visible text was used. The body was not available."
+    },
+    {
+      "term": "[Uncertain]",
+      "definition": "Evidence label used in this run for claims grounded in OCR / VLM-visible fragments only."
+    },
+    {
+      "term": "[Needs verification]",
+      "definition": "Evidence label used for claims that need confirmation from the body before they can be treated as solid."
+    }
+  ],
+  "limitations": [
+    "Screenshot-only run. Body, references, figures and tables are NOT visible in the screenshot.",
+    "OCR / VLM extraction quality is medium — smaller text may be mis-read.",
+    "Pass 2 / Pass 3 are explicitly NOT performed.",
+    "All claims are [Uncertain] or [Needs verification].",
+    "Affiliation text from the screenshot is treated as low confidence (OCR-dependent).",
+    "Re-render with reading_mode = full_text to upgrade."
+  ],
+  "open_questions": [
+    "What is the full body of the paper, beyond the visible fragments?",
+    "What references does the paper cite?",
+    "Does the paper address modern reading aids (LLMs, semantic search)?",
+    "What limitations does the paper acknowledge in the body?",
+    "What is the exact wording of the logbook advice?",
+    "Does the paper have any figures or tables beyond the title-page affiliation line?"
+  ],
+  "final_checklist": [
+    {
+      "question": "Did I read the full paper or only a partial screenshot?",
+      "answerable": true
+    },
+    {
+      "question": "Am I clear about the reading mode in the hero badge (screenshot_only)?",
+      "answerable": true
+    },
+    {
+      "question": "Have I marked every interpretive claim with an evidence label?",
+      "answerable": true
+    },
+    {
+      "question": "Did I avoid pretending that I read Pass 2 / Pass 3 content?",
+      "answerable": true
+    },
+    {
+      "question": "Did I record the missing fields explicitly (full_body, references, figures, tables)?",
+      "answerable": true
+    },
+    {
+      "question": "Have I avoided using [Paper evidence] for content beyond the visible screenshot fragments?",
+      "answerable": true
+    },
+    {
+      "question": "Did I record the screenshot-only decision (SEEK_FULL_TEXT) and a rationale?",
+      "answerable": true
+    },
+    {
+      "question": "Do I know what I would need to do to upgrade this page to full_text mode?",
+      "answerable": true
+    }
+  ],
+  "paper_outline": [
+    {
+      "title": "1. Abstract",
+      "subsections": [],
+      "visible_in_screenshot": true
+    },
+    {
+      "title": "2. Introduction",
+      "subsections": [],
+      "visible_in_screenshot": true
+    },
+    {
+      "title": "3. The Three-Pass Approach",
+      "subsections": [],
+      "visible_in_screenshot": true
+    },
+    {
+      "title": "4. The First Pass",
+      "subsections": [],
+      "visible_in_screenshot": true
+    },
+    {
+      "title": "5. (rest of body — not visible in screenshot)",
+      "subsections": []
+    }
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_screenshot; only an OCR / VLM transcript of a partial screenshot was supplied.",
+      "Title 'How to Read a Paper' + author 'S. Keshav' + year 2007 + venue 'SIGCOMM CCR' visible in the screenshot → high-confidence identification of S. Keshav, SIGCOMM Computer Communication Review 37(4), 2007.",
+      "Visible section headings: Abstract, Introduction, The Three-Pass Approach, The First Pass.",
+      "Visible method fragments: three-pass structure; Pass 1 = bird's-eye; Pass 2 = deeper read; Pass 3 = reconstruction; Five Cs = Category, Context, Correctness, Contributions, Clarity.",
+      "Body, references, figures, tables are NOT visible in the screenshot.",
+      "OCR / VLM extraction quality is medium.",
+      "No PDF was fetched. reading_mode = screenshot_only."
+    ]
+  },
+  "candidate_papers": [],
+  "figures_tables": [
+    {
+      "id": "FT-001",
+      "kind": "note",
+      "number": "",
+      "title": "(no figures visible in screenshot)",
+      "explanation": "The screenshot did not contain any figure or table. The paper is known to contain no figures, but this is not confirmed in this run because the body is not visible.",
+      "evidence_label": "[Uncertain]"
+    }
+  ],
+  "claims_evidence_map": [
+    {
+      "claim_id": "C-001",
+      "claim": "Title: How to Read a Paper; Author: S. Keshav; Year: 2007; Venue: SIGCOMM CCR.",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Title page (visible in screenshot)",
+      "evidence": "Direct observation of the screenshot's title block via OCR / VLM.",
+      "confidence": "high",
+      "comment": "OCR of visible title page. Identification is high confidence. Affiliation text is medium confidence (OCR-dependent).",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-002",
+      "claim": "The paper proposes a three-pass reading method.",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Section heading 'The Three-Pass Approach' (visible in screenshot)",
+      "evidence": "Section heading visible in the screenshot.",
+      "confidence": "high",
+      "comment": "OCR of a visible heading.",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-003",
+      "claim": "Pass 1 = bird's-eye view of the paper.",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Section 'The First Pass' (visible in screenshot)",
+      "evidence": "Visible text fragment: 'First pass (5–10 minutes): read title, abstract, intro, section headings, conclusion, references; glance at figures and skim the math.'",
+      "confidence": "medium",
+      "comment": "OCR of a visible fragment. Time budget is part of the visible text, but the rest of the body is not visible.",
+      "needs_verification": true,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-004",
+      "claim": "Pass 1 uses the Five Cs checklist: Category, Context, Correctness, Contributions, Clarity.",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Section 'The First Pass' (visible in screenshot)",
+      "evidence": "Visible text fragment names the Five Cs explicitly.",
+      "confidence": "medium",
+      "comment": "OCR of a visible fragment.",
+      "needs_verification": true,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-005",
+      "claim": "Pass 2 takes ~1 hour; Pass 3 takes 1–4 hours and reconstructs the paper.",
+      "evidence_label": "[Uncertain]",
+      "section_or_page": "Body (partially visible in screenshot)",
+      "evidence": "Visible fragments: 'Second pass (~1 hour): read the body with care, skipping proofs.' and 'Third pass (1–4 hours): re-implement the paper as if you were its author.'",
+      "confidence": "medium",
+      "comment": "OCR of visible fragments.",
+      "needs_verification": true,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    },
+    {
+      "claim_id": "C-006",
+      "claim": "Full body text, references, figures, and tables are available.",
+      "evidence_label": "[Needs verification]",
+      "section_or_page": "n/a — this claim is FALSE in this run",
+      "evidence": "NOT visible in the screenshot. This claim is being recorded only to be marked false, so the page is honest about the missing body.",
+      "confidence": "high",
+      "comment": "Assertion that the body is missing.",
+      "needs_verification": false,
+      "claim_text": "(missing)",
+      "evidence_location": "",
+      "evidence_kind": "paper_text",
+      "notes": ""
+    }
+  ],
+  "related_work": [],
+  "reproduction_plan": {
+    "steps": [],
+    "plan_7_day": [],
+    "plan_30_day": [],
+    "plan_90_day": [],
+    "success_criteria": [],
+    "risks": [],
+    "rationale": "",
+    "applicable": true,
+    "kind": "experiment"
+  },
+  "_is_essay_talk": false,
+  "generator_version": "v0.2.9-alpha"
+}

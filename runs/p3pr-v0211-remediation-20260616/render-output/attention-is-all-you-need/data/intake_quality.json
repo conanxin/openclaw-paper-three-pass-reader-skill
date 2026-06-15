@@ -1,0 +1,25 @@
+{
+  "input_kind": "paper_identifier",
+  "reading_mode": "full_text",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "missing_fields": [
+    "doi"
+  ],
+  "warnings": [
+    "DOI not present in arXiv source; arXiv ID 1706.03762v7 used as canonical identifier.",
+    "Equal-contribution author list (Vaswani et al., eight authors)."
+  ],
+  "source_used": "arXiv:1706.03762v7 [cs.CL] 2 Aug 2023, full PDF, 5 pages",
+  "extraction_quality": "high — all major sections (Abstract, Introduction, Background, Model Architecture, Training, Results, Conclusion, References) present and ordered; tables and figure captions recovered.",
+  "ambiguities": [],
+  "source_resolution": [
+    "Input kind = paper_identifier (arXiv ID).",
+    "Resolved via arXiv abs landing page: https://arxiv.org/abs/1706.03762",
+    "Canonical PDF fetched from https://arxiv.org/pdf/1706.03762",
+    "Version v7 (last updated 2 Aug 2023) used; original submission v1 was 12 Jun 2017.",
+    "Text extracted with pdftotext (poppler 24.02.0); 40 074 characters, 5 pages.",
+    "All major sections present; no body content missing.",
+    "Reading mode = full_text."
+  ]
+}

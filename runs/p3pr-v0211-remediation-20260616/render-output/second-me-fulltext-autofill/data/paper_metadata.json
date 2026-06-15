@@ -1,0 +1,23 @@
+{
+  "title": "AI-native Memory 2.0: Second Me",
+  "authors": [
+    "Jiale Wei",
+    "Xiang Ying",
+    "Tao Gao",
+    "Fangyi Bao",
+    "Felix Tao",
+    "Jingbo Shang"
+  ],
+  "year": 2025,
+  "venue": "arXiv preprint (under review)",
+  "identifiers": {
+    "arxiv_id": "2503.08102",
+    "doi": null,
+    "openreview_id": null,
+    "url": "https://arxiv.org/abs/2503.08102"
+  },
+  "source_kind": "paper_identifier",
+  "reading_mode": "full_text",
+  "field": "AI agents / personalized memory management",
+  "category": "Methods — AI-native memory architecture for personal LLM agents"
+}

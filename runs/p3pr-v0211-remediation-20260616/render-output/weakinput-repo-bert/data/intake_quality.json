@@ -1,0 +1,25 @@
+{
+  "input_kind": "project_or_repo",
+  "reading_mode": "full_text",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "missing_fields": [
+    "doi"
+  ],
+  "warnings": [
+    "Input was a GitHub repo URL (https://github.com/google-research/bert). Repo → paper resolution was straightforward because the repo README links directly to the BERT paper.",
+    "Version v2 of arXiv 1810.04805 (24 May 2019) was used; original v1 was 11 Oct 2018."
+  ],
+  "ambiguities": [],
+  "source_used": "GitHub repo https://github.com/google-research/bert → README → linked paper 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding' (arXiv 1810.04805) → https://arxiv.org/pdf/1810.04805 → pdftotext → 64 321 characters, all sections present.",
+  "extraction_quality": "high — all major sections (Abstract, Introduction, BERT, Pre-training BERT, Fine-tuning BERT, Experiments, Conclusion, References) present.",
+  "source_resolution": [
+    "Input kind = project_or_repo; only the GitHub repo URL was supplied.",
+    "Repo https://github.com/google-research/bert is the canonical implementation repo for BERT.",
+    "Repo README links to the associated paper: arXiv 1810.04805 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'.",
+    "Canonical PDF fetched from https://arxiv.org/pdf/1810.04805 (775 166 bytes, 6 pages, PDF 1.5).",
+    "Text extracted with pdftotext (poppler 24.02.0): 64 321 characters.",
+    "All major sections (Abstract, Introduction, BERT, Pre-training BERT, Fine-tuning BERT, Experiments, Conclusion, References) present and ordered.",
+    "reading_mode = full_text (full body text obtained)."
+  ]
+}

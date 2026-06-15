@@ -1,0 +1,92 @@
+[
+  {
+    "term": "Second Me",
+    "definition": "The AI-native personal memory system proposed in this paper (Mindverse.ai, arXiv:2503.08102), succeeding LPM 1.0. Acts as a persistent context provider that parameterises user memory in an L2 model.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "LLM agent",
+    "definition": "A large-language-model-driven system that performs tasks or interacts on behalf of a user; SECOND ME is positioned as a context provider for such agents.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "memory mechanism",
+    "definition": "In this paper, a layered architecture (L0/L1/L2) for storing and retrieving user memory, with L2 implemented as a personalised neural network.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "hierarchical memory",
+    "definition": "The three-layer L0 (raw) / L1 (natural-language) / L2 (parameter) memory model inherited from LPM 1.0 and refined in SECOND ME.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "LPM 1.0 / Large Personal Model",
+    "definition": "The 2024 predecessor system by Shang et al., which proposed the three-layer memory model and demonstrated that LLMs can parameterise user memory. SECOND ME is its evolved version.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "L0 / L1 / L2 memory layers",
+    "definition": "L0: raw-data layer (akin to RAG/RALM); L1: natural-language memory (bios, tags, summaries); L2: AI-native parameter memory encoded in a per-user neural network.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "PEFT (Parameter-Efficient Fine-Tuning)",
+    "definition": "Fine-tuning technique family (BitFit, LoRA, etc.) that updates a small number of parameters while keeping the base model frozen. Used for SECOND ME's SFT step on Qwen2.5-7B.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "DPO (Direct Preference Optimization)",
+    "definition": "A reinforcement-learning-free preference optimisation method. SECOND ME uses DPO on ~20% of SFT data to refine preference alignment.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "SFT (Supervised Fine-Tuning)",
+    "definition": "Standard next-token training on labelled or synthetic data. In SECOND ME: PEFT SFT on Qwen2.5-7B-Instruct with COT-style synthetic answers.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "COT (Chain-of-Thought)",
+    "definition": "Reasoning style in which the model produces intermediate steps before the final answer. SECOND ME compares Weak / Multi-step / Strong COT synthesis strategies.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Qwen2.5-7B-Instruct",
+    "definition": "The base model used by SECOND ME for parameter memory (per §3.1).",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Deepseek-R1",
+    "definition": "Reasoning model used as the Strong-COT expert during data synthesis (§3.2).",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Context Provider",
+    "definition": "Self-positioning of SECOND ME: rather than executing tasks, it provides user context to other agents (and to the user themselves).",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "term": "Inner / Outer loop",
+    "definition": "Inner loop = seamless integration across L0/L1/L2 inside SECOND ME. Outer loop = SECOND ME coordinating with external LLMs and internet resources.",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "HMM (Hidden Markov Model)",
+    "definition": "Not used in this paper. The task spec referenced HMM as part of a different paper (Second Me by Hu et al.); for this Mindverse paper, N/A. [Needs verification: see limitations — spec mismatch]",
+    "evidence_label": "[Needs verification]"
+  },
+  {
+    "term": "Me-Alignment",
+    "definition": "Not used in this paper. Spec reference: belongs to a different paper. [Needs verification]",
+    "evidence_label": "[Needs verification]"
+  },
+  {
+    "term": "Mind Palace / Ensemble of Experts (MoE)",
+    "definition": "Not used in this paper. Spec reference: belongs to a different paper. [Needs verification]",
+    "evidence_label": "[Needs verification]"
+  },
+  {
+    "term": "TIME benchmark",
+    "definition": "Not used in this paper. Spec reference: belongs to a different paper. [Needs verification]",
+    "evidence_label": "[Needs verification]"
+  }
+]

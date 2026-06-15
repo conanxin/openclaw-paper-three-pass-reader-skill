@@ -1,0 +1,74 @@
+[
+  {
+    "heading": "Abstract",
+    "page_or_section": "p.1"
+  },
+  {
+    "heading": "1 Introduction",
+    "page_or_section": "§1"
+  },
+  {
+    "heading": "2 An Overview of SECOND ME",
+    "page_or_section": "§2"
+  },
+  {
+    "heading": "2.1 Large Personal Model (LPM) 1.0: A Recap",
+    "page_or_section": "§2.1"
+  },
+  {
+    "heading": "2.2 SECOND ME: Overall Design",
+    "page_or_section": "§2.2"
+  },
+  {
+    "heading": "3 SECOND ME: Practice and Result",
+    "page_or_section": "§3"
+  },
+  {
+    "heading": "3.1 Overview of Training",
+    "page_or_section": "§3.1"
+  },
+  {
+    "heading": "3.2 Answer Style: COT or Not?",
+    "page_or_section": "§3.2"
+  },
+  {
+    "heading": "3.3 Training Strategy: DPO or Not?",
+    "page_or_section": "§3.3"
+  },
+  {
+    "heading": "3.4 Evaluation Setting",
+    "page_or_section": "§3.4"
+  },
+  {
+    "heading": "3.5 Experiment Results",
+    "page_or_section": "§3.5"
+  },
+  {
+    "heading": "4 Applications",
+    "page_or_section": "§4"
+  },
+  {
+    "heading": "5 Conclusions, Limitations, and Outlooks",
+    "page_or_section": "§5"
+  },
+  {
+    "heading": "References",
+    "page_or_section": "Refs"
+  },
+  {
+    "heading": "A Training data synthesis",
+    "page_or_section": "Appendix A"
+  },
+  {
+    "heading": "B Evaluation data synthesis",
+    "page_or_section": "Appendix B"
+  },
+  {
+    "heading": "C Details of Evaluation metrics",
+    "page_or_section": "Appendix C"
+  },
+  {
+    "heading": "D Details of our Multi-agent Framework",
+    "page_or_section": "Appendix D"
+  }
+]

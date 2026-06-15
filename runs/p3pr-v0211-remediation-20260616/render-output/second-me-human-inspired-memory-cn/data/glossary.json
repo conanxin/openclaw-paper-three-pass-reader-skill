@@ -1,0 +1,72 @@
+[
+  {
+    "term": "Second Me",
+    "definition": "本文提出的 AI-native 个人记忆系统（Mindverse.ai, arXiv:2503.08102），继承 LPM 1.0。作为持久上下文提供者，将用户记忆参数化为 L2 模型。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "LLM agent",
+    "definition": "由大语言模型驱动的系统，代表用户执行任务或交互；SECOND ME 被定位为这类 Agent 的上下文提供者。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "memory mechanism",
+    "definition": "本文中的分层架构（L0/L1/L2），用于存储和检索用户记忆，L2 实现为个性化神经网络。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "hierarchical memory",
+    "definition": "从 LPM 1.0 继承并在 SECOND ME 中细化的三层 L0（原始）/ L1（自然语言）/ L2（参数）记忆模型。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "LPM 1.0 / Large Personal Model",
+    "definition": "Shang et al. (2024) 的前代系统，提出三层记忆模型并证明 LLM 可以参数化用户记忆。SECOND ME 是其演进版本。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "L0 / L1 / L2 memory layers",
+    "definition": "L0: 原始数据层（类似 RAG/RALM）；L1: 自然语言记忆（简介、标签、摘要）；L2: AI-native 参数记忆，编码在每个用户的神经网络中。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "PEFT (Parameter-Efficient Fine-Tuning)",
+    "definition": "微调技术家族（BitFit、LoRA 等），仅更新少量参数同时保持基座模型冻结。用于 SECOND ME 在 Qwen2.5-7B 上的 SFT 步骤。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "DPO (Direct Preference Optimization)",
+    "definition": "无需强化学习的偏好优化方法。SECOND ME 在 ~20% SFT 数据上使用 DPO 精炼偏好对齐。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "SFT (Supervised Fine-Tuning)",
+    "definition": "标准 next-token 训练，使用标注或合成数据。在 SECOND ME 中：使用 COT 风格合成答案在 Qwen2.5-7B-Instruct 上进行 PEFT SFT。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "COT (Chain-of-Thought)",
+    "definition": "推理风格，模型在给出最终答案前产生中间步骤。SECOND ME 比较 Weak / Multi-step / Strong COT 合成策略。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Qwen2.5-7B-Instruct",
+    "definition": "SECOND ME 用于参数记忆的基座模型（§3.1）。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Deepseek-R1",
+    "definition": "数据合成期间用作 Strong-COT 专家的推理模型（§3.2）。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Context Provider",
+    "definition": "SECOND ME 的自我定位：不执行任务，而是向其他 Agent（以及用户自身）提供用户上下文。",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "term": "Inner / Outer loop",
+    "definition": "Inner loop = SECOND ME 内部 L0/L1/L2 的无缝整合。Outer loop = SECOND ME 与外部 LLM 和互联网资源的协调。",
+    "evidence_label": "[Paper evidence]"
+  }
+]
