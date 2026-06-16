@@ -36,10 +36,10 @@ This checklist was used to decide whether the project is ready to cut a
 
 | Question | Answer |
 | --- | --- |
-| Can v0.3.0 stable be released? | **No** |
-| Reason | `p3pr doctor` reports 1 WARN (`git_working_tree`) on a real dirty working tree |
-| Stable release created? | **No** |
-| Release URL | (none) |
+| Can v0.3.0 stable be released? | **Yes** (after housekeeping) |
+| Reason | Working tree is clean; doctor 25/0/0; cleanroom re-run on clean tree. |
+| Stable release created? | **Yes** |
+| Release URL | <https://github.com/conanxin/openclaw-paper-three-pass-reader-skill/releases/tag/v0.3.0> |
 
 The WARN is a historical backlog: 4 modified files + 21 untracked run dirs
 from prior phases (v0.2.10 / v0.2.15 / v0.2.16 / v0.3.0-alpha) that were

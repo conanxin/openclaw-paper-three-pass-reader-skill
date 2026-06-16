@@ -423,11 +423,13 @@ This is `v0.3.0-alpha`, not `v0.3.0` stable. See
 §"Not yet stable" for the criteria that should be met before the next
 stable release.
 
-## v0.3.0 stable — DEFERRED
+### v0.3.0 stable (released)
 
-`v0.3.0` stable was **deferred** in
-[`PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md).
-The cleanroom is otherwise fully clean (validation 305/0, live audit
-14/14, doctor 24/1/0, all dry-runs PASS) but `p3pr doctor` reports a
-`git_working_tree` WARN from a historical backlog. `v0.3.0-alpha`
-remains the latest released.
+`v0.3.0` is the first **stable** release. No new features; the delta
+from `v0.3.0-alpha` is a single housekeeping commit that committed
+the historical backlog and added 21 untracked run dirs to
+`.gitignore`, bringing the working tree to a clean state. The final
+cleanroom on the clean tree reported 305/0 validation, 25/0/0
+doctor, 14/14 live audit. See
+[`PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md)
+for the full delta.

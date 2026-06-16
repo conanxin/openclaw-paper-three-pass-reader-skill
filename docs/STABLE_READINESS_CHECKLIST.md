@@ -79,12 +79,8 @@ The `p3pr` one-line CLI has 10 subcommands.
 
 ## Not yet stable
 
-This is `v0.3.0-alpha`, not `v0.3.0` stable. The stable `v0.3.0` cut was
-**deferred** in
-[`docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md`](PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md)
-because of a `git_working_tree` doctor WARN from historical backlog.
-See the cleanroom report for the three options the user can take to
-unblock `v0.3.0` stable.
+`v0.3.0` stable is the first stable release. Future changes will be
+tracked in `CHANGELOG.md` and will cut new `v0.3.x` / `v0.4.x` releases.
 
 ## Compatibility
 

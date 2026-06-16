@@ -248,12 +248,14 @@ and
 [`PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md)
 for the full readiness record.
 
-## v0.3.0 stable cleanroom — DEFERRED
+## v0.3.0 stable (released)
 
-`v0.3.0` stable was **deferred** in
-[`PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md).
-The cleanroom is otherwise fully clean (validation 305/0, live audit
-14/14, doctor 24/1/0, all dry-runs PASS) but `p3pr doctor` reports a
-`git_working_tree` WARN from a historical backlog. `v0.3.0-alpha`
-remains the latest released. See the cleanroom report for the three
-options the user can take to unblock `v0.3.0` stable.
+`v0.3.0` is the first **stable** release. The housekeeping phase
+committed the historical backlog and added 21 untracked run dirs to
+`.gitignore`, bringing the working tree to a clean state. The final
+cleanroom reported 305/0 validation, 25/0/0 doctor, 14/14 live
+audit. See
+[`PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md)
+and
+[`STABLE_CLEANROOM_CHECKLIST.md`](../../../../docs/STABLE_CLEANROOM_CHECKLIST.md)
+for the full readiness record.

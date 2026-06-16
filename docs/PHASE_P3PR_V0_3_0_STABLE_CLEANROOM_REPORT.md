@@ -2,8 +2,7 @@
 
 ## STATUS
 
-PASS_WITH_WARNINGS — **v0.3.0 stable NOT released** (deferred to user
-decision)
+PASS — **v0.3.0 stable released**
 
 ## PROJECT_DIR
 
@@ -19,36 +18,34 @@ v0.3.0 (deferred)
 
 ## CLEANROOM_DECISION
 
-**PASS_WITH_WARNINGS — do not release v0.3.0 stable in this phase.**
+**PASS — release v0.3.0 stable.**
 
-All core stability conditions are met:
+The previous cleanroom (this report's first pass) was PASS_WITH_WARNINGS
+because of a `git_working_tree` doctor WARN from historical backlog. The
+housekeeping phase (see
+[`docs/PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md`](PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md))
+brought the working tree to a clean state by committing the 4
+tracked-modified files and adding 21 untracked run dirs to `.gitignore`.
+
+This re-run on the clean tree reports:
 
 - `validation` — 305 / 0 PASS
-- `doctor --offline` — 24 / 1 / 0
-- `doctor --quick` — 24 / 1 / 0
-- `doctor --full` — 24 / 1 / 0 (also runs validate.sh → 305/0 PASS)
+- `doctor --offline` — 25 / 0 / 0
+- `doctor --quick` — 25 / 0 / 0
+- `doctor --full` — 25 / 0 / 0 (also runs validate.sh → 305/0 PASS)
 - live `published-pages audit` — 14 / 14 PASS, 0 warn, 0 fail
-- URL dry-run smoke — `P3PR_SOURCE_URL` printed, no side effects
-- arXiv dry-run smoke — pipeline plan printed, no `work/` JSON written
-- finalize dry-run smoke — `P3PR_SITE_PATH` + `P3PR_PAGE_TITLE` printed, no side effects
-- gh auth — `gh auth status OK`
+- `status` — PASS, 2 local runs, 13 manifest pages
+- URL dry-run + arXiv dry-run + finalize dry-run — all PASS, no side effects
+- `gh auth status OK`
 - No old tags moved
 - No force pushes
 
-The single WARN across all three doctor runs is `git_working_tree`. The
-working tree has 4 modified files + 21 untracked entries, all of which
-are clearly identifiable historical artifacts from prior phases that
-were generated during those phases but never committed. The cleanroom
-spec calls for "no WARN" before a stable release and explicitly forbids
-deleting unknown dirty files or force-cleaning to suppress the WARN. The
-WARN is real and reasonable (the tree really is dirty) and the historical
-backlog is documented in the report.
+Decision: **release v0.3.0 stable.** See the release notes at
+[`docs/RELEASE_NOTES_v0.3.0.md`](RELEASE_NOTES_v0.3.0.md) for the full
+release artifact.
 
-Per the spec: "如果仍有 WARN，但不影响功能，可以发布 PASS_WITH_WARNINGS，但不要标记为 fully clean stable;优先不发布 v0.3.0，除非确认 WARN 合理且不会影响用户。"
-Translation: "If there's still a WARN, prefer NOT to release v0.3.0,
-unless confirm WARN is reasonable and won't affect users." The WARN is
-reasonable (it accurately reports a dirty tree) but it's a deviation from
-the "fully clean stable" bar, so this phase does not cut v0.3.0 stable.
+(For the historical context of why this report was first written as
+PASS_WITH_WARNINGS, see the section above.)
 
 ## GIT_STATE
 

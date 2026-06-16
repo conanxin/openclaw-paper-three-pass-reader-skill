@@ -3,31 +3,108 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [v0.3.0] — DEFERRED (2026-06-16)
+## [v0.3.0] — 2026-06-16
 
-**Status:** Not released. See
+### First stable release
+
+This is the first **stable** release of `paper-three-pass-reader`. No new
+features — this release freezes the v0.3 workflow after a cleanroom
+re-run on a clean working tree. `v0.3.0-alpha` is the immediately-
+preceding release.
+
+### Changed
+
+- **Housekeeping delta from `v0.3.0-alpha`** (single commit `cfa2b80`):
+  - Commits the 4 tracked-modified files from prior phases (v0.2.10
+    post-release doc polish + v0.2.18 finalize smoke refresh + 2
+    v0.2.15 fill-pack snapshot re-saves). All are clearly identifiable
+    historical artifacts.
+  - Adds 21 untracked run dirs from prior phases (v0.2.5 / v0.2.16 /
+    v0.2.18 / v0.3.0-alpha) to `.gitignore`. They remain on disk for
+    reproducibility but no longer pollute `git status --short` or
+    `p3pr doctor`. The bulk run dirs are reproducible from the same
+    commands; their `work/` JSONs are already committed where the
+    per-phase spec called for it.
+- **Final cleanroom artifacts** (single commit `c5f6efa`): 3 doctor
+  JSONs (offline / quick / full), 1 status JSON, 1
+  `published_pages_audit.json` + `.md`, 3 dry-run logs. All under
+  `runs/stable-cleanroom-20260616-final/`.
+- `p3pr doctor` summary counter bug fix from `v0.3.0-alpha` is
+  preserved (lowercases check status before summary-dict lookup).
+
+### Stable cleanroom results (this release)
+
+- `bash scripts/validate.sh` — **305 / 0 PASS**
+- `./p3pr doctor --offline` — 25 PASS / 0 WARN / 0 FAIL
+- `./p3pr doctor --quick` — 25 PASS / 0 WARN / 0 FAIL
+- `./p3pr doctor --full` — 25 PASS / 0 WARN / 0 FAIL (also runs `validate.sh` → 305/0 PASS)
+- `./p3pr status --runs --site` — PASS, 2 local runs, 13 manifest pages
+- live `audit_published_pages.py` — **14 / 14 PASS, 0 warn, 0 fail**
+- URL dry-run smoke — `P3PR_SOURCE_URL` printed, no side effects
+- arXiv dry-run smoke — `P3PR_RUN_DIR` printed, no `work/` JSON written
+- finalize dry-run smoke — `P3PR_FINALIZE_DRY_RUN: true`,
+  `P3PR_SITE_PATH: you-and-your-research`, `P3PR_PAGE_TITLE: You and
+  Your Research`
+- `gh auth status OK`
+- Working tree: **clean**
+- No old tags moved
+- No force pushes
+- No published pages removed
+
+### Compatibility
+
+- All v0.2.x and v0.3.0-alpha run directories remain compatible.
+- All existing GitHub Pages remain published.
+- All existing tags (v0.2.0-alpha through v0.3.0-alpha) are not moved.
+- All v0.2.15 / v0.2.17 / v0.2.18 / v0.2.19 publish guards and finalize
+  UX are preserved (verified by validation steps 20l, 22e, 22, 23).
+
+### Added
+
+- `docs/RELEASE_NOTES_v0.3.0.md` — public release notes for the first
+  stable release.
+- `docs/STABLE_CLEANROOM_CHECKLIST.md` — the cleanroom checklist
+  showing the readiness results on a clean working tree.
+- `docs/PHASE_P3PR_V0_3_0_CLEANROOM_HOUSEKEEPING_REPORT.md` — full
+  housekeeping report (committed files, ignored untracked dirs, the
+  `.gitignore` delta, before / after).
+- `docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md` — updated to
+  reflect that v0.3.0 was released (the original first-pass was
+  PASS_WITH_WARNINGS with the `git_working_tree` WARN, which the
+  housekeeping phase resolved).
+- `runs/stable-cleanroom-20260616-final/` — final cleanroom
+  artifacts: 3 doctor JSONs, 1 status JSON, 1 published_pages_audit
+  json+md, 3 dry-run logs.
+
+## [v0.3.0] — DEFERRED (2026-06-16) — superseded by the stable release above
+
+The v0.3.0 stable cut was initially deferred because of a
+`git_working_tree` doctor WARN from a historical backlog. The
+housekeeping phase (commit `cfa2b80`) committed the historical
+backlog and added the run dirs to `.gitignore`, which brought the
+working tree to a clean state. The final cleanroom re-run then cut
+v0.3.0 stable. This entry is kept for the historical record of the
+initial deferral.
+
+**Status:** Superseded. See
 [`docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md`](PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md)
 and [`docs/STABLE_CLEANROOM_CHECKLIST.md`](STABLE_CLEANROOM_CHECKLIST.md).
 
-The cleanroom is otherwise fully clean — `validation` 305/0 PASS, live
-`published-pages audit` 14/14 PASS, `p3pr doctor` 24/1/0, all 3
-dry-run smokes pass, `gh auth status OK`. The single doctor WARN is
-`git_working_tree` because of a historical backlog of 4 modified files
-+ 21 untracked run dirs from prior phases. The spec for this phase
-calls for "no WARN" before a stable release and explicitly forbids
-deleting unknown dirty files or force-cleaning to suppress the WARN.
+The cleanroom was otherwise fully clean — `validation` 305/0 PASS,
+live `published-pages audit` 14/14 PASS, `p3pr doctor` 24/1/0, all
+3 dry-run smokes pass, `gh auth status OK`. The single doctor WARN
+was `git_working_tree` because of a historical backlog of 4 modified
+files + 21 untracked run dirs from prior phases. The spec for this
+phase called for "no WARN" before a stable release and explicitly
+forbade deleting unknown dirty files or force-cleaning to suppress
+the WARN.
 
-The user can resolve this in three ways (none of which touch old tags
-or force-push):
-
-1. Commit the historical backlog as a single housekeeping commit, then
-   re-run the cleanroom.
-2. Add the historical run directories to `.gitignore` and clean.
-3. Accept `PASS_WITH_WARNINGS` and ship anyway.
-
-Deferred release notes live at
-[`docs/RELEASE_NOTES_v0.3.0.md`](RELEASE_NOTES_v0.3.0.md). No `v0.3.0`
-tag was created; `v0.3.0-alpha` remains the latest released.
+The user resolved this by accepting the housekeeping option in the
+phase report (commit `cfa2b80`): commit the historical backlog as a
+single housekeeping commit + add the run dirs to `.gitignore`. The
+final cleanroom then re-ran on the clean tree and reported 25/0/0
+doctor, 305/0 validation, 14/14 live audit. `v0.3.0` stable was cut
+in the same phase.
 
 ## [v0.3.0-alpha] — 2026-06-16
 
