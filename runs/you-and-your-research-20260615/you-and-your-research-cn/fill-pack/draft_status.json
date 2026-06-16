@@ -1,13 +1,13 @@
 {
   "language": "zh-CN",
-  "generated_at": "2026-06-15T13:31:05Z",
+  "generated_at": "2026-06-15T13:54:10Z",
   "input_kind": "paper_url",
   "reading_mode": "full_text",
   "confidence": "high",
   "needs_confirmation": false,
   "counts": {
     "draft_fields_count": 0,
-    "missing_fields_count": 10,
+    "missing_fields_count": 8,
     "unavailable_due_to_reading_mode_count": 0,
     "needs_verification_count": 0,
     "claims_total": 12,

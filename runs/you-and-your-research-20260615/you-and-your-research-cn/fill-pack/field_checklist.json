@@ -1,11 +1,11 @@
 {
   "language": "zh-CN",
   "reading_mode": "full_text",
-  "generated_at": "2026-06-15T13:31:05Z",
+  "generated_at": "2026-06-15T13:54:10Z",
   "summary": {
-    "present": 28,
+    "present": 30,
     "draft": 0,
-    "missing": 10,
+    "missing": 8,
     "unavailable_due_to_reading_mode": 0,
     "needs_verification": 0
   },
@@ -145,7 +145,7 @@
     {
       "field": "figures_tables",
       "required": false,
-      "status": "missing",
+      "status": "present",
       "needs_verification": false
     },
     {
@@ -217,7 +217,7 @@
     {
       "field": "reproduction_plan.success_criteria",
       "required": false,
-      "status": "missing",
+      "status": "present",
       "needs_verification": false
     },
     {

@@ -1,13 +1,13 @@
 {
   "schema_version": "0.2.0",
-  "generated_at": "2026-06-16T02:15:29.514235Z",
+  "generated_at": "2026-06-16T03:06:51.899931Z",
   "status": "PASS",
   "site_root": "https://conanxin.github.io/paper-reading-pages",
   "manifest_url": "https://conanxin.github.io/paper-reading-pages/published_pages.json",
   "manifest_ok": true,
-  "pages_total": 12,
-  "pages_checked": 12,
-  "pages_pass": 12,
+  "pages_total": 13,
+  "pages_checked": 13,
+  "pages_pass": 13,
   "pages_warn": 0,
   "pages_fail": 0,
   "issues_by_severity": {
@@ -17,7 +17,7 @@
   },
   "page_type_counts": {
     "site_index": 1,
-    "paper_page": 11,
+    "paper_page": 12,
     "manifest": 0,
     "unknown": 0
   },
@@ -27,7 +27,7 @@
       "slug": "index",
       "title": "Paper Reading Pages — index",
       "http_status": 200,
-      "fetched_bytes": 3438,
+      "fetched_bytes": 3675,
       "issues": [],
       "page_type": "site_index",
       "status": "PASS"
@@ -198,6 +198,16 @@
     {
       "url": "https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-dogfood-cn/",
       "slug": "you-and-your-research-url-dogfood-cn",
+      "title": "You and Your Research — 三遍阅读法",
+      "http_status": 200,
+      "fetched_bytes": 30991,
+      "issues": [],
+      "page_type": "paper_page",
+      "status": "PASS"
+    },
+    {
+      "url": "https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-dogfood-finalize-cn/",
+      "slug": "you-and-your-research-url-dogfood-finalize-cn",
       "title": "You and Your Research — 三遍阅读法",
       "http_status": 200,
       "fetched_bytes": 30991,
