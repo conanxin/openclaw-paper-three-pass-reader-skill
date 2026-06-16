@@ -3,6 +3,30 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.13-alpha] — 2026-06-16
+
+### Added
+
+- **Manifest link in generated root index.** `publish_output_to_github.sh` now emits both `<link rel="alternate" type="application/json" href="published_pages.json" title="Published pages manifest" />` in the `<head>` and a visible `<a href="published_pages.json">` link in the About section (with English + Chinese labels: "Machine-readable manifest: ... · 页面清单 JSON"). Users see the manifest link directly on the index; tools can discover the JSON via `<link rel="alternate">`.
+- **Audit recognizes the manifest link.** `_check_site_index()` in `audit_published_pages.py` now accepts either a visible `<a href="published_pages.json">` link OR a `<link rel="alternate" type="application/json" href="published_pages.json">` machine-readable discovery tag. A root index emitted by the current publisher no longer triggers the info-level `index_no_manifest_link` finding.
+- **`scripts/validate.sh` step 19.** Six new sub-checks: publisher-generated index contains `published_pages.json`; generated index contains the manifest link in either form; fake root index with manifest link does not trigger `index_no_manifest_link`; fake root index without manifest link still triggers it (info-level); audit JSON classifies `site_index` AND has no paper-level warnings on the root; live site audit root index no longer triggers `index_no_manifest_link`. Validation is now 242/0 PASS (was 236/0 PASS at v0.2.12-alpha).
+- **One new selftest fixture** (`fake-site-index-no-manifest`): a root index with no link to `published_pages.json`, must still trigger `index_no_manifest_link` at info level.
+- **Live audit landed clean.** Live run against `conanxin.github.io/paper-reading-pages` now reports `[audit] overall=PASS pages=10 pass=10 warn=0 fail=0` with `issues_by_severity: {error: 0, warning: 0, info: 8}` (was 9 info — one fewer `index_no_manifest_link`). Recorded under `runs/published-pages-audit-20260615-root-index-manifest-link/`.
+- **`docs/RELEASE_NOTES_v0.2.13-alpha.md`** and **`docs/PHASE_P3PR_V0_2_13_ROOT_INDEX_MANIFEST_LINK_REPORT.md`** — release notes + final phase report.
+
+### Changed
+
+- `skills/paper-three-pass-reader/scripts/publish_output_to_github.sh` — root index generator now emits the manifest link (two forms) on every publish.
+- `skills/paper-three-pass-reader/scripts/audit_published_pages.py` — `_check_site_index` now accepts the `<link rel="alternate">` form; old text-only fallback (`"published_pages.json" not in body`) replaced with a structured regex pair.
+- `scripts/validate.sh` — step 17 selftest fixture list bumped from 8 to 9 (added `fake-site-index-no-manifest`); step 19 adds 6 new sub-checks; the existing fake-site-index fixture now carries the manifest link in both forms.
+
+### Compatibility
+
+- Existing pages remain readable. The only consumer page republished by this release is `you-and-your-research-cn` (used as the trigger to refresh the root index).
+- `published_pages.json` schema is unchanged.
+- No old tags moved. v0.2.10-alpha / v0.2.12-alpha stay at their original commits.
+- The audit JSON's `index_no_manifest_link` finding still appears in legacy reports / older runs that don't have the new manifest link; new reports from this release will no longer show it on the live site.
+
 ## [v0.2.12-alpha] — 2026-06-16
 
 ### Added

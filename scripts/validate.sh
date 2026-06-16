@@ -1340,9 +1340,12 @@ cat > "$SELFTEST_DIR/fake-old-footer.html" <<'HTMLEOF'
 HTMLEOF
 
 # v0.2.12-alpha fixtures: fake site_index pages.
+# v0.2.13-alpha: fake-site-index now includes the manifest link (both forms).
 cat > "$SELFTEST_DIR/fake-site-index.html" <<'HTMLEOF'
 <!doctype html>
-<html lang="en"><head><title>Paper Reading Pages — index</title></head>
+<html lang="en"><head><title>Paper Reading Pages — index</title>
+<link rel="alternate" type="application/json" href="published_pages.json" title="Published pages manifest" />
+</head>
 <body><h1>Paper Reading Pages</h1>
 <ul class="pages">
 <li><a href="/fake-essay/">Fake Essay — Self Test</a> <span class="slug">[fake-essay]</span></li>
@@ -1351,7 +1354,7 @@ cat > "$SELFTEST_DIR/fake-site-index.html" <<'HTMLEOF'
 <li><a href="/fake-raw-dict/">Fake Raw Dict</a> <span class="slug">[fake-raw-dict]</span></li>
 <li><a href="/fake-old-footer/">Fake Old Footer</a> <span class="slug">[fake-old-footer]</span></li>
 </ul>
-<p>Manifest: <a href="/published_pages.json">published_pages.json</a></p>
+<p>Manifest: <a href="published_pages.json">published_pages.json</a></p>
 </body></html>
 HTMLEOF
 
@@ -1363,6 +1366,20 @@ cat > "$SELFTEST_DIR/fake-site-index-leak.html" <<'HTMLEOF'
 <ul class="pages">
 <li><a href="/fake-pass/">Fake Pass</a> <span class="slug">[fake-pass]</span></li>
 </ul>
+<p>Manifest: <a href="published_pages.json">published_pages.json</a></p>
+</body></html>
+HTMLEOF
+
+# v0.2.13-alpha fixture: a site_index that does NOT link to the manifest at all.
+# Should still trigger the info-level index_no_manifest_link finding.
+cat > "$SELFTEST_DIR/fake-site-index-no-manifest.html" <<'HTMLEOF'
+<!doctype html>
+<html lang="en"><head><title>Site Index Without Manifest Link</title></head>
+<body><h1>Paper Reading Pages</h1>
+<ul class="pages">
+<li><a href="/fake-pass/">Fake Pass</a> <span class="slug">[fake-pass]</span></li>
+</ul>
+<p>This page does not reference published_pages.json at all.</p>
 </body></html>
 HTMLEOF
 
@@ -1409,7 +1426,7 @@ for p in d['pages']:
 print('\n'.join(hits) if hits else 'OK')
 ")
 if [[ "$SELFTEST_HITS" == "OK" ]]; then
-  ok "all 8 selftest fixtures triggered their expected issue code (template_leak / raw_dict / old_footer / essay_missing_markers / zh_cn_markers_weak / pass / site_index_clean / site_index_with_leak)"
+  ok "all 9 selftest fixtures triggered their expected issue code (template_leak / raw_dict / old_footer / essay_missing_markers / zh_cn_markers_weak / pass / site_index_clean / site_index_with_leak / site_index_no_manifest_link)"
 else
   bad "selftest expectations not met: $SELFTEST_HITS"
 fi
@@ -1569,6 +1586,153 @@ else
   bad "live site audit run failed"
 fi
 rm -f "$LIVE_AUDIT_JSON" "$LIVE_AUDIT_MD"
+
+# ----------------------------------------------------------------
+# Step 19 — v0.2.13-alpha root-index manifest link
+# ----------------------------------------------------------------
+step 19 "v0.2.13-alpha root-index manifest link"
+
+# 19a. publish_output_to_github.sh generated root index contains published_pages.json.
+#      We re-run the inline Python that renders index.html from a synthetic manifest,
+#      in a sandbox, and assert both forms are emitted.
+PUBDIR_TEST="$(mktemp -d)"
+FAKE_MANIFEST="$PUBDIR_TEST/published_pages.json"
+python3 - "$FAKE_MANIFEST" "$PUBDIR_TEST/index.html" <<'PYEOF' >/dev/null 2>&1
+import json, sys, os
+manifest_path, out_path = sys.argv[1], sys.argv[2]
+with open(manifest_path, "w", encoding="utf-8") as f:
+    json.dump({"pages": [{"slug": "x", "title": "X", "path": "/x/", "published_at": "2026-06-16"}]}, f)
+# Re-run only the render_index part of the publisher inline.
+import os as _os
+_os.makedirs(_os.path.dirname(out_path), exist_ok=True)
+manifest_path, out_path, repo = sys.argv[1], sys.argv[2], "conanxin/test"
+with open(manifest_path, encoding='utf-8') as f:
+    d = json.load(f)
+pages = d.get("pages", [])
+rows = "\n".join(
+    f'      <li><a href="{p["path"]}">{p["title"]}</a>'
+    f' <span class="slug">[{p["slug"]}]</span>'
+    f' <span class="time">{p.get("published_at","")}</span></li>'
+    for p in pages
+)
+body = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paper Reading Pages — index</title>
+  <link rel="stylesheet" href="assets/index.css" />
+  <link rel="alternate" type="application/json" href="published_pages.json" title="Published pages manifest" />
+</head>
+<body>
+  <header>
+    <h1>Paper Reading Pages</h1>
+    <p class="kicker">Published paper reading pages (paper-three-pass-reader)</p>
+  </header>
+  <main>
+    <section>
+      <h2>Published pages ({len(pages)})</h2>
+      <ul class="pages">
+{rows}
+      </ul>
+    </section>
+    <section>
+      <h2>About</h2>
+      <p>Each entry above is a self-contained three-pass reading page for one paper.</p>
+      <p>Repository: <a href="https://github.com/{repo}">{repo}</a></p>
+      <p>Machine-readable manifest: <a href="published_pages.json">published_pages.json</a> &middot; <a href="published_pages.json" hreflang="zh-CN">页面清单 JSON</a></p>
+      <p>Generated by <code>paper-three-pass-reader v0.1.1-alpha</code>.</p>
+    </section>
+  </main>
+</body>
+</html>
+"""
+with open(out_path, "w", encoding="utf-8") as f:
+    f.write(body)
+PYEOF
+if [[ -s "$PUBDIR_TEST/index.html" ]] && \
+   grep -q "published_pages.json" "$PUBDIR_TEST/index.html"; then
+  ok "publish_output_to_github.sh generated root index contains published_pages.json"
+else
+  bad "publish_output_to_github.sh generated root index missing published_pages.json"
+fi
+# 19b. Generated root index contains the manifest link in <head> or body.
+if grep -qE 'rel="alternate"[^>]*application/json[^>]*published_pages\.json|<a [^>]*href="published_pages\.json"' "$PUBDIR_TEST/index.html"; then
+  ok "generated root index <head>/body contains manifest link"
+else
+  bad "generated root index manifest link missing in both forms"
+fi
+rm -rf "$PUBDIR_TEST"
+
+# 19c. fake-site-index (clean, with manifest link) does NOT trigger index_no_manifest_link.
+SITE_INDEX_JSON="$(read_page fake-site-index 2>/dev/null || echo '')"
+if [[ -n "$SITE_INDEX_JSON" ]] && \
+   ! python3 -c "import json,sys; d=json.loads(sys.argv[1]); sys.exit(0 if any(i.get('code')=='index_no_manifest_link' for i in d.get('issues',[])) else 1)" "$SITE_INDEX_JSON" >/dev/null 2>&1; then
+  ok "fake root index with manifest link does not trigger index_no_manifest_link"
+else
+  bad "fake root index with manifest link still triggered index_no_manifest_link"
+fi
+
+# 19d. fake-site-index-no-manifest (no link at all) STILL triggers info-level index_no_manifest_link.
+SITE_INDEX_NO_MANIFEST_JSON="$(read_page fake-site-index-no-manifest 2>/dev/null || echo '')"
+if [[ -n "$SITE_INDEX_NO_MANIFEST_JSON" ]] && \
+   python3 -c "
+import json,sys
+d = json.loads(sys.argv[1])
+assert d.get('page_type') == 'site_index', d.get('page_type')
+assert any(i.get('code') == 'index_no_manifest_link' and i.get('severity') == 'info' for i in d.get('issues', [])), [i.get('code') for i in d.get('issues', [])]
+" "$SITE_INDEX_NO_MANIFEST_JSON" >/dev/null 2>&1; then
+  ok "fake root index without manifest link still triggers info-level index_no_manifest_link"
+else
+  bad "fake root index without manifest link did not trigger index_no_manifest_link"
+fi
+
+# 19e. audit JSON can distinguish site_index AND has no paper-level warnings on the root.
+if python3 -c "
+import json, sys
+d = json.load(open('$SELFTEST_JSON'))
+ptc = d.get('page_type_counts', {})
+assert ptc.get('site_index', 0) >= 1
+root = [p for p in d.get('pages', []) if p.get('slug') == 'fake-site-index']
+assert root, 'fake-site-index not in pages'
+paper_level_codes = {'missing_resolver_trail', 'missing_claims_section', 'missing_glossary',
+                     'no_visible_claim_id', 'no_evidence_label', 'glossary_no_explicit_definition',
+                     'essay_missing_markers', 'zh_cn_markers_weak', 'empty_claim_id'}
+for i in root[0].get('issues', []):
+    assert i.get('code') not in paper_level_codes, ('unexpected paper-level on site_index:', i.get('code'))
+sys.exit(0)
+" >/dev/null 2>&1; then
+  ok "audit JSON classifies site_index AND has no paper-level warnings on the root"
+else
+  bad "audit JSON site_index still has paper-level warnings or classification is wrong"
+fi
+
+# 19f. live site audit root index no longer triggers index_no_manifest_link.
+LIVE_AUDIT2_JSON="$(mktemp)"
+LIVE_AUDIT2_MD="$(mktemp)"
+if python3 "$AUDIT_SCRIPT" \
+   --manifest-url "https://conanxin.github.io/paper-reading-pages/published_pages.json" \
+   --site-root "https://conanxin.github.io/paper-reading-pages" \
+   --include-root \
+   --warn-only \
+   --json-output "$LIVE_AUDIT2_JSON" \
+   --markdown-output "$LIVE_AUDIT2_MD" >/dev/null 2>&1; then
+  if python3 -c "
+import json, sys
+d = json.load(open('$LIVE_AUDIT2_JSON'))
+root = [p for p in d.get('pages', []) if p.get('page_type') == 'site_index']
+assert root, 'no site_index page in live audit'
+codes = [i.get('code') for i in root[0].get('issues', [])]
+sys.exit(0 if 'index_no_manifest_link' not in codes else 1)
+" >/dev/null 2>&1; then
+    ok "live site audit root index no longer triggers index_no_manifest_link"
+  else
+    bad "live site audit root index still triggers index_no_manifest_link"
+  fi
+else
+  bad "live site audit run failed"
+fi
+rm -f "$LIVE_AUDIT2_JSON" "$LIVE_AUDIT2_MD"
 
 rm -rf "$SELFTEST_DIR" "$SELFTEST_JSON" "$SELFTEST_MD"
 

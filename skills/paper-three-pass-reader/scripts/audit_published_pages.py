@@ -451,13 +451,27 @@ def _check_site_index(body: str, url: str, manifest_pages: List[Dict[str, Any]])
                     "确认 publish_output_to_github.sh 的 index 重新生成逻辑使用了最新 manifest。",
                 ))
 
-    # Reference to published_pages.json (or the manifest URL)
-    if "published_pages.json" not in body:
+    # Reference to published_pages.json (or the manifest URL).
+    # v0.2.13-alpha: accept either a visible <a href="published_pages.json">
+    # link, OR a <link rel="alternate" type="application/json" href="published_pages.json">
+    # machine-readable manifest discovery. Both forms make the manifest
+    # discoverable from the index.
+    has_visible_link = bool(re.search(
+        r'<a\s+[^>]*href=["\']published_pages\.json["\']', body,
+    ))
+    has_rel_alternate = bool(re.search(
+        r'<link\s+[^>]*rel=["\']alternate["\'][^>]*type=["\']application/json["\'][^>]*href=["\']published_pages\.json["\']',
+        body,
+    )) or bool(re.search(
+        r'<link\s+[^>]*rel=["\']alternate["\'][^>]*href=["\']published_pages\.json["\'][^>]*type=["\']application/json["\']',
+        body,
+    ))
+    if not (has_visible_link or has_rel_alternate):
         issues.append(_mk_issue(
             "info",
             "index_no_manifest_link",
             "site_index 页面未引用 published_pages.json (audit 仍可工作,但用户可能无法直接跳转到 manifest)。",
-            "publisher 可选地在 <head> 或 <footer> 加 <link rel=alternate> 到 manifest URL。",
+            "publisher 应在 <head> 加 <link rel=\"alternate\" type=\"application/json\" href=\"published_pages.json\"> 或在 About 区加可见链接。",
         ))
 
     return issues
@@ -904,6 +918,13 @@ def _selftest(args) -> Dict[str, Any]:
             "_url": "file://" + os.path.join(args.selftest_dir, "fake-site-index-leak.html"),
             "_expect": ["template_leak"],
         },
+        {
+            "slug": "fake-site-index-no-manifest",
+            "title": "Fake Site Index Without Manifest Link",
+            "path": "/fake-site-index-no-manifest/",
+            "_url": "file://" + os.path.join(args.selftest_dir, "fake-site-index-no-manifest.html"),
+            "_expect": ["index_no_manifest_link"],
+        },
     ]
     # monkey-patch _http_get for file:// urls
     import urllib.parse as _up
@@ -924,7 +945,7 @@ def _selftest(args) -> Dict[str, Any]:
         # regardless of the URL we point _http_get at (file:// fixture path);
         # we use page_type_override so the classifier rule and the
         # page_type field both stay consistent with the spec.
-        site_index_slugs = {"fake-site-index", "fake-site-index-leak"}
+        site_index_slugs = {"fake-site-index", "fake-site-index-leak", "fake-site-index-no-manifest"}
         pages: List[Dict[str, Any]] = []
         for entry in fake_manifest_pages:
             url = entry["_url"]
