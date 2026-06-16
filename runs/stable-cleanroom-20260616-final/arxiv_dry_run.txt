@@ -1,0 +1,20 @@
+[info] skipped (--dry-run)
+[info] run dir: runs/stable-cleanroom-20260616-final/stable-cleanroom-final-arxiv-smoke
+[info] input_kind=paper_identifier, reading_mode=full_text, language=zh-CN
+
+============================================================
+P3PR_STATUS: DRY_RUN
+P3PR_INPUT_KIND: paper_identifier
+P3PR_READING_MODE: full_text
+P3PR_RUN_DIR: runs/stable-cleanroom-20260616-final/stable-cleanroom-final-arxiv-smoke
+P3PR_JSON: runs/stable-cleanroom-20260616-final/stable-cleanroom-final-arxiv-smoke/work/paper_reading.json
+P3PR_FILL_PACK: runs/stable-cleanroom-20260616-final/stable-cleanroom-final-arxiv-smoke/fill-pack
+P3PR_LOCAL_PAGE: runs/stable-cleanroom-20260616-final/stable-cleanroom-final-arxiv-smoke/paper-reading-output/index.html
+P3PR_PAGE_URL: (publish skipped in --dry-run)
+P3PR_RESOLVER_STATUS: matched
+P3PR_RESOLVER_MATCH_TYPE: arxiv
+P3PR_CANONICAL_TITLE: AI-native Memory 2.0: Second Me
+P3PR_ARXIV_ID: 2503.08102
+P3PR_DEFAULT_SLUG: stable-cleanroom-final-arxiv-smoke
+P3PR_NEXT_ACTION: remove --dry-run to actually run the pipeline
+============================================================

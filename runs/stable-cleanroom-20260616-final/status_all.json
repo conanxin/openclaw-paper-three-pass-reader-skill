@@ -1,0 +1,150 @@
+{
+  "status": "PASS",
+  "runs_root": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs",
+  "runs": [
+    {
+      "run_dir": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/attention-is-all-you-need-20260615",
+      "slug": "attention-is-all-you-need-20260615",
+      "title": "Attention Is All You Need",
+      "input_kind": "unknown",
+      "reading_mode": "full_text",
+      "target_language": "zh-CN",
+      "ui_language": "zh-CN",
+      "has_fill_pack": false,
+      "has_audit": false,
+      "audit_status": "unknown",
+      "has_quality_gate": false,
+      "quality_gate_status": "unknown",
+      "has_rendered_page": true,
+      "local_page_path": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/attention-is-all-you-need-20260615/paper-reading-output/index.html",
+      "has_published_hint": true,
+      "site_path_guess": "attention-is-all-you-need",
+      "status": "published",
+      "next_action": "Already published; re-run only if you want to republish."
+    },
+    {
+      "run_dir": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/you-and-your-research-20260615",
+      "slug": "you-and-your-research-20260615",
+      "title": "You and Your Research",
+      "input_kind": "html",
+      "reading_mode": "full_text",
+      "target_language": "zh-CN",
+      "ui_language": "zh-CN",
+      "has_fill_pack": true,
+      "has_audit": false,
+      "audit_status": "unknown",
+      "has_quality_gate": true,
+      "quality_gate_status": "PASS",
+      "has_rendered_page": true,
+      "local_page_path": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/you-and-your-research-20260615/paper-reading-output/index.html",
+      "has_published_hint": false,
+      "site_path_guess": "you-and-your-research",
+      "status": "rendered",
+      "next_action": "Rendered. Re-run `./p3pr finalize /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/you-and-your-research-20260615 --publish` to publish."
+    }
+  ],
+  "site": {
+    "status": "PASS",
+    "manifest_source": "url",
+    "site_root": "https://conanxin.github.io/paper-reading-pages",
+    "pages_total": 13,
+    "pages": [
+      {
+        "title": "Attention Is All You Need",
+        "slug": "attention-is-all-you-need",
+        "url": "",
+        "published_at": "2026-06-15T22:41:00Z"
+      },
+      {
+        "title": "Weak Input: Title Only — Attention Is All You Need",
+        "slug": "weakinput-title-attention-is-all-you-need",
+        "url": "",
+        "published_at": "2026-06-15T22:41:52Z"
+      },
+      {
+        "title": "Weak Input: Abstract Only — How to Read a Paper",
+        "slug": "weakinput-abstract-how-to-read-a-paper",
+        "url": "",
+        "published_at": "2026-06-15T22:42:02Z"
+      },
+      {
+        "title": "Weak Input: Screenshot Only — How to Read a Paper",
+        "slug": "weakinput-screenshot-how-to-read-a-paper",
+        "url": "",
+        "published_at": "2026-06-15T22:42:11Z"
+      },
+      {
+        "title": "Weak Input: GitHub Repo — BERT",
+        "slug": "weakinput-repo-bert",
+        "url": "",
+        "published_at": "2026-06-15T22:42:21Z"
+      },
+      {
+        "title": "Runner Smoke: Attention Is All You Need",
+        "slug": "runner-title-attention",
+        "url": "",
+        "published_at": "2026-06-15T22:42:30Z"
+      },
+      {
+        "title": "Second Me: AI-Native Memory 2.0 — Auto-Fill Smoke",
+        "slug": "second-me-fulltext-autofill",
+        "url": "",
+        "published_at": "2026-06-15T22:42:39Z"
+      },
+      {
+        "title": "Second Me：面向 LLM Agent 的人类启发式记忆机制",
+        "slug": "second-me-human-inspired-memory-cn",
+        "url": "",
+        "published_at": "2026-06-15T22:42:48Z"
+      },
+      {
+        "title": "You and Your Research：如何选择重要问题并做好研究",
+        "slug": "you-and-your-research-cn",
+        "url": "",
+        "published_at": "2026-06-16T00:18:48Z"
+      },
+      {
+        "title": "URL Smoke：You and Your Research",
+        "slug": "you-and-your-research-url-smoke-cn",
+        "url": "",
+        "published_at": "2026-06-16T00:52:10Z"
+      },
+      {
+        "title": "URL Dogfood：You and Your Research",
+        "slug": "you-and-your-research-url-dogfood-cn",
+        "url": "",
+        "published_at": "2026-06-16T01:55:29Z"
+      },
+      {
+        "title": "Finalize Dogfood：You and Your Research",
+        "slug": "you-and-your-research-url-dogfood-finalize-cn",
+        "url": "",
+        "published_at": "2026-06-16T02:15:14Z"
+      },
+      {
+        "title": "Finalize UX：You and Your Research",
+        "slug": "you-and-your-research-url-finalize-ux-cn",
+        "url": "",
+        "published_at": "2026-06-16T03:06:35Z"
+      }
+    ],
+    "root_index_present": false,
+    "manifest_valid": true,
+    "next_action": "13 page(s) tracked in manifest."
+  },
+  "summary": {
+    "runs_total": 2,
+    "draft": 0,
+    "filled": 0,
+    "audited": 0,
+    "rendered": 1,
+    "rendered_with_warnings": 0,
+    "published": 1,
+    "blocked": 0,
+    "unknown": 0
+  },
+  "recommendations": [
+    "1 rendered run(s) not yet published. Run `./p3pr finalize <run-dir> --publish`."
+  ],
+  "next_action": "All clear. Use `./p3pr finalize <run-dir> --publish` to publish more pages."
+}

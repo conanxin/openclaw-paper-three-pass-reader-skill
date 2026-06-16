@@ -63,6 +63,8 @@ runs/p3pr-cli-20260615/arxiv-2503.08102/extracted/
 runs/stable-readiness-20260616/stable-readiness-url-smoke/
 runs/stable-cleanroom-20260616/stable-cleanroom-url-smoke/
 runs/stable-cleanroom-20260616/stable-cleanroom-arxiv-smoke/
+runs/stable-cleanroom-20260616-final/stable-cleanroom-final-url-smoke/
+runs/stable-cleanroom-20260616-final/stable-cleanroom-final-arxiv-smoke/
 
 # Human-readable .txt logs that mirror committed .json artifacts.
 runs/stable-cleanroom-20260616/doctor_offline.txt
@@ -71,6 +73,17 @@ runs/stable-cleanroom-20260616/doctor_full.txt
 runs/stable-cleanroom-20260616/status_all.txt
 runs/stable-cleanroom-20260616/status_runs_offline.txt
 runs/stable-cleanroom-20260616/published_pages_audit.txt
+runs/stable-cleanroom-20260616-final/doctor_offline.txt
+runs/stable-cleanroom-20260616-final/doctor_quick.txt
+runs/stable-cleanroom-20260616-final/doctor_full.txt
+runs/stable-cleanroom-20260616-final/status_all.txt
+runs/stable-cleanroom-20260616-final/status_runs_offline.txt
+runs/stable-cleanroom-20260616-final/published_pages_audit.txt
+
+# The final cleanroom dry-run logs (url / arxiv / finalize) ARE
+# committed (see the spec — they are part of the canonical cleanroom
+# artifacts). Listed here so a future phase that adds new dry-runs
+# under a new path knows to either commit them or add them here.
 
 # Inner dirs of tracked runs/ that are themselves bulk run outputs.
 runs/p3pr-url-dogfood-filled-20260616/you-and-your-research-url-dogfood-cn/input/

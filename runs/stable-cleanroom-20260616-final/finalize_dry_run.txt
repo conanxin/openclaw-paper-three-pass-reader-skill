@@ -1,0 +1,16 @@
+
+============================================================
+P3PR_FINALIZE_DRY_RUN: true
+would_read_json: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/p3pr-url-dogfood-filled-20260616/you-and-your-research-url-dogfood-cn/work/paper_reading.json
+would_audit: True (audit_paper_reading.py)
+would_quality_gate: True (target_language=zh-CN, ui_language=zh-CN, skip_quality_gate=False)
+would_render: True (render_page.py → /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/p3pr-url-dogfood-filled-20260616/you-and-your-research-url-dogfood-cn/paper-reading-output)
+would_publish: True (repo=conanxin/paper-reading-pages, branch=gh-pages)
+inferred_site_path: you-and-your-research (source: auto from paper_reading.json / run-dir)
+inferred_page_title: You and Your Research (source: auto from paper_reading.json)
+P3PR_SITE_PATH: you-and-your-research
+P3PR_PAGE_TITLE: You and Your Research
+P3PR_READING_MODE: full_text
+P3PR_LANGUAGE: zh-CN/zh-CN
+published_audit_after_publish: True
+============================================================
