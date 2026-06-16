@@ -422,3 +422,12 @@ This is `v0.3.0-alpha`, not `v0.3.0` stable. See
 [`STABLE_READINESS_CHECKLIST.md`](../../../../docs/STABLE_READINESS_CHECKLIST.md)
 §"Not yet stable" for the criteria that should be met before the next
 stable release.
+
+## v0.3.0 stable — DEFERRED
+
+`v0.3.0` stable was **deferred** in
+[`PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md).
+The cleanroom is otherwise fully clean (validation 305/0, live audit
+14/14, doctor 24/1/0, all dry-runs PASS) but `p3pr doctor` reports a
+`git_working_tree` WARN from a historical backlog. `v0.3.0-alpha`
+remains the latest released.

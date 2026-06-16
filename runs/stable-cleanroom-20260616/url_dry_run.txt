@@ -1,0 +1,20 @@
+[info] url=https://www.cs.virginia.edu/~robins/YouAndYourResearch.html; http_status=0; final_url=https://www.cs.virginia.edu/~robins/YouAndYourResearch.html; content_type=''; is_pdf=False; text_chars=0; body_path=None
+[info] run dir: runs/stable-cleanroom-20260616/stable-cleanroom-url-smoke
+[info] input_kind=paper_url, reading_mode=full_text, language=zh-CN
+
+============================================================
+P3PR_STATUS: DRY_RUN
+P3PR_INPUT_KIND: paper_url
+P3PR_READING_MODE: full_text
+P3PR_RUN_DIR: runs/stable-cleanroom-20260616/stable-cleanroom-url-smoke
+P3PR_JSON: runs/stable-cleanroom-20260616/stable-cleanroom-url-smoke/work/paper_reading.json
+P3PR_FILL_PACK: runs/stable-cleanroom-20260616/stable-cleanroom-url-smoke/fill-pack
+P3PR_LOCAL_PAGE: runs/stable-cleanroom-20260616/stable-cleanroom-url-smoke/paper-reading-output/index.html
+P3PR_PAGE_URL: (publish skipped in --dry-run)
+P3PR_SOURCE_URL: https://www.cs.virginia.edu/~robins/YouAndYourResearch.html
+P3PR_RESOLVER_STATUS: not_found
+P3PR_RESOLVER_MATCH_TYPE: none
+P3PR_CANONICAL_TITLE: You and Your Research
+P3PR_DEFAULT_SLUG: stable-cleanroom-url-smoke
+P3PR_NEXT_ACTION: remove --dry-run to actually run the pipeline
+============================================================

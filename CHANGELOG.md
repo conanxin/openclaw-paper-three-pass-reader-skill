@@ -3,6 +3,32 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.3.0] — DEFERRED (2026-06-16)
+
+**Status:** Not released. See
+[`docs/PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md`](PHASE_P3PR_V0_3_0_STABLE_CLEANROOM_REPORT.md)
+and [`docs/STABLE_CLEANROOM_CHECKLIST.md`](STABLE_CLEANROOM_CHECKLIST.md).
+
+The cleanroom is otherwise fully clean — `validation` 305/0 PASS, live
+`published-pages audit` 14/14 PASS, `p3pr doctor` 24/1/0, all 3
+dry-run smokes pass, `gh auth status OK`. The single doctor WARN is
+`git_working_tree` because of a historical backlog of 4 modified files
++ 21 untracked run dirs from prior phases. The spec for this phase
+calls for "no WARN" before a stable release and explicitly forbids
+deleting unknown dirty files or force-cleaning to suppress the WARN.
+
+The user can resolve this in three ways (none of which touch old tags
+or force-push):
+
+1. Commit the historical backlog as a single housekeeping commit, then
+   re-run the cleanroom.
+2. Add the historical run directories to `.gitignore` and clean.
+3. Accept `PASS_WITH_WARNINGS` and ship anyway.
+
+Deferred release notes live at
+[`docs/RELEASE_NOTES_v0.3.0.md`](RELEASE_NOTES_v0.3.0.md). No `v0.3.0`
+tag was created; `v0.3.0-alpha` remains the latest released.
+
 ## [v0.3.0-alpha] — 2026-06-16
 
 ### Stable-readiness release candidate
