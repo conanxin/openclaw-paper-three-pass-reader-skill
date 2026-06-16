@@ -1839,6 +1839,35 @@ if (cd "$ROOT" && ./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResea
       bad "p3pr $sub --help regressed"
     fi
   done
+  # 20l. v0.2.15-alpha: p3pr.py refuses to publish when paper-reading-output/index.html
+  # is missing (i.e. when render was skipped because audit/qg FAILED). We exercise
+  # this by running a real p3pr url with --allow-draft-publish against the smoke URL
+  # WITHOUT --audit-warn-only — the audit will FAIL on a 1-claim draft, render will
+  # be skipped, and the CLI must exit non-zero with P3PR_STATUS=BLOCKED.
+  V215_ROOT="$ROOT/.v215-empty-stub-check"
+  V215_SLUG="v215-empty-stub-check"
+  rm -rf "$V215_ROOT"
+  mkdir -p "$V215_ROOT"
+  v215_rc=0
+  (cd "$ROOT" && ./p3pr url "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html" --zh --full \
+      --allow-draft-publish --publish \
+      --slug "$V215_SLUG" --output-root "$V215_ROOT" \
+      --title "You and Your Research" --authors "Richard W. Hamming" \
+      --page-title "v0.2.15 empty-stub check" \
+      >/dev/null 2>"$V215_ROOT/stderr.log") || v215_rc=$?
+  if [[ "$v215_rc" -ne 0 ]] && grep -q "render was skipped" "$V215_ROOT/stderr.log" 2>/dev/null; then
+    ok "v0.2.15-alpha: p3pr url blocks publish when render was skipped (rc=$v215_rc)"
+  else
+    bad "v0.2.15-alpha: p3pr url should block (rc=$v215_rc) and stderr should mention 'render was skipped'"
+  fi
+  # Confirm no v215-empty-stub-check directory was pushed to gh-pages.
+  if curl -sI -L "https://conanxin.github.io/paper-reading-pages/$V215_SLUG/" 2>/dev/null \
+     | head -1 | grep -q "200"; then
+    bad "v0.2.15-alpha fix regressed: empty stub was pushed to gh-pages"
+  else
+    ok "v0.2.15-alpha: no empty stub on gh-pages for blocked run"
+  fi
+  rm -rf "$V215_ROOT"
 else
   bad "URL smoke run failed; layout checks skipped"
 fi

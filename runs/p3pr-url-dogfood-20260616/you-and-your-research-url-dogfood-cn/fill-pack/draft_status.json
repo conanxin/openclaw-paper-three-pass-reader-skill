@@ -1,0 +1,19 @@
+{
+  "language": "zh-CN",
+  "generated_at": "2026-06-16T01:33:48Z",
+  "input_kind": "paper_url",
+  "reading_mode": "full_text",
+  "confidence": "low",
+  "needs_confirmation": true,
+  "counts": {
+    "draft_fields_count": 20,
+    "missing_fields_count": 7,
+    "unavailable_due_to_reading_mode_count": 0,
+    "needs_verification_count": 20,
+    "claims_total": 1,
+    "claims_with_verification_or_uncertain": 0
+  },
+  "can_render": true,
+  "can_publish": true,
+  "recommended_next_action": "1. Open `fill-pack/01_stage0_intake_resolution.md` and work through each step in order.\n2. Replace remaining [DRAFT] placeholders in `work/paper_reading.json`.\n3. Re-run `audit_paper_reading.py` until status = PASS.\n4. Re-run `render_page.py` and (optionally) publish."
+}

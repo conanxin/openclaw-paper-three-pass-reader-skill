@@ -213,3 +213,30 @@ Project-wide `scripts/validate.sh` returns **225/0 PASS** (220 v0.2.9 baseline +
 project tag or release was created — this is a consumer-pages-only remediation.
 The 8 page commits land on the `gh-pages` branch of `conanxin/paper-reading-pages`
 and are visible in the published-pages repo history.
+
+---
+
+## v0.2.15-alpha — `p3pr url` dogfood
+
+| Field | Value |
+|---|---|
+| **Phase** | P3PR-V0.2.15-URL-SUBCOMMAND-DOGFOOD |
+| **Date** | 2026-06-16 |
+| **Skill code changed** | true (`p3pr.py` publish-gate + `validate.sh` step 20l) |
+| **Source** | https://www.cs.virginia.edu/~robins/YouAndYourResearch.html (Hamming) |
+| **Run dir** | `runs/p3pr-url-dogfood-20260616/you-and-your-research-url-dogfood-cn` |
+| **Slug** | `you-and-your-research-url-dogfood-cn` (not published — bug surfaced and stub removed) |
+| **Reading mode** | `full_text` (78,593 chars extracted) |
+| **Input kind** | `paper_url` (CLI subcommand `p3pr url`) |
+| **Bug surfaced** | `p3pr --publish` pushed a 404 stub when render was skipped (audit/qg FAILED) |
+| **Bug fix** | `p3pr.py` now hard-BLOCKs on missing `paper-reading-output/index.html`; regression-guard added at `validate.sh` step 20l |
+| **Validation** | 263/0 PASS (was 261/0 at v0.2.14-alpha) |
+| **Live audit** | 11/11 PASS, 0 fail, 0 warn |
+| **Report** | `docs/PHASE_P3PR_V0_2_15_URL_SUBCOMMAND_DOGFOOD_REPORT.md` |
+| **Release** | `v0.2.15-alpha` (release notes: `docs/RELEASE_NOTES_v0.2.15-alpha.md`) |
+
+Note: this is a dogfood / plumbing-validation run, not a content run. The dogfood
+page itself is **not** a published artifact — the broken stub from the initial run
+was removed from `gh-pages` and the manifest entry was deleted. The fix prevents
+future regressions. To produce a real published dogfood page, the next phase
+must drive an LLM fill stage to make the audit PASS, then re-publish.

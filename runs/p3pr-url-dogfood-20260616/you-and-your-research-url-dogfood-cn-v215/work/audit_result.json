@@ -1,0 +1,50 @@
+{
+  "status": "FAIL",
+  "reading_mode": "full_text",
+  "input_kind": "paper_url",
+  "schema_version": "0.1.0",
+  "source_resolution": {
+    "status": "not_found",
+    "structured": true,
+    "legacy_fallback": false,
+    "warnings": [],
+    "errors": [],
+    "summary": {
+      "structured": true,
+      "fallback_legacy": false,
+      "resolver_status": "not_found",
+      "resolver_match_type": "none",
+      "confidence": "low",
+      "confidence_numeric": 0.3,
+      "matched_paper_id": null,
+      "matched_canonical_title": null,
+      "matched_arxiv_id": null,
+      "matched_repo": null,
+      "resolver_source": "skills/paper-three-pass-reader/data/resolver_hints.json",
+      "source_resolution_step": "cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'",
+      "degraded": null,
+      "candidate_count": 0,
+      "candidates_top": [],
+      "steps_count": 8,
+      "hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html"
+    }
+  },
+  "counts": {
+    "claims_total": 1,
+    "claims_with_valid_evidence": 1,
+    "final_checklist_questions": 8,
+    "draft_placeholders": 39
+  },
+  "errors": [
+    "reading_mode = full_text but claims_evidence_map has only 1 entries. full_text mode requires at least 5 claims."
+  ],
+  "warnings": [
+    "reading_mode = full_text but pass1 still contains [DRAFT] placeholders. The reading should be complete.",
+    "reading_mode = full_text but pass2 still contains [DRAFT] placeholders. The reading should be complete.",
+    "reading_mode = full_text but pass3 still contains [DRAFT] placeholders. The reading should be complete.",
+    "target_language/ui_language = zh-CN but fewer than 50% of main interpretive fields contain Chinese characters (0/4). Fields checked: ['summaries.one_sentence', 'pass2.main_ideas', 'pass3.method_reconstruction', 'pass3.critical_review', 'glossary']. Ensure explanatory content is in Chinese; evidence labels and paper names may remain in English."
+  ],
+  "recommendations": [
+    "Document contains 39 [DRAFT] placeholders. These are normal for a freshly-generated runner draft; they should be replaced before the page is treated as a real reading."
+  ]
+}

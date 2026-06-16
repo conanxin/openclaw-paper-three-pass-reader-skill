@@ -3,6 +3,23 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.15-alpha] — 2026-06-16
+
+### Fixed
+
+- **`p3pr --publish` no longer pushes a 404 stub when render was skipped.** When the runner correctly skipped render (audit FAILED or quality gate FAILED), `p3pr.py` used to invoke the publisher anyway because the runner returned 0; the publisher then pushed an empty `paper-reading-output/` directory to `gh-pages`, producing a page entry in `published_pages.json` whose live URL was a 404. The CLI also misleadingly emitted `P3PR_STATUS: PASS` even though no real page was rendered. The fix: `p3pr.py` now hard-BLOCKs on a missing `paper-reading-output/index.html`, prints `render was skipped because the audit (or quality gate) FAILED`, and exits 1 — even when `--allow-draft-publish` is set. The user is pointed at the fill-pack and instructed to re-run with `--no-publish` first, or pass `--audit-warn-only` to force render. Surfaced and fixed by the v0.2.15 dogfood phase on Hamming's *You and Your Research*. Phase report: `docs/PHASE_P3PR_V0_2_15_URL_SUBCOMMAND_DOGFOOD_REPORT.md`.
+
+### Changed
+
+- **`scripts/validate.sh` step 20l.** Two new sub-checks act as a regression guard: (a) `p3pr url` with `--allow-draft-publish --publish` against the smoke URL must exit non-zero with stderr mentioning "render was skipped"; (b) the resulting `v215-empty-stub-check` slug must not appear on `gh-pages` (HTTP 200 = bad). Validation is now 263/0 PASS (was 261/0 PASS at v0.2.14-alpha).
+- **Cleanup of the broken stub on `gh-pages`.** The v0.2.14 dogfood pushed an empty `you-and-your-research-url-dogfood-cn/` directory (just `.nojekyll`, no `index.html`) and added it to the manifest. As part of v0.2.15-alpha, that directory and its manifest entry have been removed from the `gh-pages` branch. Live `published-pages-audit` is `11/11 PASS, 0 fail, 0 warn`.
+
+### Compatibility
+
+- The CLI surface is unchanged. v0.2.15-alpha is a pure bug-fix release on top of v0.2.14-alpha.
+- No old tags moved. v0.2.10-alpha / v0.2.12-alpha / v0.2.13-alpha / v0.2.14-alpha stay at their original commits.
+- No migration steps. Existing fill-packs, drafts, and rendered pages are untouched.
+
 ## [v0.2.14-alpha] — 2026-06-16
 
 ### Added

@@ -1,0 +1,13 @@
+{
+  "status": "not_found",
+  "match_type": "none",
+  "confidence": "low",
+  "paper": {},
+  "candidates": [],
+  "source_resolution_step": "cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'",
+  "matched_paper_id": null,
+  "matched_alias": null,
+  "matched_repo": null,
+  "_cli_hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html",
+  "_cli_hint_kind": "paper_url"
+}

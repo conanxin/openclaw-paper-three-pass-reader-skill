@@ -1,0 +1,42 @@
+{
+  "status": "FAIL",
+  "target_language": "zh-CN",
+  "ui_language": "zh-CN",
+  "reading_mode": "full_text",
+  "cjk_coverage": {
+    "checked_fields": 21,
+    "fields_with_cjk": 0,
+    "ratio": 0.0,
+    "long_english_paragraphs": 7
+  },
+  "counts": {
+    "claims": 1,
+    "glossary_terms": 0,
+    "checklist_items": 8
+  },
+  "evidence_label_distribution": {
+    "[Paper evidence]": 1
+  },
+  "source_resolution_check": {
+    "structured": true,
+    "legacy_fallback": false,
+    "resolver_status": "not_found",
+    "warnings": [
+      "source_resolution.matched_canonical_title and matched_arxiv_id are both empty; please verify the paper"
+    ],
+    "errors": []
+  },
+  "errors": [
+    "CJK coverage on interpretive fields is 0.00 (0/21); minimum is 0.50. Most explanatory content is still in English.",
+    "glossary has 0 entries; minimum is 10.",
+    "claims_evidence_map has 1 entries; minimum is 8."
+  ],
+  "warnings": [
+    "Found 7 interpretive field(s) with a long English blob (>=30 ASCII chars without CJK). Examples: ['claims_evidence_map[0].comment', 'final_checklist[0].question', 'final_checklist[1].question']. These may be carryover from the English draft that should be translated.",
+    "Only 0/1 claims have Chinese in claim_text or comment.",
+    "Only 0/8 final_checklist questions are in Chinese."
+  ],
+  "recommendations": [
+    "source_resolution_check: source_resolution.matched_canonical_title and matched_arxiv_id are both empty; please verify the paper"
+  ]
+}

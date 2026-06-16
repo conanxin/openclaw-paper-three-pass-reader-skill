@@ -1180,9 +1180,39 @@ def _finalise(
                 run_dir=str(run_dir),
                 json_path=str(work_json),
                 fill_pack=str(fill_pack),
-                local_page=str(page_path),
+                local_page="",
                 page_url="",
                 next_action="Fill the draft (follow fill-pack), rerun `./p3pr ... --no-publish` until quality gate passes, then re-publish. Or pass --allow-draft-publish to publish the draft as-is.",
+                resolver_status=resolver_status,
+                resolver_match_type=resolver_match_type,
+                canonical_title=canonical_title or (title or ""),
+                arxiv_id=arxiv_id or "",
+                default_slug=slug,
+            )
+            return 1
+        # Bug fix v0.2.15-alpha: when the runner skipped render (audit FAILED),
+        # `paper-reading-output/index.html` is missing. Publishing an empty
+        # directory pushes a 404 stub to gh-pages. Refuse hard — even with
+        # --allow-draft-publish, a missing index.html is a publish-shaped bug
+        # the user almost certainly did not intend.
+        if not page_path.exists():
+            print(
+                "[error] paper-reading-output/index.html is missing — render was "
+                "skipped because the audit (or quality gate) FAILED. Refusing to "
+                "publish an empty stub. The fill-pack documents what to fix; "
+                "re-run `./p3pr ... --no-publish` after filling, then publish.",
+                file=sys.stderr,
+            )
+            _print_summary(
+                "BLOCKED",
+                input_kind=input_kind,
+                reading_mode=reading_mode,
+                run_dir=str(run_dir),
+                json_path=str(work_json),
+                fill_pack=str(fill_pack),
+                local_page="",
+                page_url="",
+                next_action="render was skipped (audit/qg FAILED); fill the draft per fill-pack and re-run, or pass --audit-warn-only to force render.",
                 resolver_status=resolver_status,
                 resolver_match_type=resolver_match_type,
                 canonical_title=canonical_title or (title or ""),
