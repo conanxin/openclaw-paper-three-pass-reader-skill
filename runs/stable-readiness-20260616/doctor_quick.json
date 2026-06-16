@@ -1,0 +1,161 @@
+{
+  "status": "WARN",
+  "checks": [
+    {
+      "name": "python3",
+      "status": "PASS",
+      "message": "python3 on PATH (/home/conanxin/hermes-agent/.venv/bin/python3)",
+      "recommendation": ""
+    },
+    {
+      "name": "git",
+      "status": "PASS",
+      "message": "git on PATH (/usr/bin/git)",
+      "recommendation": ""
+    },
+    {
+      "name": "p3pr_shim",
+      "status": "PASS",
+      "message": "exists + executable: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/p3pr",
+      "recommendation": ""
+    },
+    {
+      "name": "run_paper_reading",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/run_paper_reading.py",
+      "recommendation": ""
+    },
+    {
+      "name": "render_page",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/render_page.py",
+      "recommendation": ""
+    },
+    {
+      "name": "audit_paper_reading",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/audit_paper_reading.py",
+      "recommendation": ""
+    },
+    {
+      "name": "quality_gate_zh_cn",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/quality_gate_zh_cn.py",
+      "recommendation": ""
+    },
+    {
+      "name": "audit_published_pages",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/audit_published_pages.py",
+      "recommendation": ""
+    },
+    {
+      "name": "publish_output_to_github",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/publish_output_to_github.sh",
+      "recommendation": ""
+    },
+    {
+      "name": "source_resolution_utils",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/source_resolution_utils.py",
+      "recommendation": ""
+    },
+    {
+      "name": "resolver_hints",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/scripts/resolver_hints.py",
+      "recommendation": ""
+    },
+    {
+      "name": "resolver_hints_json",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/data/resolver_hints.json",
+      "recommendation": ""
+    },
+    {
+      "name": "skill_md",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/skills/paper-three-pass-reader/SKILL.md",
+      "recommendation": ""
+    },
+    {
+      "name": "readme_md",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/README.md",
+      "recommendation": ""
+    },
+    {
+      "name": "readme_zh_cn_md",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/README.zh-CN.md",
+      "recommendation": ""
+    },
+    {
+      "name": "changelog_md",
+      "status": "PASS",
+      "message": "exists: /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/CHANGELOG.md",
+      "recommendation": ""
+    },
+    {
+      "name": "git_repo",
+      "status": "PASS",
+      "message": "git repo at /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill",
+      "recommendation": ""
+    },
+    {
+      "name": "git_branch",
+      "status": "PASS",
+      "message": "on branch main",
+      "recommendation": ""
+    },
+    {
+      "name": "git_working_tree",
+      "status": "WARN",
+      "message": "working tree has uncommitted changes (25 file(s))",
+      "recommendation": "Review `git status` and commit / stash as appropriate."
+    },
+    {
+      "name": "git_latest_tag",
+      "status": "PASS",
+      "message": "latest tag: v0.2.19-alpha",
+      "recommendation": ""
+    },
+    {
+      "name": "gh_cli",
+      "status": "PASS",
+      "message": "gh CLI on PATH",
+      "recommendation": ""
+    },
+    {
+      "name": "gh_auth",
+      "status": "PASS",
+      "message": "gh auth status OK",
+      "recommendation": ""
+    },
+    {
+      "name": "validation_script",
+      "status": "PASS",
+      "message": "validate.sh present (full check skipped; pass --full to run)",
+      "recommendation": "Use `./p3pr doctor --full` to run validation."
+    },
+    {
+      "name": "site_root_http",
+      "status": "PASS",
+      "message": "https://conanxin.github.io/paper-reading-pages/ -> HTTP 200",
+      "recommendation": ""
+    },
+    {
+      "name": "site_manifest_http",
+      "status": "PASS",
+      "message": "https://conanxin.github.io/paper-reading-pages/published_pages.json -> HTTP 200",
+      "recommendation": ""
+    }
+  ],
+  "summary": {
+    "pass": 24,
+    "warn": 1,
+    "fail": 0
+  },
+  "next_action": "1 doctor check(s) WARN. Review them; publishing will still work."
+}

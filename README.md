@@ -168,7 +168,7 @@ The script refuses to **create** a new repo silently — if `conanxin/paper-read
 
 ### Two-stage workflow (URL → fill → finalize → publish)
 
-The recommended daily workflow as of v0.2.18-alpha is two stages:
+The recommended daily workflow as of v0.3.0-alpha is two stages:
 
 ```bash
 # Stage 1 — draft + fill-pack (no publish, no render)
@@ -188,13 +188,41 @@ The recommended daily workflow as of v0.2.18-alpha is two stages:
 
 `finalize` is a thin wrapper that runs the four standard post-fill scripts (audit, quality gate, render, publish) and prints a fixed `P3PR_FINALIZE_STATUS` summary block. It carries the v0.2.15 publish-gate: if `paper-reading-output/index.html` is missing after render, finalize BLOCKs and never reaches the publisher. As of v0.2.18, the gh-pages site-path and the published page title are auto-inferred from `paper_reading.json` (explicit `--site-path` / `--page-title` still override), and the summary block is enriched with `P3PR_SITE_PATH`, `P3PR_PAGE_TITLE`, `P3PR_READING_MODE`, `P3PR_LANGUAGE`, `P3PR_AUDIT_STATUS`, `P3PR_QUALITY_GATE_STATUS`, `P3PR_WARNING_COUNT`, `P3PR_WARNING_SUMMARY`, and a state-aware `P3PR_NEXT_ACTION`. See [`skills/paper-three-pass-reader/docs/USAGE.md`](skills/paper-three-pass-reader/docs/USAGE.md) §"v0.2.18-alpha" for the full flag list and dry-run output.
 
+### Manage runs and audit the site (v0.2.19)
+
+```bash
+# What's local, what's online
+./p3pr status
+./p3pr status --runs --offline --json-output status_runs.json
+
+# Is the toolchain healthy
+./p3pr doctor --offline
+./p3pr doctor --full    # also runs scripts/validate.sh
+
+# Live audit of every page on the site
+python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
+    --manifest-url https://conanxin.github.io/paper-reading-pages/published_pages.json \
+    --site-root https://conanxin.github.io/paper-reading-pages \
+    --include-root --warn-only
+```
+
+`status` and `doctor` are 100% read-only — they never write to runs, never
+modify the working tree, never `chmod` anything, never re-authenticate `gh`.
+See [`skills/paper-three-pass-reader/docs/STATUS_AND_DOCTOR.md`](skills/paper-three-pass-reader/docs/STATUS_AND_DOCTOR.md) for the full flag list and JSON shapes.
+
 ### Run validation
 
 ```bash
 bash scripts/validate.sh
 ```
 
-This is a **smoke check**, not a test suite. It verifies files exist, JSON is valid, the sample render works, and the page contains the expected sections.
+This is a **smoke check**, not a test suite. It runs 305 sub-checks across
+23 steps: required files, sample render, mandatory page sections, every
+subcommand, every published page, every block path in v0.2.15 / v0.2.17 /
+v0.2.18 / v0.2.19, slugify behavior, summary block fields, the v0.2.15
+publish-gate, the v0.2.18 finalize UX, status JSON shape, fake-manifest file
+support, malformed-run regression, doctor offline / quick modes, dirty-tree-
+as-WARN invariant.
 
 ---
 
@@ -330,7 +358,8 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.2.13-alpha` | immutable | Manifest link in generated root index. `publish_output_to_github.sh` now emits `<link rel="alternate" type="application/json" href="published_pages.json">` in `<head>` plus a visible `<a href="published_pages.json">` link in the About section (English + Chinese labels). `_check_site_index()` in the audit accepts both forms. The live audit's last info finding (`index_no_manifest_link`) is gone. Validation 242/0 PASS. |
 | `v0.2.14-alpha` | immutable | `p3pr url <url>` subcommand. Fetch an HTML page (or PDF) from a user-supplied URL, run stdlib-only `html.parser` text extraction, and feed the result to the runner as `input_kind=paper_url` with `--input-file` + `--paper-url`. New `_HTMLTextExtractor` and `_fetch_url()` in `p3pr.py`. The runner now accepts `--input` and `--input-file` together (audit-trail string + body). Reading-mode discipline: HTML ≥800 chars → `full_text`, else `partial_text`; PDFs without body stay `partial_text`. New `P3PR_SOURCE_URL:` summary line. New `--authors` and `--year` flags exposed at CLI. Validation 261/0 PASS. Live URL smoke page (`you-and-your-research-url-smoke-cn`) published; live audit `pages=11 pass=11 warn=0 fail=0`. |
 | `v0.2.15-alpha` | immutable | Block `p3pr --publish` on missing `paper-reading-output/index.html`. Surfaced by the v0.2.15 dogfood phase: the runner correctly skipped render (audit/qg FAILED) but `p3pr.py` invoked the publisher anyway and pushed a 404 stub. Hard BLOCK on missing index.html, even with `--allow-draft-publish`. New validation sub-checks at step 20l. The v0.2.15 dogfood stub was removed from `gh-pages` and the manifest. Validation 263/0 PASS. |
-| `v0.2.19-alpha` | current | `p3pr status` + `p3pr doctor` — read-only observability subcommands. `status` scans `runs/` and reads `published_pages.json`, classifying each run as `draft` / `filled` / `audited` / `rendered` / `rendered_with_warnings` / `published` / `blocked` / `unknown` and cross-referencing the manifest to flag `published` runs. `doctor` runs 7 health-check groups: local env, required scripts, required docs, git state, gh CLI / auth, optional `validate.sh`, light HEAD probe of the site. Both are read-only, both emit JSON via `--json-output`, both print fixed `P3PR_STATUS_*` / `P3PR_DOCTOR_*` summary blocks. Dirty working tree and missing gh are WARN, never FAIL. New `STATUS_AND_DOCTOR.md` doc. New validation step 23 (12 sub-checks). Validation 305/0 PASS. |
+| `v0.3.0-alpha` | current | First **stable-readiness release candidate**. No new features. Documents: `STABLE_READINESS_CHECKLIST.md`, `RELEASE_NOTES_v0.3.0-alpha.md`, `PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md`. README.md / README.zh-CN.md Quick Start updated to show the two-stage flow + management (`status` / `doctor`) + site audit. Bug fix: `p3pr doctor` summary counter now correctly lowercases check status (was always 0/0/0 because the lookup used uppercase keys). Validation 305/0 PASS. Live audit 14/14 PASS, 0 warn, 0 fail. Doctor 24/1/0 (1 WARN is dirty working tree, expected mid-release). This is **not** v0.3.0 stable — see `STABLE_READINESS_CHECKLIST.md` §"Not yet stable". |
+| `v0.2.19-alpha` | previous | `p3pr status` + `p3pr doctor` — read-only observability subcommands. `status` scans `runs/` and reads `published_pages.json`, classifying each run as `draft` / `filled` / `audited` / `rendered` / `rendered_with_warnings` / `published` / `blocked` / `unknown` and cross-referencing the manifest to flag `published` runs. `doctor` runs 7 health-check groups: local env, required scripts, required docs, git state, gh CLI / auth, optional `validate.sh`, light HEAD probe of the site. Both are read-only, both emit JSON via `--json-output`, both print fixed `P3PR_STATUS_*` / `P3PR_DOCTOR_*` summary blocks. Dirty working tree and missing gh are WARN, never FAIL. New `STATUS_AND_DOCTOR.md` doc. New validation step 23 (12 sub-checks). Validation 305/0 PASS. |
 | `v0.2.18-alpha` | previous | `p3pr finalize <run-dir>` UX polish. Auto-infer the gh-pages site-path and published page title from `paper_reading.json` (explicit `--site-path` / `--page-title` still override). New summary fields: `P3PR_SITE_PATH`, `P3PR_PAGE_TITLE`, `P3PR_READING_MODE`, `P3PR_LANGUAGE`, `P3PR_AUDIT_STATUS`, `P3PR_QUALITY_GATE_STATUS`, `P3PR_WARNING_COUNT`, `P3PR_WARNING_SUMMARY` (lists up to 3 actual warnings, not a generic line). `P3PR_NEXT_ACTION` is now state-aware. Improved dry-run prints `inferred_site_path` / `inferred_page_title` with source attribution. All v0.2.15 / v0.2.17 publish guards preserved (verified by validation step 22). New validation step 22 with 14 sub-checks. Live-published dogfood at `https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-finalize-ux-cn/`. Validation 293/0 PASS. |
 | `v0.2.17-alpha` | previous | `p3pr finalize <run-dir>` — the second-stage CLI. Reads `<run-dir>/work/paper_reading.json` and runs audit → zh-CN quality gate → render → optional publish → optional published-pages audit. Fixed `P3PR_FINALIZE_STATUS` summary block on every exit. With `--dry-run` prints a `P3PR_FINALIZE_DRY_RUN` plan. Carries over the v0.2.15 publish-gate: if `paper-reading-output/index.html` is missing, BLOCK. Flags: `--publish` / `--no-publish` / `--repo` / `--branch` / `--site-path` / `--page-title` / `--allow-warnings` / `--allow-draft-publish` / `--skip-quality-gate` / `--skip-published-audit` / `--dry-run`. New validation step 21 with 16 sub-checks. Live-published dogfood at `https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-dogfood-finalize-cn/`. Validation 279/0 PASS. |
 | `v0.2.9-alpha` | previous | Polished HTML essay / talk page rendering. Renderer no longer leaks raw `{'label': ...}` dicts, no longer leaks `{% else %}` template tags, exposes `generator_version` in the page footer, switches `Reproduction Plan` → `实践计划` for essay-mode inputs, and renders a `<details>`-based accordion. Claim IDs and glossary definitions display correctly. Re-published the Chinese *You and Your Research* page. Validation 220/0 PASS. |

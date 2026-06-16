@@ -3,6 +3,76 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.3.0-alpha] — 2026-06-16
+
+### Stable-readiness release candidate
+
+This is the first **stable-readiness release candidate** for the project.
+No new features in this release. The goal is to take stock: confirm every
+guard is intact, the validation suite is green, the live site is healthy,
+and the documentation is consistent. After a few more real paper runs and
+one more audit cycle, the next stable release should follow.
+
+### Changed
+
+- **Bug fix in `p3pr doctor` summary counter** — the per-check `status` is
+  uppercase (`PASS` / `WARN` / `FAIL`) but the summary dict uses lowercase
+  keys (`pass` / `warn` / `fail`). The lookup `if s in summary` was always
+  failing, so the counter was always 0/0/0. Now the check status is
+  lowercased before the lookup. Verified by re-running `./p3pr doctor
+  --full` on the v0.3.0-alpha state: 24 PASS / 1 WARN / 0 FAIL.
+- **README.md / README.zh-CN.md** — Quick Start now shows the two-stage
+  flow + `status` / `doctor` management + the `audit_published_pages.py`
+  CLI snippet. Run-validation paragraph expanded to call out the 305
+  sub-checks across 23 steps and the v0.2.15 / v0.2.17 / v0.2.18 / v0.2.19
+  invariants.
+- **Version table** — both README files have a v0.3.0-alpha row at
+  `current`. v0.2.19-alpha moves to `previous`. v0.2.18 and earlier
+  remain at `previous` / `immutable` (no tag moves, no history rewrites).
+
+### Added
+
+- **`docs/STABLE_READINESS_CHECKLIST.md`** — the canonical checklist for
+  cutting a stable release. Lists every CLI subcommand, every quality
+  gate, every stable guard (v0.2.15 publish-gate, v0.2.17 finalize BLOCKs,
+  v0.2.18 finalize UX, v0.2.19 status / doctor). Records this run's
+  results.
+- **`docs/RELEASE_NOTES_v0.3.0-alpha.md`** — public release notes for
+  v0.3.0-alpha: what is included, the readiness-check results, the
+  compatibility promise, and the "not yet stable" disclaimer.
+- **`docs/PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md`** — this run's
+  full phase report (status, doctor, status, audit, smoke, files,
+  commit / push / tag / release, limitations, next actions).
+- **`runs/stable-readiness-20260616/`** — readiness artifacts: 3 doctor
+  JSONs (offline / quick / full), 2 status JSONs (online all / offline
+  runs only), live `published_pages_audit.json` / `.md`.
+
+### Validation
+
+- `bash scripts/validate.sh` — **305 / 0 PASS**
+- `./p3pr doctor --offline` — 24 PASS / 1 WARN / 0 FAIL
+- `./p3pr doctor --quick` — 24 PASS / 1 WARN / 0 FAIL
+- `./p3pr doctor --full` — 24 PASS / 1 WARN / 0 FAIL (also runs `validate.sh` → 305/0 PASS)
+- `./p3pr status` — 2 local runs (1 published, 1 rendered), 13 manifest pages
+- live `audit_published_pages.py` — 14 / 14 PASS, 0 warn, 0 fail
+- URL dry-run smoke — `P3PR_SOURCE_URL` printed, no side effects
+- finalize dry-run smoke — `inferred_site_path` + `P3PR_SITE_PATH` printed, no side effects
+
+### Compatibility
+
+- All v0.2.x run directories remain compatible.
+- All existing GitHub Pages remain published.
+- All existing tags (v0.2.0-alpha through v0.2.19-alpha) are not moved.
+- All v0.2.15 / v0.2.17 / v0.2.18 / v0.2.19 publish guards and finalize
+  UX are preserved (verified by validation steps 20l, 22e, 22, 23).
+
+### Not yet stable
+
+This is `v0.3.0-alpha`, not `v0.3.0` stable. See
+[`docs/STABLE_READINESS_CHECKLIST.md`](docs/STABLE_READINESS_CHECKLIST.md)
+§"Not yet stable" for the criteria that should be met before the next
+stable release.
+
 ## [v0.2.19-alpha] — 2026-06-16
 
 ### Added

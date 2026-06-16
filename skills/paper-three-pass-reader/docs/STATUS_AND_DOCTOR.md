@@ -221,3 +221,29 @@ publish run.
   "next_action": "1 doctor check(s) WARN. ..."
 }
 ```
+
+## v0.3.0-alpha bug fix
+
+`p3pr doctor`'s per-check `status` is uppercase (`PASS` / `WARN` / `FAIL`)
+but the summary counter dict uses lowercase keys (`pass` / `warn` / `fail`).
+The `if s in summary` lookup in `_doctor_print_summary` was always failing,
+so the JSON `summary.pass` / `summary.warn` / `summary.fail` values were
+always `0`. v0.3.0-alpha lowercases the check status before the lookup.
+After the fix, the same doctor run reports `summary: {pass: 24, warn: 1,
+fail: 0}` (the 1 WARN is `git_working_tree` because the working tree is
+dirty mid-release).
+
+## v0.3.0-alpha readiness results
+
+- `bash scripts/validate.sh` — **305 / 0 PASS**
+- `./p3pr doctor --offline` — 24 PASS / 1 WARN (dirty tree) / 0 FAIL
+- `./p3pr doctor --quick` — 24 PASS / 1 WARN (dirty tree) / 0 FAIL
+- `./p3pr doctor --full` — 24 PASS / 1 WARN (dirty tree) / 0 FAIL
+- live `audit_published_pages.py` — 14 / 14 PASS, 0 warn, 0 fail
+- URL dry-run smoke + finalize dry-run smoke — no side effects
+
+See
+[`STABLE_READINESS_CHECKLIST.md`](../../../../docs/STABLE_READINESS_CHECKLIST.md)
+and
+[`PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md)
+for the full readiness record.

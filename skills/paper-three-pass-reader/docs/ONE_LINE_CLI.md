@@ -390,3 +390,35 @@ FAIL. doctor never auto-fixes anything.
 
 All v0.2.15 / v0.2.17 / v0.2.18 publish guards and finalize UX are unchanged.
 Validation 305/0 PASS.
+
+## v0.3.0-alpha: stable-readiness release candidate
+
+No new subcommands or features. v0.3.0-alpha is the first stable-readiness
+release candidate. The full checklist is in
+[`STABLE_READINESS_CHECKLIST.md`](../../../../docs/STABLE_READINESS_CHECKLIST.md).
+The phase report is in
+[`PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md).
+
+### Bug fix in v0.3.0-alpha
+
+`p3pr doctor`'s per-check status is uppercase (`PASS` / `WARN` / `FAIL`)
+but the summary counter dict used lowercase keys. The `if s in summary`
+lookup was always failing, so `summary.pass` / `summary.warn` / `summary.fail`
+were always `0`. v0.3.0-alpha lowercases the status before the lookup.
+Verified by re-running `./p3pr doctor --full` on the v0.3.0-alpha state:
+24 PASS / 1 WARN / 0 FAIL.
+
+### v0.3.0-alpha readiness results
+
+- `bash scripts/validate.sh` — 305 / 0 PASS
+- `./p3pr doctor --offline` / `--quick` / `--full` — 24 PASS / 1 WARN / 0 FAIL
+- live `audit_published_pages.py` — 14 / 14 PASS, 0 warn, 0 fail
+- URL dry-run smoke — no side effects
+- finalize dry-run smoke — no side effects
+
+### Not yet stable
+
+This is `v0.3.0-alpha`, not `v0.3.0` stable. See
+[`STABLE_READINESS_CHECKLIST.md`](../../../../docs/STABLE_READINESS_CHECKLIST.md)
+§"Not yet stable" for the criteria that should be met before the next
+stable release.

@@ -2828,7 +2828,7 @@ def _doctor_collect(root: Path, *, full: bool, offline: bool, skip_validation: b
 def _doctor_print_summary(*, checks: list[dict], json_output: str | None) -> int:
     summary = {"pass": 0, "warn": 0, "fail": 0}
     for c in checks:
-        s = c.get("status", "PASS")
+        s = (c.get("status", "PASS") or "PASS").lower()
         if s in summary:
             summary[s] += 1
     overall = "PASS"

@@ -1038,3 +1038,41 @@ runs/<output-root>/<slug>/
   PDFs without `pdftotext` stay `partial_text`.
 - **Existing subcommands unchanged.** `arxiv / title / abstract / screenshot /
   repo / pdf` continue to work as before.
+
+## v0.3.0-alpha: stable-readiness release candidate
+
+This is the first stable-readiness release candidate for the project. No
+new subcommands or features in this release. The goal is to take stock:
+confirm every guard is intact, the validation suite is green, the live
+site is healthy, and the documentation is consistent.
+
+### Bug fix in v0.3.0-alpha
+
+`p3pr doctor`'s per-check `status` is uppercase (`PASS` / `WARN` / `FAIL`)
+but the summary counter dict uses lowercase keys. The `if s in summary`
+lookup was always failing, so `summary.pass` / `summary.warn` /
+`summary.fail` were always `0`. v0.3.0-alpha lowercases the check status
+before the lookup. After the fix, the same doctor run reports
+`summary: {pass: 24, warn: 1, fail: 0}`.
+
+### v0.3.0-alpha readiness results
+
+- `bash scripts/validate.sh` — **305 / 0 PASS**
+- `./p3pr doctor --offline` / `--quick` / `--full` — 24 PASS / 1 WARN / 0 FAIL
+- live `audit_published_pages.py` — 14 / 14 PASS, 0 warn, 0 fail
+- URL dry-run smoke + finalize dry-run smoke — no side effects
+
+### Not yet stable
+
+This is `v0.3.0-alpha`, not `v0.3.0` stable. The next stable release
+should follow after:
+
+1. At least a few more real paper runs through the two-stage flow
+2. One more round of `audit_published_pages.py` after the new runs land
+3. A final `p3pr doctor --full` pass on a clean working tree
+
+See
+[`STABLE_READINESS_CHECKLIST.md`](../../../../docs/STABLE_READINESS_CHECKLIST.md)
+for the full checklist and
+[`PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md`](../../../../docs/PHASE_P3PR_V0_3_0_STABLE_READINESS_REPORT.md)
+for this run's full phase report.
