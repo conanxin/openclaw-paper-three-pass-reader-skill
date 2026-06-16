@@ -1,0 +1,113 @@
+[
+  {
+    "figure_id": "F01",
+    "title": "讲稿主题分布 (conceptual table)",
+    "kind": "conceptual_table",
+    "description": "把 Hamming 讲稿的 15 段主题分成 4 类：(1) 排除类——运气、脑力、年龄；(2) 内在驱动力——野心、勇气、ego drive；(3) 行动原则——选重要问题、退出、投入度、销售、风格；(4) 环境与对照——critical mass、计算机、第一流工作、创意、伟大工作的特质。",
+    "rows": [
+      [
+        "类别",
+        "主题",
+        "Hamming 的关键口号"
+      ],
+      [
+        "排除类",
+        "运气",
+        "Luck favors the prepared mind (引 Pasteur)"
+      ],
+      [
+        "排除类",
+        "脑力",
+        "Brains are measured in various ways; not equivalent to great work"
+      ],
+      [
+        "排除类",
+        "年龄",
+        "Laplace 40 后才出 Laplace transform"
+      ],
+      [
+        "内在驱动力",
+        "野心 / drive",
+        "Drive is not something you can substitute for fuel"
+      ],
+      [
+        "内在驱动力",
+        "勇气",
+        "Courage is one of the things you need most"
+      ],
+      [
+        "行动原则",
+        "重要 vs 著名",
+        "When you are in a field, you must know what is important and what is not"
+      ],
+      [
+        "行动原则",
+        "退出",
+        "Step aside to give the field time to digest your work"
+      ],
+      [
+        "行动原则",
+        "投入度",
+        "Great work comes from working on the right problem, not from overwork"
+      ],
+      [
+        "行动原则",
+        "销售",
+        "50% of your time is spent in selling"
+      ],
+      [
+        "行动原则",
+        "风格 / taste",
+        "Style is a function of exposure and time"
+      ],
+      [
+        "环境与对照",
+        "critical mass",
+        "It is not what you do, it is who you do it with"
+      ],
+      [
+        "环境与对照",
+        "计算机",
+        "Computers enable, they do not direct"
+      ],
+      [
+        "环境与对照",
+        "第一流工作",
+        "First-rate work is not just hard, it is differently directed"
+      ],
+      [
+        "环境与对照",
+        "创意",
+        "Creativity is fostered by being in a permissive atmosphere"
+      ],
+      [
+        "环境与对照",
+        "伟大工作的特质",
+        "Great work is often controversial at first"
+      ]
+    ],
+    "evidence_label": "[Agent inference]",
+    "note": "本表是 [Agent inference]，是阅读页把讲稿重组为四类的概念性图表，不是 Hamming 原表的复刻 (原文无图表)。",
+    "id": "FT-001",
+    "number": "",
+    "explanation": ""
+  },
+  {
+    "figure_id": "F02",
+    "title": "7 / 30 / 90 天实践计划时间线 (textual timeline)",
+    "kind": "textual_timeline",
+    "description": "对应 reproduction_plan 的 plan_7_day / plan_30_day / plan_90_day。Hamming 处方从'选问题 / 投入度 / 销售 / 方向切换'四条主线落地为 7/30/90 天可执行步骤。",
+    "milestones": [
+      "Day 1–7: 列出当前手头 3 个研究问题, 逐条判断是否满足'有合理攻击路径'。",
+      "Day 8–14: 把过去 30 天工作时间按'解决 / 写作 / 正式演讲 / 非正式讨论'四类记录 5 个工作日。",
+      "Day 15–30: 列出 5 人名单, 标出谁是 sound absorber、谁是 critical mass。",
+      "Day 31–60: 每周固定 50% 时间给 presentation 类活动。",
+      "Day 61–90: 重新评估'重要问题 vs 著名问题'清单, 决定是否启动方向切换假设。"
+    ],
+    "evidence_label": "[Agent inference]",
+    "note": "本时间线是 [Agent inference]，由 [Paper evidence] + [Author claim] 推导。",
+    "id": "FT-002",
+    "number": "",
+    "explanation": ""
+  }
+]

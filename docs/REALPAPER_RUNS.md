@@ -240,3 +240,36 @@ page itself is **not** a published artifact — the broken stub from the initial
 was removed from `gh-pages` and the manifest entry was deleted. The fix prevents
 future regressions. To produce a real published dogfood page, the next phase
 must drive an LLM fill stage to make the audit PASS, then re-publish.
+
+---
+
+## v0.2.16-alpha — `p3pr url` filled-page dogfood (live)
+
+| Field | Value |
+|---|---|
+| **Phase** | P3PR-V0.2.16-URL-DOGFOOD-FILLED-PAGE |
+| **Date** | 2026-06-16 |
+| **Skill code changed** | false (consumer run; v0.2.15-alpha publish-gate held) |
+| **Source** | https://www.cs.virginia.edu/~robins/YouAndYourResearch.html (Hamming, 1986) |
+| **Run dir** | `runs/p3pr-url-dogfood-filled-20260616/you-and-your-research-url-dogfood-cn` |
+| **Slug** | `you-and-your-research-url-dogfood-cn` |
+| **Live URL** | https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-dogfood-cn/ |
+| **Reading mode** | `full_text` (78,593 chars extracted via stdlib html.parser) |
+| **Input kind** | `paper_url` (CLI subcommand `p3pr url`) |
+| **Audit** | PASS (14/14 valid-evidence claims, 0 [DRAFT] placeholders) |
+| **Quality gate** | WARN (100% CJK coverage on 63/63 interpretive fields; 4 long_en_blobs are short Hamming quotations under [Paper evidence]) |
+| **Render** | 41,197-byte `index.html`; all 14 must-contain present, all 9 must-not-contain absent |
+| **Live audit** | 12/12 PASS, 0 fail, 0 warn |
+| **Validation** | 263/0 PASS |
+| **Category** | research advice talk / essay / methodology lecture / scientific career advice (not an experimental paper) |
+| **Report** | `docs/PHASE_P3PR_V0_2_16_URL_DOGFOOD_FILLED_PAGE_REPORT.md` |
+| **Latest release** | v0.2.15-alpha (no new release for v0.2.16) |
+
+This is the first end-to-end dogfood of the v0.2.14 `p3pr url` subcommand: a real
+CLI invocation fetched the URL, extracted the body, generated a draft + fill-pack,
+and a local Hermes agent filled the draft (14 claims, 12 glossary terms, 12-item
+final checklist, 6 open questions, 2 conceptual figures, 7/30/90-day practice
+plan). The v0.2.15 publish gate held throughout — `--no-publish` blocked the
+initial run, and the post-fill publish succeeded only because `index.html`
+existed. The new page is a real readable artifact and lives alongside (does
+NOT replace) the formal精修 `you-and-your-research-cn` page.

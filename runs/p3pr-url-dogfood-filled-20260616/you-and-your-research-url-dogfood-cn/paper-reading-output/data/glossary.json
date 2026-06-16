@@ -1,0 +1,86 @@
+[
+  {
+    "term": "Bell Labs",
+    "term_zh": "贝尔实验室",
+    "definition": "1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年 (1946–1976)。",
+    "definition_zh": "1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年 (1946–1976)。",
+    "evidence_label": "[Agent inference]"
+  },
+  {
+    "term": "Bell Communications Research (Bellcore)",
+    "term_zh": "贝尔通信研究公司",
+    "definition": "1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。",
+    "definition_zh": "1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Richard W. Hamming",
+    "term_zh": "理查德·W·汉明",
+    "definition": "1915–1998 年间的美国数学家，Hamming 码、Hamming 距离、Hamming 窗的命名人；本文演讲者。",
+    "definition_zh": "1915–1998 年间的美国数学家，Hamming 码、Hamming 距离、Hamming 窗的命名人；本文演讲者。",
+    "evidence_label": "[Agent inference]"
+  },
+  {
+    "term": "Colloquium",
+    "term_zh": "内部学术报告会",
+    "definition": "研究机构内部邀请外部演讲者做长报告的制度，常见于 Bell Labs、Bellcore 这类大型工业研究机构。",
+    "definition_zh": "研究机构内部邀请外部演讲者做长报告的制度，常见于 Bell Labs、Bellcore 这类大型工业研究机构。",
+    "evidence_label": "[Agent inference]"
+  },
+  {
+    "term": "critical mass",
+    "term_zh": "临界质量",
+    "definition": "Hamming 用的隐喻：足够多的第一流同事在物理上聚集，使得'平庸'难以存在，'伟大'自然出现。",
+    "definition_zh": "Hamming 用的隐喻：足够多的第一流同事在物理上聚集，使得'平庸'难以存在，'伟大'自然出现。",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "term": "sound absorber",
+    "term_zh": "声音吸尘器",
+    "definition": "Hamming 用的贬义词：会客厅里只说 yes、从不 push back、把所有讨论以'非常好'收束的人。Hamming 警告要远离这种人。",
+    "definition_zh": "Hamming 用的贬义词：会客厅里只说 yes、从不 push back、把所有讨论以'非常好'收束的人。Hamming 警告要远离这种人。",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "term": "zone melting",
+    "term_zh": "区域熔炼",
+    "definition": "Bill Pfann 发明的材料纯化方法：通过缓慢移动熔区把杂质扫到一端。Pfann 因此拿到几乎所有相关奖项。",
+    "definition_zh": "Bill Pfann 发明的材料纯化方法：通过缓慢移动熔区把杂质扫到一端。Pfann 因此拿到几乎所有相关奖项。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Clogston cable",
+    "term_zh": "Clogston 电缆",
+    "definition": "Andrew Clogston 在 Bell Labs 提出的超导电缆方案；Hamming 用此证明'早期被评为中等'的研究者只要选对问题也能做出第一流工作。",
+    "definition_zh": "Andrew Clogston 在 Bell Labs 提出的超导电缆方案；Hamming 用此证明'早期被评为中等'的研究者只要选对问题也能做出第一流工作。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "Laplace transform",
+    "term_zh": "拉普拉斯变换",
+    "definition": "Pierre-Simon Laplace 在 40 岁之后才完善的积分变换。Hamming 用此作为'年龄不是障碍'的论据。",
+    "definition_zh": "Pierre-Simon Laplace 在 40 岁之后才完善的积分变换。Hamming 用此作为'年龄不是障碍'的论据。",
+    "evidence_label": "[Paper evidence]"
+  },
+  {
+    "term": "ego drive",
+    "term_zh": "自我驱动",
+    "definition": "Hamming 用词：指不甘于 secondary、有持续向上的内驱力。区别于 external motivation (奖金、晋升)。",
+    "definition_zh": "Hamming 用词：指不甘于 secondary、有持续向上的内驱力。区别于 external motivation (奖金、晋升)。",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "term": "soft data",
+    "term_zh": "软数据",
+    "definition": "Hamming 自承讲稿论据多数为软数据：经验、直觉、案例反思。Hamming 主张 'soft data is better than no data'，但不主张这是 controlled study。",
+    "definition_zh": "Hamming 自承讲稿论据多数为软数据：经验、直觉、案例反思。Hamming 主张 'soft data is better than no data'，但不主张这是 controlled study。",
+    "evidence_label": "[Author claim]"
+  },
+  {
+    "term": "重要问题 vs 著名问题",
+    "term_zh": "Important problem vs famous problem",
+    "definition": "Hamming 区分'对你想做的方向有 attack path 的问题'与'领域里被广泛引用但对路不明的问题'。他主张选前者, 即便它当下并不著名。",
+    "definition_zh": "Hamming 区分'对你想做的方向有 attack path 的问题'与'领域里被广泛引用但对路不明的问题'。他主张选前者, 即便它当下并不著名。",
+    "evidence_label": "[Author claim]"
+  }
+]

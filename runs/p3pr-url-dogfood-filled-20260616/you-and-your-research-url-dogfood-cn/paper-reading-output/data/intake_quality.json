@@ -1,0 +1,28 @@
+{
+  "input_kind": "paper_url",
+  "reading_mode": "full_text",
+  "confidence": "high",
+  "needs_confirmation": false,
+  "missing_fields": [],
+  "warnings": [
+    "本文不是实验论文、综述或预印本；它是 1986 年 Bell Communications Research 内部讲座的转录稿，由 J. F. Kaiser 整理。",
+    "原文不含图表、实验、benchmark、代码或数据集。'图表'面板与'复现计划'面板在本文中以概念性笔记 / 个人实践计划的形式存在，不要伪装为实验产物。",
+    "少量 Hamming 英文原话在 [Paper evidence] 标签下保留；解释性内容全部用中文。"
+  ],
+  "ambiguities": [
+    "Resolver 仍标 not_found；本文为非学术 URL，未进入 resolver hints 库。已在 paper_metadata 中人工补全年份、venue 与 category。"
+  ],
+  "source_used": "URL fetch via p3pr url subcommand; stdlib html.parser extraction; 78,593 chars of plain text captured",
+  "extraction_quality": "good — HTML body extracted with block-level separators; <script>/<style> dropped; no encoding issues",
+  "source_resolution": [
+    "Input kind = paper_url.",
+    "Input string: 'https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'.",
+    "Step 1 (CLI overlay): p3pr url subcommand dispatched to fetcher.",
+    "Step 2 (fetch): HTTP GET → status 200, content_type text/html, body 78,593 chars.",
+    "Step 3 (extract): stdlib html.parser dropped <script>/<style>, kept block-level separators and headings.",
+    "Step 4 (reading mode): text_chars=78,593 ≥ 800 ⇒ reading_mode = full_text.",
+    "Step 5 (resolver): shared resolver_hints.json has no match for this URL (academic-only database). resolver_status = not_found, confidence = low from the resolver alone; manually upgraded to high in intake_quality because the body is a full transcript of a famous talk whose metadata is universally known.",
+    "Step 6 (paper_metadata): manually filled title / year / venue / category after reading the opening 60 lines.",
+    "Step 7 (downstream): runner proceeds with --input-file = extracted/page.txt and --paper-url = original URL; audit expects ≥5 claims for full_text mode; quality gate expects CJK coverage on interpretive fields."
+  ]
+}

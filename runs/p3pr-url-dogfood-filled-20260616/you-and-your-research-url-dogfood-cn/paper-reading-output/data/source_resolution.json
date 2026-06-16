@@ -1,0 +1,25 @@
+{
+  "steps": [
+    "Input kind = paper_url.",
+    "Input string: 'https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'.",
+    "Resolver source: skills/paper-three-pass-reader/data/resolver_hints.json (shared).",
+    "Resolver status: not_found; match_type: none; confidence: low.",
+    "Matched paper id: (none).",
+    "No resolver hint matched for 'https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'. needs_confirmation = true.",
+    "Resolver step: cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'",
+    "Runner did NOT fetch the paper body. Operator must supply the body (PDF → extracted text) or upgrade reading_mode manually."
+  ],
+  "hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html",
+  "resolver_source": "skills/paper-three-pass-reader/data/resolver_hints.json",
+  "resolver_helper": "skills/paper-three-pass-reader/scripts/resolver_hints.py",
+  "resolver_status": "not_found",
+  "resolver_match_type": "none",
+  "confidence": "low",
+  "matched_paper_id": null,
+  "matched_canonical_title": null,
+  "matched_arxiv_id": null,
+  "matched_alias": null,
+  "matched_repo": null,
+  "candidates": [],
+  "source_resolution_step": "cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'"
+}

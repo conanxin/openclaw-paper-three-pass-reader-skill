@@ -1,0 +1,156 @@
+[
+  {
+    "claim_id": "C01",
+    "claim_text": "运气只决定'做什么'的随机性，不决定'是否做'——伟大的科学家会反复做出重要工作。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "原文第一段 'On the Arrogance of ...' 与 'Yes, it is partly luck' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 用 Einstein、Shannon 多次成功的例子说明：the prepared mind sooner or later finds something important。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C02",
+    "claim_text": "高智商或大量脑力并不等于伟大工作——勇气、投入与方向比天赋更关键。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "原文 'How about having lots of brains?' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 引用 Bill Pfann (zone melting) 与 Clogston (Clogston cable) 作为反例：他们数学笨拙、表达差，但仍做出第一流工作。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C03",
+    "claim_text": "年龄不是障碍——不少伟大工作出现在 30–40 岁之后，Laplace 40 后才出 Laplace transform。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "原文 'When you are old enough to know what you want' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 明确反对'趁年轻出名'的迷思，认为 30–40 岁是许多人做出第一流工作的时间。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C04",
+    "claim_text": "野心 (drive / ego drive) 是把'中等'推到'伟大'的燃料。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'Now for the matter of drive' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 在此把 ego drive 描述为'有 fuel to drive you'——是处方层面的论断，可证伪性较弱。",
+    "confidence": "medium",
+    "needs_verification": true,
+    "notes": ""
+  },
+  {
+    "claim_id": "C05",
+    "claim_text": "勇气是做出第一流工作的人格前提：敢于赌大、敢于换方向、敢于承认错。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "原文 'Courage is one of the things' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 引用 Einstein 12 岁时思考'追光会看到什么'作为 7–10 年前就埋下种子的范例。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C06",
+    "claim_text": "选'重要问题'比'著名问题'重要 10 倍——选错问题比没天赋更致命。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'Again, the great mass of scientists' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 的'重要 vs 著名'二分是其讲稿最常被引用的处方之一。'10 倍'是 Hamming 的口号化表述，不是字面数字。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C07",
+    "claim_text": "退出现有方向 (step aside to give the field time) 是顶级研究者的常见动作。",
+    "evidence_label": "[Paper evidence]",
+    "evidence_location": "原文 'If you are doing something quite different' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 列出他自己每 7–10 年换方向的轨迹：从数值分析到编码理论到自动编码理论到……",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C08",
+    "claim_text": "在第一流同事之间工作 (critical mass) 决定你能做出什么级别的成果。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'Most great people know the great people' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 把 Bell Labs 的 critical mass 几乎归因于'运气'——这忽略了 AT&T 垄断利润的结构性原因。[Agent inference] 注：Bell Labs 的 critical mass 是 1925–1996 年间多种结构因素的合流 (垄断利润 + 自由研究 + 美国研发扩张)，不能简单复制。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C09",
+    "claim_text": "销售 (writing / talks / informal discussions) 占 50% 的研究时间，是'完成'的同义词。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'Now for the matter of selling' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 的'50%'是处方化数字，不是工时实测值。在大学/纯理论/工业 R&D 之间比例应重新校准。",
+    "confidence": "medium",
+    "needs_verification": true,
+    "notes": ""
+  },
+  {
+    "claim_id": "C10",
+    "claim_text": "风格 (taste) 是对问题重要性的内部判断，只能通过长期 exposure 培养。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'Some of the people who could have' 与 'Style' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 把 style 与 taste 视为日积月累的 exposure 产物，没有快速通道。",
+    "confidence": "medium",
+    "needs_verification": true,
+    "notes": ""
+  },
+  {
+    "claim_id": "C11",
+    "claim_text": "计算机让你跑得更快，但不让你跑得更对。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'The next thing is the computer' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 担心计算机让研究者沉溺于'能做'而忽略'该做'。今天 AI 工具 (LLM、autoML) 进一步放大了这个风险。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C12",
+    "claim_text": "第一流工作 = 重复 + 准备 + 环境的 critical mass。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "全文总结段",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 把这三者作为不可缺一的三脚架；他承认 critical mass 难复制。",
+    "confidence": "high",
+    "needs_verification": false,
+    "notes": ""
+  },
+  {
+    "claim_id": "C13",
+    "claim_text": "做伟大的工作比做好的工作更'划算'，因为边际投入差异极小。",
+    "evidence_label": "[Author claim]",
+    "evidence_location": "原文 'Most people do not really do great work' 一节",
+    "evidence_kind": "paper_text",
+    "comment": "Hamming 的论据是：你已经花了 80% 时间在'好'上，再投入 20% 就能把'好'升到'伟大'——这 20% 是 direction change，而不是更多 working hours。",
+    "confidence": "medium",
+    "needs_verification": true,
+    "notes": ""
+  },
+  {
+    "claim_id": "C14",
+    "claim_text": "对今天 AI 研究者：Hamming 全部处方仍可用，但 Bell Labs 式的 critical mass 在今天极少数机构中可复制。",
+    "evidence_label": "[Agent inference]",
+    "evidence_location": "[本阅读页的延伸论断，跨文本]",
+    "evidence_kind": "synthesis",
+    "comment": "今日 AI 领域可以继承选重要问题、勇气、投入度、销售四条主线，但 critical mass of first-class people 这种环境依赖 (1) 大量研究自由度、(2) 长期资金缓冲、(3) 跨学科基础设施——这三者在今天少数机构 (例如 FAIR、DeepMind 早期、Anthropic 早期) 中曾经存在过，但难以稳定维持。",
+    "confidence": "medium",
+    "needs_verification": true,
+    "notes": ""
+  }
+]

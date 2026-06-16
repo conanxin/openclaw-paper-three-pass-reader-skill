@@ -1,0 +1,129 @@
+{
+  "language": "zh-CN",
+  "agent_profile": "default",
+  "reading_mode": "full_text",
+  "input_kind": "paper_url",
+  "max_claims": 8,
+  "max_figures": 6,
+  "stage0_intake_resolution": {
+    "goal": "校对 Stage 0 解析是否正确，确认 canonical paper。",
+    "allowed_inputs": [
+      "input/input.md",
+      "arXiv / DOI 页面（仅确认）",
+      "runner hint"
+    ],
+    "forbidden": [
+      "下载 PDF",
+      "自动 deep-read",
+      "把含糊 clue 当成 canonical"
+    ],
+    "fields": [
+      "paper_metadata.title",
+      "paper_metadata.authors",
+      "paper_metadata.identifiers.arxiv_id",
+      "intake_quality.source_resolution"
+    ],
+    "evidence_labels": [
+      "[Author claim]",
+      "[Needs verification]"
+    ],
+    "stop_condition": "needs_confirmation = false 且 title 与 arXiv 完全一致。"
+  },
+  "pass1_five_cs": {
+    "goal": "写完 Five Cs：Category / Context / Correctness / Contributions / Clarity。",
+    "fields": [
+      "five_cs.category",
+      "five_cs.context",
+      "five_cs.correctness",
+      "five_cs.contributions",
+      "five_cs.clarity"
+    ],
+    "evidence_labels_weak": [
+      "[Author claim]",
+      "[Needs verification]"
+    ],
+    "evidence_labels_full": [
+      "[Paper evidence]",
+      "[Agent inference]"
+    ],
+    "stop_condition": "五个字段全部非空。"
+  },
+  "pass2_main_ideas": {
+    "goal": "写 main ideas + method summary。",
+    "fields": [
+      "pass2.main_ideas",
+      "pass2.method_summary"
+    ],
+    "stop_condition": "main_ideas ≥ 1；method_summary ≥ 30 字符。"
+  },
+  "claims_evidence_map": {
+    "goal": "为每个重要 claim 写一条 claim-evidence 条目。",
+    "fields": [
+      "claims_evidence_map"
+    ],
+    "min_claims_full_text": 5,
+    "max_claims_weak": 8,
+    "stop_condition": "每条 claim 有 evidence_label 且在白名单内。"
+  },
+  "figures_tables": {
+    "goal": "为每个关键 figure/table 写 explanation。",
+    "fields": [
+      "figures_tables"
+    ],
+    "max_entries_weak": 6,
+    "stop_condition": "weak 模式 label ∈ {[Author claim], [Needs verification], [Uncertain]}。"
+  },
+  "pass3_reconstruction": {
+    "goal": "用自己话重建方法。",
+    "fields": [
+      "pass3.method_reconstruction",
+      "pass3.hidden_assumptions"
+    ],
+    "stop_condition": "full_text ≥ 3 步；weak 保留 [DRAFT]。"
+  },
+  "critical_review": {
+    "goal": "写 critical review + limitations + hidden assumptions + future work。",
+    "fields": [
+      "pass3.critical_review",
+      "pass3.limitations",
+      "pass3.hidden_assumptions",
+      "pass3.future_work",
+      "pass3.application_notes"
+    ],
+    "stop_condition": "critical_review ≥ 1；limitations ≥ 1。"
+  },
+  "reproduction_plan": {
+    "goal": "写最小可执行 reproduction plan。",
+    "fields": [
+      "reproduction_plan.dataset",
+      "reproduction_plan.baseline",
+      "reproduction_plan.steps",
+      "reproduction_plan.sanity_checks",
+      "reproduction_plan.success_criteria"
+    ],
+    "stop_condition": "full_text 全非空；weak 保留 [DRAFT]。"
+  },
+  "finalize_json": {
+    "goal": "校对整份 JSON。",
+    "checks": [
+      "[DRAFT] 替换",
+      "evidence_label 合法",
+      "reading_mode 一致",
+      "final_checklist 数量充足",
+      "audit PASS"
+    ]
+  },
+  "quality_gate": {
+    "goal": "audit + render + 可选 publish。",
+    "commands": [
+      "audit_paper_reading.py",
+      "render_page.py",
+      "publish_output_to_github.sh (optional)"
+    ],
+    "quality_bar": [
+      "audit status PASS",
+      "index.html 完整",
+      "reading mode badge 正确"
+    ]
+  }
+}

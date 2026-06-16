@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "reading_mode": "full_text",
+  "input_kind": "paper_url",
+  "schema_version": "0.1.0",
+  "source_resolution": {
+    "status": "not_found",
+    "structured": true,
+    "legacy_fallback": false,
+    "warnings": [],
+    "errors": [],
+    "summary": {
+      "structured": true,
+      "fallback_legacy": false,
+      "resolver_status": "not_found",
+      "resolver_match_type": "none",
+      "confidence": "low",
+      "confidence_numeric": 0.3,
+      "matched_paper_id": null,
+      "matched_canonical_title": null,
+      "matched_arxiv_id": null,
+      "matched_repo": null,
+      "resolver_source": "skills/paper-three-pass-reader/data/resolver_hints.json",
+      "source_resolution_step": "cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'",
+      "degraded": null,
+      "candidate_count": 0,
+      "candidates_top": [],
+      "steps_count": 8,
+      "hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html"
+    }
+  },
+  "counts": {
+    "claims_total": 14,
+    "claims_with_valid_evidence": 14,
+    "final_checklist_questions": 12,
+    "draft_placeholders": 0
+  },
+  "errors": [],
+  "warnings": [],
+  "recommendations": []
+}

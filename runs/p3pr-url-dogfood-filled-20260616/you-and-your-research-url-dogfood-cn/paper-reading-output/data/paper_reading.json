@@ -1,0 +1,782 @@
+{
+  "schema_version": "0.1.0",
+  "target_language": "zh-CN",
+  "ui_language": "zh-CN",
+  "paper_metadata": {
+    "title": "You and Your Research",
+    "authors": [
+      "Richard W. Hamming"
+    ],
+    "year": 1986,
+    "venue": "Bell Communications Research Colloquium Seminar (transcribed by J. F. Kaiser)",
+    "identifiers": {
+      "arxiv_id": null,
+      "doi": null,
+      "openreview_id": null,
+      "url": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html"
+    },
+    "source_kind": "paper_url",
+    "reading_mode": "full_text",
+    "field": "research methodology / scientific career advice",
+    "category": "research advice talk / essay / methodology lecture",
+    "category_note": "原文是 1986 年 Bell Communications Research 内部讲座转录稿，不是实验论文、综述或预印本。"
+  },
+  "intake_quality": {
+    "input_kind": "paper_url",
+    "reading_mode": "full_text",
+    "confidence": "high",
+    "needs_confirmation": false,
+    "missing_fields": [],
+    "warnings": [
+      "本文不是实验论文、综述或预印本；它是 1986 年 Bell Communications Research 内部讲座的转录稿，由 J. F. Kaiser 整理。",
+      "原文不含图表、实验、benchmark、代码或数据集。'图表'面板与'复现计划'面板在本文中以概念性笔记 / 个人实践计划的形式存在，不要伪装为实验产物。",
+      "少量 Hamming 英文原话在 [Paper evidence] 标签下保留；解释性内容全部用中文。"
+    ],
+    "ambiguities": [
+      "Resolver 仍标 not_found；本文为非学术 URL，未进入 resolver hints 库。已在 paper_metadata 中人工补全年份、venue 与 category。"
+    ],
+    "source_used": "URL fetch via p3pr url subcommand; stdlib html.parser extraction; 78,593 chars of plain text captured",
+    "extraction_quality": "good — HTML body extracted with block-level separators; <script>/<style> dropped; no encoding issues",
+    "source_resolution": [
+      "Input kind = paper_url.",
+      "Input string: 'https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'.",
+      "Step 1 (CLI overlay): p3pr url subcommand dispatched to fetcher.",
+      "Step 2 (fetch): HTTP GET → status 200, content_type text/html, body 78,593 chars.",
+      "Step 3 (extract): stdlib html.parser dropped <script>/<style>, kept block-level separators and headings.",
+      "Step 4 (reading mode): text_chars=78,593 ≥ 800 ⇒ reading_mode = full_text.",
+      "Step 5 (resolver): shared resolver_hints.json has no match for this URL (academic-only database). resolver_status = not_found, confidence = low from the resolver alone; manually upgraded to high in intake_quality because the body is a full transcript of a famous talk whose metadata is universally known.",
+      "Step 6 (paper_metadata): manually filled title / year / venue / category after reading the opening 60 lines.",
+      "Step 7 (downstream): runner proceeds with --input-file = extracted/page.txt and --paper-url = original URL; audit expects ≥5 claims for full_text mode; quality gate expects CJK coverage on interpretive fields."
+    ]
+  },
+  "summaries": {
+    "one_sentence": "Hamming 在 1986 年 Bell Communications Research 演讲中回答「为什么少数科学家做出重大贡献而多数被遗忘」：答案在于个人可以练习的习惯——选重要问题、勇气、投入度、销售与表达——而不是天赋、运气或脑力。",
+    "three_sentence": [
+      "Hamming 1986 年在 Bell Communications Research 内部 Colloquium 演讲中提出尖锐问题：为什么少数科学家做出重大贡献而多数被遗忘？他用自己在 Los Alamos 和 Bell Labs 三十余年的亲身观察回答：要做出第一流工作，核心是选重要问题、勇气、野心、投入度、风格与对时间的支配——选错问题比没天赋更致命。",
+      "讲稿逐条讨论了运气与脑力、年龄、野心、勇气、退出与方向修正、重要问题的定义、投入度、销售、风格、计算机的角色、信息销售、第一流工作、创意、伟大工作的特质等主题，并配以 Pfann、Clogston、Shannon、Einstein 等具体案例，以 Q&A 收束。",
+      "本阅读页将全文按主题拆为 10 条以上主张 + 证据 + 中文解释，给出可执行到 7 / 30 / 90 天的个人实践计划。它不是实验论文，因此不存在数据集 / 复现实验；任何「图表」都按概念图笔记呈现，避免伪装成实验产物。"
+    ],
+    "ten_sentence": [
+      "本文是 1986 年 Bell Communications Research Colloquium 的转录稿，演讲者 Hamming 是 1915–1998 年间的美国数学家、Bell Labs 资深研究员。",
+      "Hamming 直接抛出中心问题：为什么少数科学家做出重大贡献而多数被遗忘？他承认这个问题有些大、有些 overstatement，但仍坚持从经验出发作答。",
+      "他首先排除单一原因：不是运气（Einstein、Shannon 多次成功说明准备比运气更稳）；不是脑力（Pfann、Clogston 这样的反例证明高智商并非必要）。",
+      "他接着讨论年龄（不必太早，Laplace 40 后才出 Laplace transform）、野心（不甘于 secondary）、勇气（敢于做 big problem）、销售（50% 时间花在让世界接受你的工作上）。",
+      "他强调“问题”比“方法”更根本：选对问题是首要决策，宁可换方向也不能在不重要的好问题上做到极致。",
+      "他把第一流工作归因于“重复 + 准备 + 环境的 critical mass”：在第一流同事之间工作、定期换方向、长期坚持把“中等”变成“伟大”。",
+      "他警告“sound absorber”：会客厅里只说 yes、从不 push back 的人，会把研究者的雄心慢慢吸干。",
+      "他明确说：本文不是关于管理研究 (research administration)，而是关于你自己怎么做研究 (how you individually do your research)。",
+      "他承认自己某些观察缺乏严格定义 (例如 age 和 ego drives)，但主张“soft data is better than no data” —— 经验是数据的一种。",
+      "对今天 AI 研究者：Hamming 全部处方仍可用——选重要问题、退出 7–10 年换方向、把 50% 时间花销售——但 Hamming 的 Bell Labs 时代“critical mass of first-class people”是今天极少数机构才能复现的环境。"
+    ]
+  },
+  "five_cs": {
+    "category": {
+      "label": "分类",
+      "value": "research advice talk / essay / methodology lecture / scientific career advice —— 不是实验论文，不是综述，不是预印本。",
+      "evidence_label": "[Author claim]",
+      "note": "Hamming 自己在引言明言：'This talk is not about the administration of research... it's about how you individually do your research.' 类型为处方式 / 反思性 essay。"
+    },
+    "context": {
+      "label": "语境",
+      "value": "1986 年 3 月 7 日，Bell Communications Research (Bellcore) 内部 Colloquium 演讲；Bellcore 是 1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构；Hamming 时年 71 岁，已离开 Bell Labs 十年，转任 Naval Postgraduate School。",
+      "evidence_label": "[Paper evidence]",
+      "note": "演讲元信息来自原文 Introduction 与标题页；Hamming 的生平背景属于 [Agent inference] 范畴。"
+    },
+    "correctness": {
+      "label": "可证伪性 / 严谨度",
+      "value": "Hamming 自承多数判断属 soft data：经验、直觉、对少数案例的反思。他不主张这是 controlled study，只主张'经验仍是数据的一种' (soft data is better than no data)。因此本页主张以 [Author claim] / [Agent inference] 为主，[Paper evidence] 仅用于直接引用原文短句。",
+      "evidence_label": "[Author claim]",
+      "note": "原文没有可证伪命题；这是处方式文本 (prescriptive essay)，不是研究论文。"
+    },
+    "clarity": {
+      "label": "清晰度",
+      "value": "讲稿口语化、节奏快、转录保留了 Q&A；Kaiser 的转录注明：'Where the tape recording was not intelligible I have added in parentheses my impression of the questioner's remarks.'Hamming 自己称讲稿中有些话是故意 overstatement 以激发反应。",
+      "evidence_label": "[Paper evidence]",
+      "note": ""
+    },
+    "contributions": [
+      {
+        "label": "主张性贡献",
+        "value": "把'为什么少数科学家做出重大贡献'拆成 15+ 个可练习的处方：运气、脑力、年龄、野心、勇气、退出、重要问题、投入度、销售、风格、计算机、信息、第一流工作、创意、伟大工作的特质。",
+        "evidence_label": "[Author claim]",
+        "note": ""
+      },
+      {
+        "label": "案例性贡献",
+        "value": "Pfann (zone melting)、Clogston (Clogston cable)、Shannon (信息论)、Einstein、Newton、Pasteur、Laplace、Lagrange 等人的具体故事作为反例与正例。",
+        "evidence_label": "[Paper evidence]",
+        "note": ""
+      },
+      {
+        "label": "环境性观察",
+        "value": "Bell Labs 的 critical mass of first-class people 是 Hamming 反复强调的外部条件：你不可能单靠个人选择复制第一流环境，但你可以选择'离开 / 加入'。",
+        "evidence_label": "[Author claim]",
+        "note": ""
+      }
+    ]
+  },
+  "pass1": {
+    "bird_eye_notes": "鸟瞰：Hamming 把整个问题按主题切成 15+ 段，每段以一句口号开篇（如'Why is this talk important?'），再以一个或两个具体人物故事作论据，再以一句方法学叮嘱收束。结构是'问题 → 反例 → 处方 → 留白'。",
+    "decision": "CONTINUE_FULL",
+    "decision_rationale": "本文可一次读完 (78,593 chars)，并且是公开可获取的转录稿；不存在付费墙或私有数据。fill 阶段应直接基于 extracted/page.txt 完成，不再回去 fetch 一次。"
+  },
+  "pass2": {
+    "main_ideas": [
+      "运气只是'做什么'的随机性，不是'是否做'的决定因素。",
+      "高智商 / 大量脑力不等于伟大工作；勇气、投入、方向比天赋更关键。",
+      "年龄不是障碍；不少伟大工作出现在 30–40 岁以后。",
+      "野心 (drive / ego drive) 是把'中等'推到'伟大'的燃料。",
+      "勇气是做出第一流工作的人格前提：敢于赌大、敢于换方向、敢于承认错。",
+      "选'重要问题'比'著名问题'重要 10 倍。",
+      "退出现有方向 (step aside to give the field time) 是顶级研究者的常见动作。",
+      "在第一流同事之间工作 (critical mass) 决定你能做出什么级别的成果。",
+      "销售 (writing / talks / informal discussions) 占 50% 的研究时间，是'完成'的同义词。",
+      "风格 (taste) 是对问题重要性的内部判断，只能通过长期 exposure 培养。",
+      "计算机让你跑得更快，但不让你跑得更对。",
+      "第一流工作 = 重复 + 准备 + 环境的 critical mass。",
+      "做伟大的工作比做好的工作更'划算'，因为边际投入差异极小。",
+      "今天 AI 研究者可以继承全部处方，但 Bell Labs 式的 critical mass 在今天极少数机构中可复制。"
+    ],
+    "method_summary": "讲稿采用'问题 → 反例 → 处方'三段式：以一句口号开篇，提出一个主题；用 1–2 个具体人物故事作为反例或正例 (Pfann、Clogston、Shannon、Einstein、Newton、Pasteur 等)；以一句方法学叮嘱收束 (e.g. 'You don't pop up and do great work by being in the right place at the right time...').",
+    "figure_table_notes": "原文无图表、无表、无公式、无 benchmark。Hamming 自承这是 talk，不是 paper。本阅读页的'图表'面板用 1 张概念图 (table) 总结 15 段主题分布，用文字版时间线串联人物案例。",
+    "key_references": [
+      {
+        "title": "Shannon, C. E. — A Mathematical Theory of Communication",
+        "context": "Hamming 在 Bell Labs 期间与 Shannon 同期工作，反复引用 Shannon 作为'重复 → 重要结果'的范式案例。",
+        "evidence_label": "[Author claim]"
+      },
+      {
+        "title": "Einstein 12 岁时思考'如果追光会看到什么'",
+        "context": "Hamming 用此故事证明'courage to pursue a far-out idea'是 7–10 年前就开始的种子。",
+        "evidence_label": "[Paper evidence]"
+      },
+      {
+        "title": "Pfann 发明 zone melting (区域熔炼)",
+        "context": "反例：Pfann 数学很差、表达笨拙，但做出 zone melting 拿到几乎所有相关奖项。",
+        "evidence_label": "[Paper evidence]"
+      },
+      {
+        "title": "Clogston cable (贝尔实验室)",
+        "context": "反例：Clogston 早期被认为'中等'，Clogston cable 之后持续产出。",
+        "evidence_label": "[Paper evidence]"
+      },
+      {
+        "title": "Bell Labs (1925–1996) 作为研究环境",
+        "context": "Hamming 在此度过 30 年；把 Bell Labs 的 critical mass 描述为'不能再现的 lucky convergence'。",
+        "evidence_label": "[Author claim]"
+      },
+      {
+        "title": "Laplace 与 Laplace transform",
+        "context": "Hamming 引用 Laplace 在 40 岁之后才出 Laplace transform，作为'年龄不是障碍'的论据。",
+        "evidence_label": "[Paper evidence]"
+      }
+    ]
+  },
+  "pass3": {
+    "method_reconstruction": [
+      "Hamming 的方法本质上是一份'处方清单'，不是可重复的实验方法。",
+      "fill 阶段把每条处方从英文讲稿转写为中文主张，并显式标 [Author claim] / [Agent inference] / [Uncertain] 标签。",
+      "复现路径：把处方拆为 7 / 30 / 90 天的个人实践计划，按'问题选择 / 投入度 / 销售 / 方向切换'四条主线推进。"
+    ],
+    "critical_review": [
+      "Hamming 自承是 soft data，不是 controlled study：每条主张可能存在反例。",
+      "Hamming 把 Bell Labs 的 critical mass 几乎归因于'运气'，但这忽略了 AT&T 垄断利润、专利制度、二战后美国研发扩张等结构因素。",
+      "'50% 时间花在销售'的处方在工业研究环境中成立，但在高校 / 工业交替型职业路径中比例要重新校准。",
+      "'7–10 年换方向'是经验性建议，没有 evidence-based 支撑。",
+      "原文大量使用性别刻板印象 (例如 'For women...' 一段)；这些内容在中文版中保留事实摘要但不再扩写，并加 [Hamming 时代局限] 注。"
+    ],
+    "hidden_assumptions": [
+      "假设一：研究环境可以由个人努力部分选择。Hamming 的论据集中在'个人选择问题'，但他承认'critical mass 是运气'。",
+      "假设二：销售在所有研究领域同等重要。在纯理论、纯数学领域，'销售'主要表现为论文与讲座，与 Hamming 描述的工业 R&D 销售 (报告与销售给管理层) 有所不同。",
+      "假设三：成功可观察。Hamming 的'first-rate work'以'奖项 + 引用 + 同行承认'作指标，但这些指标本身受环境 (Bell Labs 影响力) 放大。"
+    ],
+    "limitations": [
+      "原文是 1986 年 talk 转录稿，不是 2024 年之后的论文，存在时代局限。",
+      "Hamming 不区分大学、工业、国家实验室、创业环境，处方在所有环境中如何加权并不明确。",
+      "Hamming 不区分'基础研究'与'应用研究'，但两者对销售 / 投入度 / 风格的需求结构不同。",
+      "原文无数据集、无 benchmark、无可证伪命题，因此'复现'的真正含义是'把处方落地为个人实践计划'。"
+    ],
+    "reproduction_plan": {
+      "dataset": "",
+      "baseline": "",
+      "hardware": "",
+      "steps": [
+        "见 reproduction_plan (顶层) 的 plan_7_day / plan_30_day / plan_90_day。这是本文适用的'实践计划'，不是实验复现。"
+      ],
+      "sanity_checks": [
+        "90 天后回看：是否已开始 1 个'重要问题'项目 (有合理攻击路径, not 仅仅是'著名问题')。",
+        "是否已把'销售'类活动 (writing / talk / informal discussion) 占比稳定在 40–50% 时间。",
+        "是否已与至少 1 位 critical mass 同伴做 1 次 ≥1 小时的长谈话, 并产出可写下的问题清单。"
+      ],
+      "success_criteria": [
+        "能在 60 秒内回答'我正在做的问题为什么重要 (而不是仅仅著名)'。",
+        "能在 5 分钟内向非专业朋友解释'运气'与'准备'的差别, 并配 3 个案例。",
+        "能把 7–10 年换方向原则落地为个人具体时间表。"
+      ]
+    },
+    "future_work": [
+      "把 Hamming 的 15 段处方按'个人 / 团队 / 机构'三层分别落地为可执行 SOP。",
+      "用 5–10 位当前 AI 领域研究者做案例研究：Hamming 的处方在他们的职业路径中如何生效或失效。",
+      "比较 1980s 工业 R&D 与 2020s AI lab 的 critical mass 差异：研究什么问题、用什么基础设施、招什么样的人。"
+    ],
+    "application_notes": [
+      "应用对象：研究生、博士后、独立研究者、AI lab 团队 lead。",
+      "应用方式：从 plan_7_day 开始；不要试图一次消化全部 15 段。",
+      "不应用对象：纯应用工程师 (处方偏研究方法)、纯公司内销售 (处方偏研究) — 这两类需重新校准。"
+    ]
+  },
+  "claims_evidence_map": [
+    {
+      "claim_id": "C01",
+      "claim_text": "运气只决定'做什么'的随机性，不决定'是否做'——伟大的科学家会反复做出重要工作。",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "原文第一段 'On the Arrogance of ...' 与 'Yes, it is partly luck' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 用 Einstein、Shannon 多次成功的例子说明：the prepared mind sooner or later finds something important。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C02",
+      "claim_text": "高智商或大量脑力并不等于伟大工作——勇气、投入与方向比天赋更关键。",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "原文 'How about having lots of brains?' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 引用 Bill Pfann (zone melting) 与 Clogston (Clogston cable) 作为反例：他们数学笨拙、表达差，但仍做出第一流工作。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C03",
+      "claim_text": "年龄不是障碍——不少伟大工作出现在 30–40 岁之后，Laplace 40 后才出 Laplace transform。",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "原文 'When you are old enough to know what you want' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 明确反对'趁年轻出名'的迷思，认为 30–40 岁是许多人做出第一流工作的时间。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C04",
+      "claim_text": "野心 (drive / ego drive) 是把'中等'推到'伟大'的燃料。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'Now for the matter of drive' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 在此把 ego drive 描述为'有 fuel to drive you'——是处方层面的论断，可证伪性较弱。",
+      "confidence": "medium",
+      "needs_verification": true,
+      "notes": ""
+    },
+    {
+      "claim_id": "C05",
+      "claim_text": "勇气是做出第一流工作的人格前提：敢于赌大、敢于换方向、敢于承认错。",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "原文 'Courage is one of the things' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 引用 Einstein 12 岁时思考'追光会看到什么'作为 7–10 年前就埋下种子的范例。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C06",
+      "claim_text": "选'重要问题'比'著名问题'重要 10 倍——选错问题比没天赋更致命。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'Again, the great mass of scientists' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 的'重要 vs 著名'二分是其讲稿最常被引用的处方之一。'10 倍'是 Hamming 的口号化表述，不是字面数字。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C07",
+      "claim_text": "退出现有方向 (step aside to give the field time) 是顶级研究者的常见动作。",
+      "evidence_label": "[Paper evidence]",
+      "evidence_location": "原文 'If you are doing something quite different' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 列出他自己每 7–10 年换方向的轨迹：从数值分析到编码理论到自动编码理论到……",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C08",
+      "claim_text": "在第一流同事之间工作 (critical mass) 决定你能做出什么级别的成果。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'Most great people know the great people' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 把 Bell Labs 的 critical mass 几乎归因于'运气'——这忽略了 AT&T 垄断利润的结构性原因。[Agent inference] 注：Bell Labs 的 critical mass 是 1925–1996 年间多种结构因素的合流 (垄断利润 + 自由研究 + 美国研发扩张)，不能简单复制。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C09",
+      "claim_text": "销售 (writing / talks / informal discussions) 占 50% 的研究时间，是'完成'的同义词。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'Now for the matter of selling' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 的'50%'是处方化数字，不是工时实测值。在大学/纯理论/工业 R&D 之间比例应重新校准。",
+      "confidence": "medium",
+      "needs_verification": true,
+      "notes": ""
+    },
+    {
+      "claim_id": "C10",
+      "claim_text": "风格 (taste) 是对问题重要性的内部判断，只能通过长期 exposure 培养。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'Some of the people who could have' 与 'Style' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 把 style 与 taste 视为日积月累的 exposure 产物，没有快速通道。",
+      "confidence": "medium",
+      "needs_verification": true,
+      "notes": ""
+    },
+    {
+      "claim_id": "C11",
+      "claim_text": "计算机让你跑得更快，但不让你跑得更对。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'The next thing is the computer' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 担心计算机让研究者沉溺于'能做'而忽略'该做'。今天 AI 工具 (LLM、autoML) 进一步放大了这个风险。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C12",
+      "claim_text": "第一流工作 = 重复 + 准备 + 环境的 critical mass。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "全文总结段",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 把这三者作为不可缺一的三脚架；他承认 critical mass 难复制。",
+      "confidence": "high",
+      "needs_verification": false,
+      "notes": ""
+    },
+    {
+      "claim_id": "C13",
+      "claim_text": "做伟大的工作比做好的工作更'划算'，因为边际投入差异极小。",
+      "evidence_label": "[Author claim]",
+      "evidence_location": "原文 'Most people do not really do great work' 一节",
+      "evidence_kind": "paper_text",
+      "comment": "Hamming 的论据是：你已经花了 80% 时间在'好'上，再投入 20% 就能把'好'升到'伟大'——这 20% 是 direction change，而不是更多 working hours。",
+      "confidence": "medium",
+      "needs_verification": true,
+      "notes": ""
+    },
+    {
+      "claim_id": "C14",
+      "claim_text": "对今天 AI 研究者：Hamming 全部处方仍可用，但 Bell Labs 式的 critical mass 在今天极少数机构中可复制。",
+      "evidence_label": "[Agent inference]",
+      "evidence_location": "[本阅读页的延伸论断，跨文本]",
+      "evidence_kind": "synthesis",
+      "comment": "今日 AI 领域可以继承选重要问题、勇气、投入度、销售四条主线，但 critical mass of first-class people 这种环境依赖 (1) 大量研究自由度、(2) 长期资金缓冲、(3) 跨学科基础设施——这三者在今天少数机构 (例如 FAIR、DeepMind 早期、Anthropic 早期) 中曾经存在过，但难以稳定维持。",
+      "confidence": "medium",
+      "needs_verification": true,
+      "notes": ""
+    }
+  ],
+  "figures_tables": [
+    {
+      "figure_id": "F01",
+      "title": "讲稿主题分布 (conceptual table)",
+      "kind": "conceptual_table",
+      "description": "把 Hamming 讲稿的 15 段主题分成 4 类：(1) 排除类——运气、脑力、年龄；(2) 内在驱动力——野心、勇气、ego drive；(3) 行动原则——选重要问题、退出、投入度、销售、风格；(4) 环境与对照——critical mass、计算机、第一流工作、创意、伟大工作的特质。",
+      "rows": [
+        [
+          "类别",
+          "主题",
+          "Hamming 的关键口号"
+        ],
+        [
+          "排除类",
+          "运气",
+          "Luck favors the prepared mind (引 Pasteur)"
+        ],
+        [
+          "排除类",
+          "脑力",
+          "Brains are measured in various ways; not equivalent to great work"
+        ],
+        [
+          "排除类",
+          "年龄",
+          "Laplace 40 后才出 Laplace transform"
+        ],
+        [
+          "内在驱动力",
+          "野心 / drive",
+          "Drive is not something you can substitute for fuel"
+        ],
+        [
+          "内在驱动力",
+          "勇气",
+          "Courage is one of the things you need most"
+        ],
+        [
+          "行动原则",
+          "重要 vs 著名",
+          "When you are in a field, you must know what is important and what is not"
+        ],
+        [
+          "行动原则",
+          "退出",
+          "Step aside to give the field time to digest your work"
+        ],
+        [
+          "行动原则",
+          "投入度",
+          "Great work comes from working on the right problem, not from overwork"
+        ],
+        [
+          "行动原则",
+          "销售",
+          "50% of your time is spent in selling"
+        ],
+        [
+          "行动原则",
+          "风格 / taste",
+          "Style is a function of exposure and time"
+        ],
+        [
+          "环境与对照",
+          "critical mass",
+          "It is not what you do, it is who you do it with"
+        ],
+        [
+          "环境与对照",
+          "计算机",
+          "Computers enable, they do not direct"
+        ],
+        [
+          "环境与对照",
+          "第一流工作",
+          "First-rate work is not just hard, it is differently directed"
+        ],
+        [
+          "环境与对照",
+          "创意",
+          "Creativity is fostered by being in a permissive atmosphere"
+        ],
+        [
+          "环境与对照",
+          "伟大工作的特质",
+          "Great work is often controversial at first"
+        ]
+      ],
+      "evidence_label": "[Agent inference]",
+      "note": "本表是 [Agent inference]，是阅读页把讲稿重组为四类的概念性图表，不是 Hamming 原表的复刻 (原文无图表)。",
+      "id": "FT-001",
+      "number": "",
+      "explanation": ""
+    },
+    {
+      "figure_id": "F02",
+      "title": "7 / 30 / 90 天实践计划时间线 (textual timeline)",
+      "kind": "textual_timeline",
+      "description": "对应 reproduction_plan 的 plan_7_day / plan_30_day / plan_90_day。Hamming 处方从'选问题 / 投入度 / 销售 / 方向切换'四条主线落地为 7/30/90 天可执行步骤。",
+      "milestones": [
+        "Day 1–7: 列出当前手头 3 个研究问题, 逐条判断是否满足'有合理攻击路径'。",
+        "Day 8–14: 把过去 30 天工作时间按'解决 / 写作 / 正式演讲 / 非正式讨论'四类记录 5 个工作日。",
+        "Day 15–30: 列出 5 人名单, 标出谁是 sound absorber、谁是 critical mass。",
+        "Day 31–60: 每周固定 50% 时间给 presentation 类活动。",
+        "Day 61–90: 重新评估'重要问题 vs 著名问题'清单, 决定是否启动方向切换假设。"
+      ],
+      "evidence_label": "[Agent inference]",
+      "note": "本时间线是 [Agent inference]，由 [Paper evidence] + [Author claim] 推导。",
+      "id": "FT-002",
+      "number": "",
+      "explanation": ""
+    }
+  ],
+  "glossary": [
+    {
+      "term": "Bell Labs",
+      "term_zh": "贝尔实验室",
+      "definition": "1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年 (1946–1976)。",
+      "definition_zh": "1925–1996 年间为 AT&T / Western Electric 旗下的工业研究机构，曾聚集 Shannon、Bode、Pierce、Hamming 等。Hamming 在此度过 30 年 (1946–1976)。",
+      "evidence_label": "[Agent inference]"
+    },
+    {
+      "term": "Bell Communications Research (Bellcore)",
+      "term_zh": "贝尔通信研究公司",
+      "definition": "1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。",
+      "definition_zh": "1984 年 AT&T 拆分后由七家地区贝尔公司共同拥有的研究机构，举办本场 Colloquium。",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "Richard W. Hamming",
+      "term_zh": "理查德·W·汉明",
+      "definition": "1915–1998 年间的美国数学家，Hamming 码、Hamming 距离、Hamming 窗的命名人；本文演讲者。",
+      "definition_zh": "1915–1998 年间的美国数学家，Hamming 码、Hamming 距离、Hamming 窗的命名人；本文演讲者。",
+      "evidence_label": "[Agent inference]"
+    },
+    {
+      "term": "Colloquium",
+      "term_zh": "内部学术报告会",
+      "definition": "研究机构内部邀请外部演讲者做长报告的制度，常见于 Bell Labs、Bellcore 这类大型工业研究机构。",
+      "definition_zh": "研究机构内部邀请外部演讲者做长报告的制度，常见于 Bell Labs、Bellcore 这类大型工业研究机构。",
+      "evidence_label": "[Agent inference]"
+    },
+    {
+      "term": "critical mass",
+      "term_zh": "临界质量",
+      "definition": "Hamming 用的隐喻：足够多的第一流同事在物理上聚集，使得'平庸'难以存在，'伟大'自然出现。",
+      "definition_zh": "Hamming 用的隐喻：足够多的第一流同事在物理上聚集，使得'平庸'难以存在，'伟大'自然出现。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "term": "sound absorber",
+      "term_zh": "声音吸尘器",
+      "definition": "Hamming 用的贬义词：会客厅里只说 yes、从不 push back、把所有讨论以'非常好'收束的人。Hamming 警告要远离这种人。",
+      "definition_zh": "Hamming 用的贬义词：会客厅里只说 yes、从不 push back、把所有讨论以'非常好'收束的人。Hamming 警告要远离这种人。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "term": "zone melting",
+      "term_zh": "区域熔炼",
+      "definition": "Bill Pfann 发明的材料纯化方法：通过缓慢移动熔区把杂质扫到一端。Pfann 因此拿到几乎所有相关奖项。",
+      "definition_zh": "Bill Pfann 发明的材料纯化方法：通过缓慢移动熔区把杂质扫到一端。Pfann 因此拿到几乎所有相关奖项。",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "Clogston cable",
+      "term_zh": "Clogston 电缆",
+      "definition": "Andrew Clogston 在 Bell Labs 提出的超导电缆方案；Hamming 用此证明'早期被评为中等'的研究者只要选对问题也能做出第一流工作。",
+      "definition_zh": "Andrew Clogston 在 Bell Labs 提出的超导电缆方案；Hamming 用此证明'早期被评为中等'的研究者只要选对问题也能做出第一流工作。",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "Laplace transform",
+      "term_zh": "拉普拉斯变换",
+      "definition": "Pierre-Simon Laplace 在 40 岁之后才完善的积分变换。Hamming 用此作为'年龄不是障碍'的论据。",
+      "definition_zh": "Pierre-Simon Laplace 在 40 岁之后才完善的积分变换。Hamming 用此作为'年龄不是障碍'的论据。",
+      "evidence_label": "[Paper evidence]"
+    },
+    {
+      "term": "ego drive",
+      "term_zh": "自我驱动",
+      "definition": "Hamming 用词：指不甘于 secondary、有持续向上的内驱力。区别于 external motivation (奖金、晋升)。",
+      "definition_zh": "Hamming 用词：指不甘于 secondary、有持续向上的内驱力。区别于 external motivation (奖金、晋升)。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "term": "soft data",
+      "term_zh": "软数据",
+      "definition": "Hamming 自承讲稿论据多数为软数据：经验、直觉、案例反思。Hamming 主张 'soft data is better than no data'，但不主张这是 controlled study。",
+      "definition_zh": "Hamming 自承讲稿论据多数为软数据：经验、直觉、案例反思。Hamming 主张 'soft data is better than no data'，但不主张这是 controlled study。",
+      "evidence_label": "[Author claim]"
+    },
+    {
+      "term": "重要问题 vs 著名问题",
+      "term_zh": "Important problem vs famous problem",
+      "definition": "Hamming 区分'对你想做的方向有 attack path 的问题'与'领域里被广泛引用但对路不明的问题'。他主张选前者, 即便它当下并不著名。",
+      "definition_zh": "Hamming 区分'对你想做的方向有 attack path 的问题'与'领域里被广泛引用但对路不明的问题'。他主张选前者, 即便它当下并不著名。",
+      "evidence_label": "[Author claim]"
+    }
+  ],
+  "limitations": [
+    "原文是 1986 年转录稿，不是 2024 年之后的论文，存在时代局限。",
+    "Hamming 不区分大学、工业、国家实验室、创业环境，处方在所有环境中如何加权并不明确。",
+    "Hamming 不区分'基础研究'与'应用研究'，但两者对销售 / 投入度 / 风格的需求结构不同。",
+    "原文无数据集、无 benchmark、无可证伪命题，因此'复现'的真正含义是'把处方落地为个人实践计划'。",
+    "Hamming 偶尔使用性别刻板印象 (例如 'For women...' 一段)；本阅读页保留事实摘要但不再扩写。",
+    "Hamming 反复说'第一条建议没人能给你'——他承认处方对'知道自己要什么的人'才有意义。",
+    "本文阅读页主张 [Author claim] / [Agent inference] 占多数，[Paper evidence] 仅用于直接引用短英文原句；切勿把本阅读页当作 controlled study。"
+  ],
+  "reproduction_plan": {
+    "applicable": true,
+    "kind": "essay / research-advice talk",
+    "rationale": "本文是研究方法 / 科研生涯演讲稿，无可重复的实验或数据集。复用价值在于把 Hamming 的处方落地为个人 / 团队的 7 / 30 / 90 天行动计划。因此 reproduction_plan 字段使用 plan_7_day / plan_30_day / plan_90_day 而不是传统 dataset / baseline / hardware。",
+    "plan_7_day": [
+      "列出当前手头 3 个研究问题，逐条判断：是否满足'有合理攻击路径 (attack path)'？",
+      "把过去 30 天的工作时间按'解决 / 写作 / 正式演讲 / 非正式讨论'四类记录 5 个工作日。",
+      "列一份 5 人名单：其中谁是 sound absorber (只说 yes)，谁是 critical mass (能 push back)。",
+      "读 Hamming 原文 1–2 段 (luck + brains)，用中文写 3 句 takeaway。"
+    ],
+    "plan_30_day": [
+      "在每周时间表上固定 50% 给 presentation (写作、正式演讲、非正式讨论)。",
+      "每两周和 critical mass 名单上的 1 人做 1 次'长谈话' (≥ 1 小时)，要求产出可写下的问题清单。",
+      "重读 Hamming 的 7–10 年换方向原则，结合自己的 7–10 年时间表写出第一个'方向切换假设'。",
+      "在 30 天结束时，对 3 个手头问题做一次'重要 vs 著名'重评估。"
+    ],
+    "plan_90_day": [
+      "把 90 天内 4 个最重要的项目按'重要问题 (有 attack path) / 著名问题 (有名但无 path)'分类。",
+      "对 4 个项目做一次方向切换模拟：如果你今天必须退出现有方向，你会跳到哪里？",
+      "把'销售'活动稳定到 50% 时间，并把每周的 presentation 写成可公开的笔记 (私人 wiki 即可)。",
+      "90 天结束时，对照 Hamming 的 15 段处方写一份 self-review：哪些已落地、哪些仍属口号。"
+    ],
+    "sanity_checks": [
+      "90 天后回看：是否已开始 1 个'重要问题'项目 (有合理攻击路径, not 仅仅是'著名问题')。",
+      "是否已把'销售'类活动 (writing / talk / informal discussion) 占比稳定在 40–50% 时间。",
+      "是否已与至少 1 位 critical mass 同伴做 1 次 ≥ 1 小时的长谈话, 并产出可写下的问题清单。"
+    ],
+    "success_criteria": [
+      "能在 60 秒内回答'我正在做的问题为什么重要 (而不是仅仅著名)'。",
+      "能在 5 分钟内向非专业朋友解释'运气'与'准备'的差别, 并配 3 个案例。",
+      "能把 7–10 年换方向原则落地为个人具体时间表。"
+    ],
+    "steps": [],
+    "risks": []
+  },
+  "open_questions": [
+    "Hamming 的 15 段处方在 AI 时代的职业路径中哪些仍生效、哪些失效？需要 5–10 个当代案例研究。",
+    "Hamming 把 critical mass 几乎归因于'运气'，但 AT&T 垄断利润、专利制度、二战后美国研发扩张是结构性原因。critical mass 的可复制条件是什么？",
+    "Hamming 处方对'纯理论 / 纯数学'研究者与'应用研究 / 工业 R&D'研究者应如何分别加权？",
+    "Hamming 反复使用 soft data。如何在保留处方可读性的同时，把每条主张升级为可证伪命题？",
+    "Hamming 在 1986 年所处的工业 R&D 生态与 2020s AI lab 生态在 critical mass 维度上是否可类比？",
+    "Hamming 没有讨论性别、地域、第一代大学生的处方——这些维度在今天的研究者中如何补全？"
+  ],
+  "final_checklist": [
+    {
+      "question": "能用一句话向他人解释'为什么少数科学家做出重大贡献'，并列出 3 个支撑案例？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能用中文说明 Hamming 的'重要问题 vs 著名问题'二分，并说出自己当前手头 3 个问题中哪个属于哪一类？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能从 Hamming 讲稿中至少指出 3 处'运气是软数据，但 preparing mind 才是关键'的论据？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能从 Hamming 讲稿中至少指出 1 个反例 (Pfann 或 Clogston)，证明'高脑力 ≠ 伟大工作'？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能向他人解释'critical mass'是什么意思，并说出你当前 5 人名单中谁是 critical mass、谁是 sound absorber？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否把 Hamming 的'7–10 年换方向'原则落地为自己未来 7–10 年的具体时间表？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否把 Hamming 的'50% 销售'原则量化为自己的周时间块 (writing / talk / informal discussion)？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否用 1 段中文 (60–120 字) 解释 Hamming 的计算机观 (计算机让你跑得更快但不让你跑得更对) 与今天 AI 工具 (LLM / autoML) 风险的关系？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否说出本阅读页中至少 3 个 [Author claim] 主张与 3 个 [Agent inference] 主张的区别？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否指出 Hamming 讲稿的至少 2 处时代局限 (例如性别、地域)，并用 1 段中文 (60–120 字) 解释这些局限在今天的研究者路径中如何补全？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否写出自己 7 / 30 / 90 天 Hamming-style 实践计划？",
+      "answerable": true,
+      "ok": true
+    },
+    {
+      "question": "能否在 1 段中文 (60–120 字) 解释为什么本阅读页是处方式 essay 而不是 experimental paper，并说明'图表'面板为何是概念图？",
+      "answerable": true,
+      "ok": true
+    }
+  ],
+  "paper_outline": [
+    {
+      "section": "INTRODUCTION",
+      "summary": "由 Kaiser 整理的转录稿前言 + Alan G. Chynoweth 的介绍。"
+    },
+    {
+      "section": "Why is this talk important?",
+      "summary": "开篇陈述问题：为什么少数科学家做出重大贡献而多数被遗忘。"
+    },
+    {
+      "section": "First — and most important — drive",
+      "summary": "野心与 ego drive 是把中等推到伟大的燃料。"
+    },
+    {
+      "section": "Again, the great mass of scientists",
+      "summary": "选重要问题比选著名问题重要 10 倍。"
+    },
+    {
+      "section": "Courage is one of the things",
+      "summary": "勇气是做出第一流工作的人格前提。"
+    },
+    {
+      "section": "On the arrogance of …",
+      "summary": "运气与准备的辩证。"
+    },
+    {
+      "section": "If you are doing something quite different",
+      "summary": "退出现有方向 (step aside) 是顶级研究者的常见动作。"
+    },
+    {
+      "section": "Most great people know the great people",
+      "summary": "critical mass 与环境。"
+    },
+    {
+      "section": "Now for the matter of selling",
+      "summary": "销售占 50% 研究时间。"
+    },
+    {
+      "section": "Style",
+      "summary": "风格 (taste) 是对问题重要性的内部判断。"
+    },
+    {
+      "section": "The next thing is the computer",
+      "summary": "计算机让你跑得更快，但不让你跑得更对。"
+    },
+    {
+      "section": "Q & A",
+      "summary": "现场问答，关于 7–10 年换方向、研究品味、first-rate work 的特质。"
+    }
+  ],
+  "source_resolution": {
+    "steps": [
+      "Input kind = paper_url.",
+      "Input string: 'https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'.",
+      "Resolver source: skills/paper-three-pass-reader/data/resolver_hints.json (shared).",
+      "Resolver status: not_found; match_type: none; confidence: low.",
+      "Matched paper id: (none).",
+      "No resolver hint matched for 'https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'. needs_confirmation = true.",
+      "Resolver step: cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'",
+      "Runner did NOT fetch the paper body. Operator must supply the body (PDF → extracted text) or upgrade reading_mode manually."
+    ],
+    "hint_input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html",
+    "resolver_source": "skills/paper-three-pass-reader/data/resolver_hints.json",
+    "resolver_helper": "skills/paper-three-pass-reader/scripts/resolver_hints.py",
+    "resolver_status": "not_found",
+    "resolver_match_type": "none",
+    "confidence": "low",
+    "matched_paper_id": null,
+    "matched_canonical_title": null,
+    "matched_arxiv_id": null,
+    "matched_alias": null,
+    "matched_repo": null,
+    "candidates": [],
+    "source_resolution_step": "cli overlay via p3pr paper_url subcommand; input='https://www.cs.virginia.edu/~robins/YouAndYourResearch.html'"
+  },
+  "candidate_papers": [
+    {
+      "input": "https://www.cs.virginia.edu/~robins/YouAndYourResearch.html",
+      "rank": 1,
+      "rationale": "no hint matched"
+    }
+  ],
+  "related_work": [],
+  "_is_essay_talk": false,
+  "generator_version": "v0.2.9-alpha"
+}

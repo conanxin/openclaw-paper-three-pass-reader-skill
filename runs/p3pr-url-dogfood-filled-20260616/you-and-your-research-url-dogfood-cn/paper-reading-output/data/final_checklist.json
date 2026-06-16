@@ -1,0 +1,62 @@
+[
+  {
+    "question": "能用一句话向他人解释'为什么少数科学家做出重大贡献'，并列出 3 个支撑案例？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能用中文说明 Hamming 的'重要问题 vs 著名问题'二分，并说出自己当前手头 3 个问题中哪个属于哪一类？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能从 Hamming 讲稿中至少指出 3 处'运气是软数据，但 preparing mind 才是关键'的论据？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能从 Hamming 讲稿中至少指出 1 个反例 (Pfann 或 Clogston)，证明'高脑力 ≠ 伟大工作'？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能向他人解释'critical mass'是什么意思，并说出你当前 5 人名单中谁是 critical mass、谁是 sound absorber？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否把 Hamming 的'7–10 年换方向'原则落地为自己未来 7–10 年的具体时间表？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否把 Hamming 的'50% 销售'原则量化为自己的周时间块 (writing / talk / informal discussion)？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否用 1 段中文 (60–120 字) 解释 Hamming 的计算机观 (计算机让你跑得更快但不让你跑得更对) 与今天 AI 工具 (LLM / autoML) 风险的关系？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否说出本阅读页中至少 3 个 [Author claim] 主张与 3 个 [Agent inference] 主张的区别？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否指出 Hamming 讲稿的至少 2 处时代局限 (例如性别、地域)，并用 1 段中文 (60–120 字) 解释这些局限在今天的研究者路径中如何补全？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否写出自己 7 / 30 / 90 天 Hamming-style 实践计划？",
+    "answerable": true,
+    "ok": true
+  },
+  {
+    "question": "能否在 1 段中文 (60–120 字) 解释为什么本阅读页是处方式 essay 而不是 experimental paper，并说明'图表'面板为何是概念图？",
+    "answerable": true,
+    "ok": true
+  }
+]

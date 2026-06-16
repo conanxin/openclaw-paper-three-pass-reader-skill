@@ -1,0 +1,38 @@
+{
+  "status": "WARN",
+  "target_language": "zh-CN",
+  "ui_language": "zh-CN",
+  "reading_mode": "full_text",
+  "cjk_coverage": {
+    "checked_fields": 63,
+    "fields_with_cjk": 63,
+    "ratio": 1.0,
+    "long_english_paragraphs": 4
+  },
+  "counts": {
+    "claims": 14,
+    "glossary_terms": 12,
+    "checklist_items": 12
+  },
+  "evidence_label_distribution": {
+    "[Paper evidence]": 5,
+    "[Author claim]": 8,
+    "[Agent inference]": 1
+  },
+  "source_resolution_check": {
+    "structured": true,
+    "legacy_fallback": false,
+    "resolver_status": "not_found",
+    "warnings": [
+      "source_resolution.matched_canonical_title and matched_arxiv_id are both empty; please verify the paper"
+    ],
+    "errors": []
+  },
+  "errors": [],
+  "warnings": [
+    "Found 4 interpretive field(s) with a long English blob (>=30 ASCII chars without CJK). Examples: ['summaries.ten_sentence', 'pass2.method_summary', 'claims_evidence_map[0].comment']. These may be carryover from the English draft that should be translated."
+  ],
+  "recommendations": [
+    "source_resolution_check: source_resolution.matched_canonical_title and matched_arxiv_id are both empty; please verify the paper"
+  ]
+}
