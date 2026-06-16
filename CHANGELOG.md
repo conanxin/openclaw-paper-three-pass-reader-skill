@@ -3,6 +3,28 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.18-alpha] — 2026-06-16
+
+### Added
+
+- **Automatic site-path inference in `p3pr finalize`.** Precedence: explicit `--site-path` → `paper_metadata.page_slug` / `slug` / `default_slug` → slugified `paper_metadata.title` → run-dir basename. The slugifier is `_slugify_title()`: ASCII letters/digits kept, non-alnum collapsed to `-`, leading/trailing `-` stripped, capped at 80 chars. CJK-only titles reach the run-dir fallback.
+- **Automatic page-title inference in `p3pr finalize`.** Precedence: explicit `--page-title` → `paper_metadata.page_title` → for zh-CN runs `paper_metadata.title_zh` / `title_zh_cn` → `paper_metadata.title` → run-dir basename. The English title is preserved (no auto-translation).
+- **Richer `P3PR_FINALIZE_*` summary block** — added `P3PR_READING_MODE`, `P3PR_LANGUAGE`, `P3PR_SITE_PATH`, `P3PR_PAGE_TITLE`, `P3PR_AUDIT_STATUS`, `P3PR_QUALITY_GATE_STATUS`, `P3PR_WARNING_COUNT`, `P3PR_WARNING_SUMMARY`. Every existing field is preserved.
+- **`P3PR_WARNING_SUMMARY`** is no longer a generic "warnings exist" line — it lists up to 3 actual warning messages from `audit_final.json` and `quality_gate_zh_cn.json`, ending with `... (+N more)` when longer.
+- **`P3PR_NEXT_ACTION`** is now state-aware (BLOCKED-audit / BLOCKED-quality-gate / WARN / PASS / not-published) and tells the operator exactly what to do next, including the path of the work dir / file to edit.
+- **Improved dry-run** — emits `inferred_site_path` / `inferred_page_title` with source attribution ("auto from paper_reading.json" vs "explicit --site-path"), plus `P3PR_SITE_PATH` / `P3PR_PAGE_TITLE` / `P3PR_READING_MODE` / `P3PR_LANGUAGE` echoes. No side effects.
+- **`scripts/validate.sh` step 22** — 14 new sub-checks for v0.2.18: dry-run emits `P3PR_FINALIZE_DRY_RUN` + `P3PR_SITE_PATH` + `P3PR_PAGE_TITLE` + `inferred_*`; explicit `--site-path` / `--page-title` override inference; `_slugify_title` is stable for English titles and falls back to `''` for CJK-only; local-run summary contains all new fields; v0.2.15 publish-gate (`index.html` exists) is still enforced on a real run; v0.2.17 BLOCK-on-missing-`paper_reading.json` is still enforced. Validation is now 293/0 PASS (was 279/0 PASS at v0.2.17-alpha).
+
+### Changed
+
+- **`p3pr.py`** — added `_slugify_title`, `_get_paper_reading`, `_get_paper_metadata`, `_get_reading_mode`, `_get_target_languages`, `infer_site_path`, `infer_page_title`, `_warning_to_text`, `_collect_warnings`, `summarize_finalize_warnings`, `build_finalize_next_action`. Expanded `_finalize_print_summary` with the new fields. Refactored `handle_finalize` to compute the inferred values once and reuse them across dry-run, render, and publish paths. All v0.2.15 / v0.2.17 publish guards are intact (verified by validation step 22).
+- **Documentation** — `USAGE.md`, `ONE_LINE_CLI.md`, `RUNNER.md`, `ZH_CN_QUALITY_GATE.md`, `README.md`, `README.zh-CN.md` updated to mention site-path / page-title inference and to drop the explicit `--site-path` / `--page-title` from the recommended two-stage flow.
+
+### Dogfood
+
+- **Live dogfood page:** <https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-finalize-ux-cn/> (HTTP 200).
+- **Live published-pages audit:** 13/13 PASS, 0 warn, 0 fail.
+
 ## [v0.2.17-alpha] — 2026-06-16
 
 ### Added

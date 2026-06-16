@@ -513,6 +513,115 @@ doing — `audit FAILED` and missing `index.html` will still BLOCK):
 
 ---
 
+## v0.2.18-alpha: `p3pr finalize <run-dir>` UX polish
+
+`finalize` now infers the gh-pages site-path and the published page title from
+`paper_reading.json` — no more passing `--site-path` / `--page-title` on the
+two-stage flow. The summary block is also enriched and the `P3PR_NEXT_ACTION`
+line now tells the operator exactly what to do next.
+
+### Recommended two-stage flow
+
+```bash
+# Stage 1 — draft + fill-pack (no publish, no render)
+./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+    --zh --full --no-publish
+
+# (fill work/paper_reading.json per the fill-pack)
+
+# Stage 2 — audit + zh-CN quality gate + render + publish + published-pages audit
+./p3pr finalize <run-dir> --publish
+```
+
+The site-path and page-title come from the run's `paper_reading.json`. The
+operators can still override either with `--site-path` / `--page-title`.
+
+### Inference precedence
+
+- **site-path** — explicit `--site-path` → `paper_metadata.page_slug` /
+  `slug` / `default_slug` → slugified `paper_metadata.title` → run-dir basename.
+  CJK-only titles reach the run-dir fallback (no pypinyin dependency).
+- **page-title** — explicit `--page-title` → `paper_metadata.page_title` → for
+  zh-CN runs `paper_metadata.title_zh` / `title_zh_cn` → `paper_metadata.title`
+  → run-dir basename. The English title is preserved (no auto-translation).
+
+### Dry-run improvements
+
+```text
+P3PR_FINALIZE_DRY_RUN: true
+would_read_json: .../work/paper_reading.json
+would_audit: True (audit_paper_reading.py)
+would_quality_gate: True (target_language=zh-CN, ui_language=zh-CN, skip_quality_gate=False)
+would_render: True (render_page.py → .../paper-reading-output)
+would_publish: True (repo=conanxin/paper-reading-pages, branch=gh-pages)
+inferred_site_path: you-and-your-research (source: auto from paper_reading.json / run-dir)
+inferred_page_title: You and Your Research (source: auto from paper_reading.json)
+P3PR_SITE_PATH: you-and-your-research
+P3PR_PAGE_TITLE: You and Your Research
+P3PR_READING_MODE: full_text
+P3PR_LANGUAGE: zh-CN/zh-CN
+published_audit_after_publish: True
+```
+
+When `--site-path` / `--page-title` is explicit the `source:` line flips to
+"explicit --site-path" / "explicit --page-title" so the operator can see the
+override at a glance.
+
+### Richer summary block
+
+Every finalize exit now prints:
+
+```text
+P3PR_FINALIZE_STATUS: PASS | WARN | BLOCKED
+P3PR_RUN_DIR: <path>
+P3PR_READING_MODE: full_text
+P3PR_LANGUAGE: zh-CN/zh-CN
+P3PR_SITE_PATH: ...
+P3PR_PAGE_TITLE: ...
+P3PR_JSON: .../work/paper_reading.json
+P3PR_AUDIT_JSON: .../work/audit_final.json
+P3PR_AUDIT_STATUS: PASS | WARN | FAIL | unknown
+P3PR_QUALITY_GATE_JSON: .../work/quality_gate_zh_cn.json
+P3PR_QUALITY_GATE_STATUS: PASS | WARN | FAIL | skipped | unknown
+P3PR_LOCAL_PAGE: .../paper-reading-output/index.html
+P3PR_PAGE_URL: https://...github.io/.../<site-path>/
+P3PR_PUBLISHED_AUDIT_JSON: .../work/published_pages_audit_after_finalize.json
+P3PR_WARNING_COUNT: N
+P3PR_WARNING_SUMMARY: <up to 3 actual warnings, ' | '-joined, with '... (+N more)' tail>
+P3PR_NEXT_ACTION: <state-aware one-liner — see below>
+```
+
+`P3PR_WARNING_SUMMARY` reads the actual warning entries from
+`audit_final.json` and `quality_gate_zh_cn.json` (whichever is present), keeps
+only `severity == warn|warning`, and emits up to 3 lines joined with ` | `.
+Empty case: `P3PR_WARNING_COUNT: 0`, `P3PR_WARNING_SUMMARY: no warnings`.
+
+`P3PR_NEXT_ACTION` is state-aware:
+
+- **BLOCKED audit FAIL** — "audit FAILED. Edit `<work_json>` and re-run `./p3pr finalize <run_dir>`."
+- **BLOCKED quality-gate FAIL** — "quality gate FAILED. Edit `<work_json>` and re-run finalize, or pass `--allow-draft-publish` to publish the draft as-is."
+- **BLOCKED quality-gate WARN** (no publish requested) — "quality gate WARN. Re-run with `--allow-warnings` to publish, or edit `<work_json>` to address the warnings."
+- **PASS** + published — "Done. Page published: `<url>`. Re-run the same command to re-publish."
+- **PASS** + not published — "Done. Local page rendered. Re-run `./p3pr finalize <run_dir> --publish` to publish."
+- **WARN** + non-blocking warnings — "Review N warning(s) in .../work/quality_gate_zh_cn.json (or audit_result.json). Re-run with `--allow-warnings` if acceptable."
+
+### When to use `--allow-warnings`
+
+Use it for English-source papers whose long English blobs in summary fields
+trip the quality gate's "long English blob" warning. The warning is real but
+expected for English-source drafts translated into zh-CN output. Do not use
+it to silence structural errors.
+
+### Compatibility
+
+- All v0.2.15 / v0.2.17 publish guards are preserved (verified by validation
+  step 22).
+- All existing finalize flags are unchanged.
+- Existing run directories and existing published pages are unchanged.
+- No old tags moved.
+
+---
+
 ## v0.2.9-alpha: HTML essay / talk page rendering
 
 As of v0.2.9, the renderer classifies inputs as `essay / talk` when the paper category is one of `essay / talk / keynote / lecture / opinion / blog-distillation` and switches the page layout accordingly.

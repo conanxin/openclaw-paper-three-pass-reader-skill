@@ -480,3 +480,38 @@ rendered HTML.
 
 See [`USAGE.md`](USAGE.md) § "v0.2.17-alpha: `p3pr finalize <run-dir>` — the
 second-stage CLI" for the full flag list and summary block spec.
+
+## v0.2.18-alpha: `p3pr finalize` UX polish (auto-inference + richer summary)
+
+`finalize` now infers the gh-pages site-path and the published page title from
+`paper_reading.json` — no more passing `--site-path` / `--page-title` on the
+two-stage flow. The summary block is also enriched.
+
+### Inference precedence
+
+- **site-path** — explicit `--site-path` → `paper_metadata.page_slug` /
+  `slug` / `default_slug` → slugified `paper_metadata.title` → run-dir basename.
+  CJK-only titles reach the run-dir fallback (no pypinyin dependency).
+- **page-title** — explicit `--page-title` → `paper_metadata.page_title` → for
+  zh-CN runs `paper_metadata.title_zh` / `title_zh_cn` → `paper_metadata.title`
+  → run-dir basename. The English title is preserved (no auto-translation).
+
+### Richer summary block
+
+Every finalize exit now prints `P3PR_READING_MODE`, `P3PR_LANGUAGE`,
+`P3PR_SITE_PATH`, `P3PR_PAGE_TITLE`, `P3PR_AUDIT_STATUS`,
+`P3PR_QUALITY_GATE_STATUS`, `P3PR_WARNING_COUNT`, `P3PR_WARNING_SUMMARY` (up
+to 3 actual warnings, `|`-joined, with `... (+N more)` when longer), and a
+state-aware `P3PR_NEXT_ACTION` one-liner.
+
+### Dry-run
+
+`./p3pr finalize <run-dir> --publish --dry-run` now prints the inferred
+`site_path` and `page_title` with source attribution. No side effects.
+
+### Compatibility
+
+All v0.2.15 / v0.2.17 publish guards are preserved (verified by validation
+step 22). Validation 293/0 PASS. See
+[`USAGE.md`](USAGE.md) § "v0.2.18-alpha: `p3pr finalize <run-dir>` UX
+polish" for the full flag list and dry-run output.

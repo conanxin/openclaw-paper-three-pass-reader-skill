@@ -1974,6 +1974,149 @@ else
 fi
 rm -rf "$FINALIZE_SMOKE_ROOT" "$EMPTY_DIR" "$NO_WORK_DIR"
 
+# [22] v0.2.18-alpha p3pr finalize UX polish (auto-inference + summary)
+step 22 "v0.2.18-alpha p3pr finalize UX polish"
+
+# 22a. dry-run without --site-path / --page-title: must still infer both.
+if [[ -d "$DOGFOOD_DIR" ]]; then
+  UX_DRY="$(cd "$ROOT" && ./p3pr finalize "$DOGFOOD_DIR" --publish --dry-run 2>&1 || true)"
+  if echo "$UX_DRY" | grep -q "P3PR_FINALIZE_DRY_RUN: true" \
+     && echo "$UX_DRY" | grep -q "P3PR_SITE_PATH:" \
+     && echo "$UX_DRY" | grep -q "P3PR_PAGE_TITLE:"; then
+    ok "p3pr finalize dry-run emits P3PR_FINALIZE_DRY_RUN + P3PR_SITE_PATH + P3PR_PAGE_TITLE"
+  else
+    bad "p3pr finalize dry-run missing P3PR_FINALIZE_DRY_RUN / P3PR_SITE_PATH / P3PR_PAGE_TITLE"
+  fi
+  if echo "$UX_DRY" | grep -q "inferred_site_path:" \
+     && echo "$UX_DRY" | grep -q "inferred_page_title:"; then
+    ok "p3pr finalize dry-run shows inferred_site_path and inferred_page_title"
+  else
+    bad "p3pr finalize dry-run missing inferred_site_path / inferred_page_title"
+  fi
+  # The inferred site-path should NOT be empty and should not be a stub.
+  UX_SP="$(echo "$UX_DRY" | awk -F'P3PR_SITE_PATH: ' '/P3PR_SITE_PATH:/{print $2; exit}')"
+  if [[ -n "$UX_SP" && "$UX_SP" != " " ]]; then
+    ok "p3pr finalize dry-run infers non-empty site-path (got: $UX_SP)"
+  else
+    bad "p3pr finalize dry-run did not infer a non-empty site-path"
+  fi
+  UX_PT="$(echo "$UX_DRY" | awk -F'P3PR_PAGE_TITLE: ' '/P3PR_PAGE_TITLE:/{print $2; exit}')"
+  if [[ -n "$UX_PT" && "$UX_PT" != " " ]]; then
+    ok "p3pr finalize dry-run infers non-empty page-title (got: $UX_PT)"
+  else
+    bad "p3pr finalize dry-run did not infer a non-empty page-title"
+  fi
+else
+  bad "dogfood run dir not found at $DOGFOOD_DIR; cannot run v0.2.18 dry-run UX checks"
+fi
+
+# 22b. Explicit --site-path / --page-title must override inference.
+if [[ -d "$DOGFOOD_DIR" ]]; then
+  UX_EXPL="$(cd "$ROOT" && ./p3pr finalize "$DOGFOOD_DIR" --publish --dry-run \
+             --site-path my-override-slug --page-title 'My Override Title' 2>&1 || true)"
+  if echo "$UX_EXPL" | grep -q "P3PR_SITE_PATH: my-override-slug" \
+     && echo "$UX_EXPL" | grep -q "P3PR_PAGE_TITLE: My Override Title"; then
+    ok "p3pr finalize --site-path and --page-title override inferred values"
+  else
+    bad "p3pr finalize explicit --site-path / --page-title did not override inferred values"
+  fi
+fi
+
+# 22c. _slugify_title unit-style behavior (via a small python snippet).
+UX_SLUG_OUT="$(python3 - <<'PY' 2>&1 || true
+import sys
+sys.path.insert(0, "skills/paper-three-pass-reader/scripts")
+from p3pr import _slugify_title
+checks = [
+    ("You and Your Research", "you-and-your-research"),
+    ("  Hello,   World!  ", "hello-world"),
+]
+for raw, want in checks:
+    got = _slugify_title(raw)
+    if got != want:
+        print(f"FAIL {raw!r} -> {got!r}, want {want!r}", file=sys.stderr)
+        sys.exit(1)
+    print(f"ok {raw!r} -> {got!r}")
+# CJK-only -> '' (caller falls back to run-dir basename)
+if _slugify_title("你好世界") != "":
+    print("FAIL CJK-only should produce ''", file=sys.stderr)
+    sys.exit(1)
+print("ok CJK-only -> '' (fallback to run-dir basename)")
+PY
+)"
+if [[ -n "$UX_SLUG_OUT" ]] && ! echo "$UX_SLUG_OUT" | grep -q "^FAIL"; then
+  ok "p3pr finalize slugify: stable English titles, CJK-only falls back to ''"
+  while IFS= read -r line; do
+    [[ -n "$line" && "$line" == ok* ]] && printf "  ok   %s\n" "$line"
+  done <<< "$UX_SLUG_OUT"
+else
+  bad "p3pr finalize slugify behavior regressed"
+fi
+
+# 22d. Real run (no-publish, --allow-warnings) summary must include warning summary + next action.
+UX_REAL_ROOT="/tmp/p3pr-ux-smoke-$$"
+rm -rf "$UX_REAL_ROOT"
+mkdir -p "$UX_REAL_ROOT/ux-smoke/work"
+cp "$DOGFOOD_DIR/work/paper_reading.json" "$UX_REAL_ROOT/ux-smoke/work/paper_reading.json" 2>/dev/null
+cp -r "$DOGFOOD_DIR/fill-pack" "$UX_REAL_ROOT/ux-smoke/fill-pack" 2>/dev/null
+if [[ -f "$UX_REAL_ROOT/ux-smoke/work/paper_reading.json" ]]; then
+  UX_REAL_OUT="$(cd "$ROOT" && ./p3pr finalize "$UX_REAL_ROOT/ux-smoke" --no-publish --allow-warnings 2>&1 || true)"
+  if echo "$UX_REAL_OUT" | grep -q "P3PR_SITE_PATH:"; then
+    ok "p3pr finalize local run summary contains P3PR_SITE_PATH"
+  else
+    bad "p3pr finalize local run summary missing P3PR_SITE_PATH"
+  fi
+  if echo "$UX_REAL_OUT" | grep -q "P3PR_PAGE_TITLE:"; then
+    ok "p3pr finalize local run summary contains P3PR_PAGE_TITLE"
+  else
+    bad "p3pr finalize local run summary missing P3PR_PAGE_TITLE"
+  fi
+  if echo "$UX_REAL_OUT" | grep -q "P3PR_WARNING_SUMMARY:"; then
+    ok "p3pr finalize local run summary contains P3PR_WARNING_SUMMARY"
+  else
+    bad "p3pr finalize local run summary missing P3PR_WARNING_SUMMARY"
+  fi
+  if echo "$UX_REAL_OUT" | grep -q "P3PR_NEXT_ACTION:"; then
+    ok "p3pr finalize local run summary contains P3PR_NEXT_ACTION"
+  else
+    bad "p3pr finalize local run summary missing P3PR_NEXT_ACTION"
+  fi
+  if echo "$UX_REAL_OUT" | grep -q "P3PR_READING_MODE:"; then
+    ok "p3pr finalize local run summary contains P3PR_READING_MODE"
+  else
+    bad "p3pr finalize local run summary missing P3PR_READING_MODE"
+  fi
+  if echo "$UX_REAL_OUT" | grep -q "P3PR_AUDIT_STATUS:" \
+     && echo "$UX_REAL_OUT" | grep -q "P3PR_QUALITY_GATE_STATUS:"; then
+    ok "p3pr finalize local run summary contains P3PR_AUDIT_STATUS + P3PR_QUALITY_GATE_STATUS"
+  else
+    bad "p3pr finalize local run summary missing P3PR_AUDIT_STATUS / P3PR_QUALITY_GATE_STATUS"
+  fi
+  # v0.2.15 guard: index.html must still exist after a real run.
+  if [[ -f "$UX_REAL_ROOT/ux-smoke/paper-reading-output/index.html" ]]; then
+    ok "p3pr finalize real run still produces paper-reading-output/index.html (v0.2.15 guard intact)"
+  else
+    bad "p3pr finalize real run did NOT produce paper-reading-output/index.html (v0.2.15 guard broken)"
+  fi
+else
+  bad "could not seed ux-smoke dir from $DOGFOOD_DIR (work/paper_reading.json missing)"
+fi
+
+# 22e. Block path: missing work/paper_reading.json must still BLOCK with a clear message.
+NO_JSON_DIR="/tmp/p3pr-no-json-$$"
+rm -rf "$NO_JSON_DIR"
+mkdir -p "$NO_JSON_DIR"
+if [[ -d "$NO_JSON_DIR" ]]; then
+  BLOCK_OUT="$(cd "$ROOT" && ./p3pr finalize "$NO_JSON_DIR" --no-publish 2>&1 || true)"
+  if echo "$BLOCK_OUT" | grep -q "P3PR_FINALIZE_STATUS: BLOCKED" \
+     && echo "$BLOCK_OUT" | grep -q "work/paper_reading.json missing"; then
+    ok "p3pr finalize still BLOCKs on missing work/paper_reading.json (v0.2.17 guard intact)"
+  else
+    bad "p3pr finalize no longer BLOCKs on missing work/paper_reading.json (v0.2.17 guard broken)"
+  fi
+fi
+rm -rf "$UX_REAL_ROOT" "$NO_JSON_DIR"
+
 # Summary
 echo
 echo "================================================="

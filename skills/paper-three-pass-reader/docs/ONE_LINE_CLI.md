@@ -288,3 +288,51 @@ has a filled `work/paper_reading.json`:
 A full `P3PR_FINALIZE_STATUS` summary block is printed on every exit (PASS,
 WARN, or BLOCKED). For details, see [`USAGE.md`](USAGE.md) §"v0.2.17-alpha:
 `p3pr finalize <run-dir>` — the second-stage CLI".
+
+## v0.2.18-alpha: `p3pr finalize` UX polish
+
+`finalize` now infers the gh-pages site-path and the published page title from
+`paper_reading.json`. The two-stage flow gets shorter:
+
+```bash
+# Stage 1 — draft + fill-pack (no publish, no render)
+./p3pr url <url> --zh --full --no-publish
+
+# Stage 2 — site-path and page-title inferred; just run finalize --publish
+./p3pr finalize <run-dir> --publish
+```
+
+### Inference precedence
+
+- **site-path** — explicit `--site-path` → `paper_metadata.page_slug` /
+  `slug` / `default_slug` → slugified `paper_metadata.title` → run-dir basename.
+  CJK-only titles reach the run-dir fallback (no pypinyin dependency).
+- **page-title** — explicit `--page-title` → `paper_metadata.page_title` → for
+  zh-CN runs `paper_metadata.title_zh` / `title_zh_cn` → `paper_metadata.title`
+  → run-dir basename. The English title is preserved (no auto-translation).
+
+### Richer summary block
+
+Every finalize exit now prints:
+
+- `P3PR_READING_MODE` — `full_text` / `abstract_only` / `screenshot_only` / `partial_text`.
+- `P3PR_LANGUAGE` — `target_language/ui_language`.
+- `P3PR_SITE_PATH`, `P3PR_PAGE_TITLE` — the inferred (or explicit) values.
+- `P3PR_AUDIT_STATUS`, `P3PR_QUALITY_GATE_STATUS` — short status codes.
+- `P3PR_WARNING_COUNT`, `P3PR_WARNING_SUMMARY` — up to 3 actual warnings,
+  `|`-joined, with `... (+N more)` when longer.
+- `P3PR_NEXT_ACTION` — state-aware one-liner (BLOCKED audit / BLOCKED quality
+  gate / WARN / PASS / not-published) telling the operator exactly what to do
+  next, with the path of the work dir / file to edit.
+
+### When to override
+
+- `--site-path` — when the inferred slug collides with a previous page or
+  doesn't slugify well (e.g. CJK-only title).
+- `--page-title` — when the publisher page title needs to differ from the
+  paper's own title.
+- `--allow-warnings` — only for English-source papers whose long English blobs
+  trip the quality-gate warning. Do not use it to silence structural errors.
+
+All v0.2.15 / v0.2.17 publish guards are preserved (verified by validation
+step 22). Validation 293/0 PASS.

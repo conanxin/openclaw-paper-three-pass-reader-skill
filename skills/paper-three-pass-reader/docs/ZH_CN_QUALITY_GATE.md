@@ -191,3 +191,22 @@ zh-CN pages that have a small number of `long_en_blobs` (e.g. short
 Hamming quotations under `[Paper evidence]`). The page will be published
 and the published-pages audit will report the WARNs as info-level notes
 on the page.
+
+## v0.2.18-alpha: quality-gate status surfaces in the finalize summary
+
+As of v0.2.18, the `P3PR_FINALIZE_STATUS` summary block always includes
+`P3PR_QUALITY_GATE_STATUS` (`PASS` / `WARN` / `FAIL` / `skipped` / `unknown`)
+and `P3PR_AUDIT_STATUS` (`PASS` / `WARN` / `FAIL` / `unknown`). The
+`P3PR_WARNING_SUMMARY` line now lists up to 3 actual warning messages from
+`audit_final.json` and `quality_gate_zh_cn.json` (whichever is present),
+ending with `... (+N more)` when longer — not a generic "warnings exist" line.
+The `P3PR_NEXT_ACTION` line is state-aware: it tells the operator exactly
+which file to edit and which flag to re-run with.
+
+The site-path and page-title are now auto-inferred from `paper_reading.json`
+(explicit `--site-path` / `--page-title` still override), so the daily
+`p3pr url <url> --zh --full --no-publish` → fill → `p3pr finalize <run-dir>
+--publish` flow needs no extra flags.
+
+All v0.2.15 / v0.2.17 guards remain intact (verified by validation step 22).
+Validation 293/0 PASS.

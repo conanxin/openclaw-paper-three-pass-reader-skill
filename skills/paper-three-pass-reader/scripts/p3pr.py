@@ -1288,29 +1288,297 @@ def _finalise(
 
 # --- finalize subcommand ----------------------------------------------------
 
+_SLUG_FALLBACK_CHARS = re.compile(r"[^a-z0-9-]+")
+_SLUG_DASHES = re.compile(r"-+")
+
+
+def _slugify_title(text: str, *, max_len: int = 80) -> str:
+    """Best-effort ASCII slug for a paper title.
+
+    Rules:
+    - lowercase, strip
+    - ASCII letters / digits kept, anything else collapsed to '-'
+    - consecutive '-' merged
+    - leading / trailing '-' stripped
+    - truncated to max_len characters (at a word boundary when possible)
+    - if the result is empty (e.g. a pure-CJK title), returns '' so the caller
+      can fall back to the run-dir basename.
+
+    Deliberately stdlib-only: no pypinyin, no unicodedata NFKD stripping of
+    Han characters. CJK-only titles fall back to run-dir basename in the
+    caller. This is conservative and stable.
+    """
+    if not text:
+        return ""
+    s = text.strip().lower()
+    s = _SLUG_FALLBACK_CHARS.sub("-", s)
+    s = _SLUG_DASHES.sub("-", s).strip("-")
+    if len(s) > max_len:
+        s = s[:max_len].rsplit("-", 1)[0] or s[:max_len]
+    return s.strip("-")
+
+
+def _get_paper_reading(work_json: Path) -> dict:
+    """Read paper_reading.json defensively; return {} on any error."""
+    try:
+        return json.loads(work_json.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _get_paper_metadata(work_json: Path) -> dict:
+    """Return the paper_metadata block of paper_reading.json, or {}."""
+    return (_get_paper_reading(work_json).get("paper_metadata", {}) or {})
+
+
+def _get_reading_mode(work_json: Path) -> str:
+    pr = _get_paper_reading(work_json)
+    if pr.get("reading_mode"):
+        return pr["reading_mode"]
+    pm = pr.get("paper_metadata", {}) or {}
+    return pm.get("reading_mode") or ""
+
+
+def _get_target_languages(work_json: Path) -> tuple[str, str]:
+    pr = _get_paper_reading(work_json)
+    return (
+        pr.get("target_language") or "zh-CN",
+        pr.get("ui_language") or "zh-CN",
+    )
+
+
+def infer_site_path(run_dir: Path, work_json: Path, explicit: str | None = None) -> str:
+    """Pick the gh-pages site-path for this finalize run.
+
+    Precedence:
+      1. explicit (--site-path) — used as-is
+      2. paper_reading.json: page_slug / slug / paper_metadata.slug /
+         paper_metadata.default_slug
+      3. paper_metadata.title or top-level title, slugified
+      4. run-dir basename
+    """
+    if explicit:
+        return explicit
+    pr = _get_paper_reading(work_json)
+    pm = pr.get("paper_metadata", {}) or {}
+    for key in ("page_slug", "slug", "default_slug"):
+        v = pm.get(key) or pr.get(key)
+        if isinstance(v, str) and v.strip():
+            return _slugify_title(v) or run_dir.name
+    title = pm.get("title") or pr.get("title") or run_dir.name
+    slug = _slugify_title(title)
+    return slug or run_dir.name
+
+
+def infer_page_title(run_dir: Path, work_json: Path, explicit: str | None = None) -> str:
+    """Pick the published page title for this finalize run.
+
+    Precedence:
+      1. explicit (--page-title) — used as-is
+      2. paper_reading.json: page_title / paper_metadata.page_title
+      3. For zh-CN target / ui language: prefer paper_metadata.title_zh /
+         paper_metadata.title (or top-level title_zh) over the English title
+      4. paper_metadata.title or top-level title
+      5. run-dir basename
+    """
+    if explicit:
+        return explicit
+    pr = _get_paper_reading(work_json)
+    pm = pr.get("paper_metadata", {}) or {}
+    for key in ("page_title",):
+        v = pm.get(key) or pr.get(key)
+        if isinstance(v, str) and v.strip():
+            return v
+    target_lang, ui_lang = _get_target_languages(work_json)
+    is_zh = target_lang == "zh-CN" or ui_lang == "zh-CN"
+    if is_zh:
+        for key in ("title_zh", "title_zh_cn"):
+            v = pm.get(key) or pr.get(key)
+            if isinstance(v, str) and v.strip():
+                return v
+    title = pm.get("title") or pr.get("title")
+    if title and title.strip():
+        return title
+    return run_dir.name
+
+
+def _warning_to_text(w) -> str:
+    """Convert a warning entry (dict or string) to a single line of text."""
+    if isinstance(w, dict):
+        code = w.get("code") or w.get("type") or "warning"
+        msg = (
+            w.get("message")
+            or w.get("detail")
+            or w.get("summary")
+            or w.get("path")
+            or ""
+        )
+        path = w.get("path") or w.get("location") or ""
+        if path and msg:
+            return f"{code}: {msg} (at {path})"
+        if msg:
+            return f"{code}: {msg}"
+        return str(code)
+    return str(w)
+
+
+def _collect_warnings(audit_json_path: str, qg_json_path: str) -> tuple[int, list[str]]:
+    """Return (count, [text, ...]) for warnings across audit and quality gate."""
+    warnings: list[str] = []
+    for path in (audit_json_path, qg_json_path):
+        if not path:
+            continue
+        p = Path(path)
+        if not p.exists():
+            continue
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        # Common shapes: {warnings: [...]}, {issues: [...]}, {findings: [...]}
+        for key in ("warnings", "issues", "findings", "problems"):
+            items = data.get(key) or []
+            if isinstance(items, list):
+                for w in items:
+                    sev = ""
+                    if isinstance(w, dict):
+                        sev = (w.get("severity") or w.get("level") or "").lower()
+                    if sev and sev not in {"warn", "warning"}:
+                        continue
+                    warnings.append(_warning_to_text(w))
+    return len(warnings), warnings
+
+
+def summarize_finalize_warnings(
+    audit_json_path: str, qg_json_path: str, *, max_lines: int = 3
+) -> tuple[int, str]:
+    """Return (count, single-line summary) for the finalize summary block.
+
+    The single-line summary is a ' | '-joined list of up to ``max_lines``
+    warning messages, ending with '...' when the list is longer.
+    """
+    count, items = _collect_warnings(audit_json_path, qg_json_path)
+    if not count:
+        return 0, "no warnings"
+    head = items[:max_lines]
+    text = " | ".join(head)
+    if count > max_lines:
+        text = f"{text} ... (+{count - max_lines} more)"
+    return count, text
+
+
+def build_finalize_next_action(
+    *,
+    status: str,
+    publish_requested: bool,
+    published: bool,
+    page_url: str,
+    qg_status: str,
+    audit_status: str,
+    warning_count: int,
+    work_json: str,
+    run_dir: str,
+) -> str:
+    """Produce a clear, actionable next-action string for the summary.
+
+    Distinct messages for the common states, never a single
+    "warnings exist" line. The point is to tell the operator exactly
+    what to do next without making them re-read the run logs.
+    """
+    if status == "BLOCKED":
+        if audit_status == "FAIL":
+            return (
+                f"audit FAILED. Edit {work_json} and re-run "
+                f"`./p3pr finalize {run_dir}`."
+            )
+        if qg_status == "FAIL":
+            return (
+                f"quality gate FAILED. Edit {work_json} and re-run finalize, "
+                f"or pass --allow-draft-publish to publish the draft as-is."
+            )
+        if qg_status == "WARN" and not publish_requested:
+            return (
+                f"quality gate WARN. Re-run with --allow-warnings to publish, "
+                f"or edit {work_json} to address the warnings."
+            )
+        return (
+            f"finalize blocked. Inspect {run_dir}/work/ for audit / quality "
+            f"gate / render logs and re-run `./p3pr finalize {run_dir}`."
+        )
+    if status == "WARN":
+        if warning_count:
+            return (
+                f"Review {warning_count} warning(s) in "
+                f"{run_dir}/work/quality_gate_zh_cn.json (or audit_result.json). "
+                f"Re-run with --allow-warnings if acceptable."
+            )
+        if qg_status == "WARN" and not published:
+            return (
+                "Quality gate WARN. Re-run `./p3pr finalize <run-dir> --publish` "
+                "to publish, or pass --allow-warnings to accept the warnings."
+            )
+        if qg_status == "WARN" and published:
+            return (
+                "Page published with quality-gate WARN. Review before sharing. "
+                f"Page: {page_url}"
+            )
+        return "Review the warnings above and re-run finalize if needed."
+    # status == PASS
+    if published:
+        if warning_count:
+            return (
+                f"Done. Page published: {page_url}. "
+                f"{warning_count} non-blocking warning(s) noted."
+            )
+        return (
+            f"Done. Page published: {page_url}. "
+            f"Re-run the same command to re-publish."
+        )
+    return (
+        "Done. Local page rendered. "
+        f"Re-run `./p3pr finalize {run_dir} --publish` to publish."
+    )
+
+
 def _finalize_print_summary(
     *,
     status: str,
     run_dir: str,
-    work_json: str,
-    audit_json: str,
-    quality_gate_json: str,
-    local_page: str,
-    page_url: str,
-    published_audit_json: str,
-    next_action: str,
+    reading_mode: str = "",
+    language: str = "zh-CN",
+    work_json: str = "",
+    audit_json: str = "",
+    quality_gate_json: str = "",
+    site_path: str = "",
+    page_title: str = "",
+    local_page: str = "",
+    page_url: str = "",
+    published_audit_json: str = "",
+    audit_status: str = "unknown",
+    qg_status: str = "unknown",
+    warning_count: int = 0,
+    warning_summary: str = "no warnings",
+    next_action: str = "",
 ) -> None:
     """Print the fixed P3PR_FINALIZE_STATUS summary block."""
     print()
     print("=" * 60)
     print(f"P3PR_FINALIZE_STATUS: {status}")
     print(f"P3PR_RUN_DIR: {run_dir}")
+    print(f"P3PR_READING_MODE: {reading_mode}")
+    print(f"P3PR_LANGUAGE: {language}")
+    print(f"P3PR_SITE_PATH: {site_path}")
+    print(f"P3PR_PAGE_TITLE: {page_title}")
     print(f"P3PR_JSON: {work_json}")
     print(f"P3PR_AUDIT_JSON: {audit_json}")
+    print(f"P3PR_AUDIT_STATUS: {audit_status}")
     print(f"P3PR_QUALITY_GATE_JSON: {quality_gate_json}")
+    print(f"P3PR_QUALITY_GATE_STATUS: {qg_status}")
     print(f"P3PR_LOCAL_PAGE: {local_page}")
     print(f"P3PR_PAGE_URL: {page_url}")
     print(f"P3PR_PUBLISHED_AUDIT_JSON: {published_audit_json}")
+    print(f"P3PR_WARNING_COUNT: {warning_count}")
+    print(f"P3PR_WARNING_SUMMARY: {warning_summary}")
     print(f"P3PR_NEXT_ACTION: {next_action}")
     print("=" * 60)
 
@@ -1329,12 +1597,6 @@ def handle_finalize(args) -> int:
         _finalize_print_summary(
             status="BLOCKED",
             run_dir=str(run_dir),
-            work_json="",
-            audit_json="",
-            quality_gate_json="",
-            local_page="",
-            page_url="",
-            published_audit_json="",
             next_action=f"run-dir does not exist: {run_dir}",
         )
         return 1
@@ -1352,53 +1614,38 @@ def handle_finalize(args) -> int:
             status="BLOCKED",
             run_dir=str(run_dir),
             work_json=str(work_json),
-            audit_json="",
-            quality_gate_json="",
-            local_page="",
-            page_url="",
-            published_audit_json="",
             next_action=f"work/paper_reading.json missing at {work_json}; fill the draft first.",
         )
         return 1
 
+    # Inferred values (used by both dry-run and real run; explicit flags win).
+    inferred_site_path = infer_site_path(run_dir, work_json, args.site_path)
+    inferred_page_title = infer_page_title(run_dir, work_json, args.page_title)
+    reading_mode = _get_reading_mode(work_json) or "unknown"
+    target_lang, ui_lang = _get_target_languages(work_json)
+    run_qg = (not args.skip_quality_gate) and (target_lang == "zh-CN" or ui_lang == "zh-CN")
+
     # Dry-run: print plan, do nothing else.
     if getattr(args, "dry_run", False):
-        site_path = args.site_path or run_dir.name
-        # Page title precedence for dry-run display only.
-        page_title = args.page_title
-        if not page_title:
-            try:
-                preview = json.loads(work_json.read_text(encoding="utf-8"))
-                pm = preview.get("paper_metadata", {}) or {}
-                page_title = (
-                    pm.get("title")
-                    or preview.get("title")
-                    or run_dir.name
-                )
-            except Exception:  # noqa: BLE001
-                page_title = run_dir.name
-        # Read target/ui language to know whether to plan a quality gate.
-        try:
-            preview = json.loads(work_json.read_text(encoding="utf-8"))
-            target_lang = preview.get("target_language", "zh-CN")
-            ui_lang = preview.get("ui_language", "zh-CN")
-        except Exception:  # noqa: BLE001
-            target_lang, ui_lang = "zh-CN", "zh-CN"
-        run_qg = (not args.skip_quality_gate) and (target_lang == "zh-CN" or ui_lang == "zh-CN")
-
         print()
         print("=" * 60)
-        print("P3PR_FINALIZE_DRY_RUN")
-        print(f"P3PR_RUN_DIR: {run_dir}")
+        print("P3PR_FINALIZE_DRY_RUN: true")
         print(f"would_read_json: {work_json}")
         print(f"would_audit: True (audit_paper_reading.py)")
-        print(f"would_quality_gate: {run_qg} (zh-CN detected: {target_lang}/{ui_lang}; "
+        print(f"would_quality_gate: {run_qg} "
+              f"(target_language={target_lang}, ui_language={ui_lang}, "
               f"skip_quality_gate={args.skip_quality_gate})")
         print(f"would_render: True (render_page.py → {run_dir / 'paper-reading-output'})")
-        print(f"would_publish: {args.publish} (repo={args.repo}, branch={args.branch})")
+        print(f"would_publish: {bool(args.publish)} (repo={args.repo}, branch={args.branch})")
+        print(f"inferred_site_path: {inferred_site_path} "
+              f"(source: {'explicit --site-path' if args.site_path else 'auto from paper_reading.json / run-dir'})")
+        print(f"inferred_page_title: {inferred_page_title} "
+              f"(source: {'explicit --page-title' if args.page_title else 'auto from paper_reading.json'})")
+        print(f"P3PR_SITE_PATH: {inferred_site_path}")
+        print(f"P3PR_PAGE_TITLE: {inferred_page_title}")
+        print(f"P3PR_READING_MODE: {reading_mode}")
+        print(f"P3PR_LANGUAGE: {target_lang}/{ui_lang}")
         if args.publish:
-            print(f"site_path: {site_path}")
-            print(f"page_title: {page_title}")
             print(f"published_audit_after_publish: {not args.skip_published_audit}")
         print("=" * 60)
         return 0
@@ -1416,16 +1663,30 @@ def handle_finalize(args) -> int:
             "Fix work/paper_reading.json and re-run finalize.",
             file=sys.stderr,
         )
+        wcount, wsummary = summarize_finalize_warnings(str(audit_json), "")
         _finalize_print_summary(
             status="BLOCKED",
             run_dir=str(run_dir),
+            reading_mode=reading_mode,
+            language=f"{target_lang}/{ui_lang}",
             work_json=str(work_json),
             audit_json=str(audit_json),
-            quality_gate_json="",
-            local_page="",
-            page_url="",
-            published_audit_json="",
-            next_action=f"audit FAILED (rc={audit_rc}); fix {work_json} and re-run finalize.",
+            audit_status="FAIL",
+            site_path=inferred_site_path,
+            page_title=inferred_page_title,
+            warning_count=wcount,
+            warning_summary=wsummary,
+            next_action=build_finalize_next_action(
+                status="BLOCKED",
+                publish_requested=bool(args.publish),
+                published=False,
+                page_url="",
+                qg_status="unknown",
+                audit_status="FAIL",
+                warning_count=wcount,
+                work_json=str(work_json),
+                run_dir=str(run_dir),
+            ),
         )
         return 1
 
@@ -1441,32 +1702,38 @@ def handle_finalize(args) -> int:
             "[error] audit result is FAIL. finalize will not render or publish.",
             file=sys.stderr,
         )
+        wcount, wsummary = summarize_finalize_warnings(str(audit_json), "")
         _finalize_print_summary(
             status="BLOCKED",
             run_dir=str(run_dir),
+            reading_mode=reading_mode,
+            language=f"{target_lang}/{ui_lang}",
             work_json=str(work_json),
             audit_json=str(audit_json),
-            quality_gate_json="",
-            local_page="",
-            page_url="",
-            published_audit_json="",
-            next_action=f"audit status FAIL; fix {work_json} and re-run finalize.",
+            audit_status="FAIL",
+            site_path=inferred_site_path,
+            page_title=inferred_page_title,
+            warning_count=wcount,
+            warning_summary=wsummary,
+            next_action=build_finalize_next_action(
+                status="BLOCKED",
+                publish_requested=bool(args.publish),
+                published=False,
+                page_url="",
+                qg_status="unknown",
+                audit_status="FAIL",
+                warning_count=wcount,
+                work_json=str(work_json),
+                run_dir=str(run_dir),
+            ),
         )
         return 1
 
     # --- 2. Quality gate (zh-CN only) ---
     quality_gate_json = ""
     qg_status = "SKIPPED"
-    target_lang = "zh-CN"
-    ui_lang = "zh-CN"
-    try:
-        preview = json.loads(work_json.read_text(encoding="utf-8"))
-        target_lang = preview.get("target_language", "zh-CN")
-        ui_lang = preview.get("ui_language", "zh-CN")
-    except Exception:  # noqa: BLE001
-        pass
 
-    if not args.skip_quality_gate and (target_lang == "zh-CN" or ui_lang == "zh-CN"):
+    if not args.skip_quality_gate and run_qg:
         quality_gate_json = str(run_dir / "work" / "quality_gate_zh_cn.json")
         qg_argv = [sys.executable, str(QUALITY_GATE), "--input", str(work_json),
                    "--json-output", str(quality_gate_json)]
@@ -1486,16 +1753,34 @@ def handle_finalize(args) -> int:
                 f"Re-run with --allow-warnings to ignore WARN, or fix {work_json}.",
                 file=sys.stderr,
             )
+            wcount, wsummary = summarize_finalize_warnings(
+                str(audit_json), str(quality_gate_json)
+            )
             _finalize_print_summary(
                 status="BLOCKED",
                 run_dir=str(run_dir),
+                reading_mode=reading_mode,
+                language=f"{target_lang}/{ui_lang}",
                 work_json=str(work_json),
                 audit_json=str(audit_json),
+                audit_status=audit_status,
                 quality_gate_json=str(quality_gate_json),
-                local_page="",
-                page_url="",
-                published_audit_json="",
-                next_action=f"quality gate FAIL; fix {work_json} or pass --allow-warnings/--allow-draft-publish.",
+                qg_status=qg_status,
+                site_path=inferred_site_path,
+                page_title=inferred_page_title,
+                warning_count=wcount,
+                warning_summary=wsummary,
+                next_action=build_finalize_next_action(
+                    status="BLOCKED",
+                    publish_requested=bool(args.publish),
+                    published=False,
+                    page_url="",
+                    qg_status=qg_status,
+                    audit_status=audit_status,
+                    warning_count=wcount,
+                    work_json=str(work_json),
+                    run_dir=str(run_dir),
+                ),
             )
             return 1
     else:
@@ -1514,16 +1799,34 @@ def handle_finalize(args) -> int:
             f"[error] render_page.py exited {render_rc}. finalize will not publish.",
             file=sys.stderr,
         )
+        wcount, wsummary = summarize_finalize_warnings(
+            str(audit_json), str(quality_gate_json)
+        )
         _finalize_print_summary(
             status="BLOCKED",
             run_dir=str(run_dir),
+            reading_mode=reading_mode,
+            language=f"{target_lang}/{ui_lang}",
             work_json=str(work_json),
             audit_json=str(audit_json),
+            audit_status=audit_status,
             quality_gate_json=quality_gate_json,
-            local_page="",
-            page_url="",
-            published_audit_json="",
-            next_action=f"render FAILED (rc={render_rc}); fix {work_json} and re-run finalize.",
+            qg_status=qg_status,
+            site_path=inferred_site_path,
+            page_title=inferred_page_title,
+            warning_count=wcount,
+            warning_summary=wsummary,
+            next_action=build_finalize_next_action(
+                status="BLOCKED",
+                publish_requested=bool(args.publish),
+                published=False,
+                page_url="",
+                qg_status=qg_status,
+                audit_status=audit_status,
+                warning_count=wcount,
+                work_json=str(work_json),
+                run_dir=str(run_dir),
+            ),
         )
         return 1
 
@@ -1536,16 +1839,27 @@ def handle_finalize(args) -> int:
             "or fix work/paper_reading.json.",
             file=sys.stderr,
         )
+        wcount, wsummary = summarize_finalize_warnings(
+            str(audit_json), str(quality_gate_json)
+        )
         _finalize_print_summary(
             status="BLOCKED",
             run_dir=str(run_dir),
+            reading_mode=reading_mode,
+            language=f"{target_lang}/{ui_lang}",
             work_json=str(work_json),
             audit_json=str(audit_json),
+            audit_status=audit_status,
             quality_gate_json=quality_gate_json,
-            local_page="",
-            page_url="",
-            published_audit_json="",
-            next_action=f"render produced no index.html at {index_html}; check renderer and re-run finalize.",
+            qg_status=qg_status,
+            site_path=inferred_site_path,
+            page_title=inferred_page_title,
+            warning_count=wcount,
+            warning_summary=wsummary,
+            next_action=(
+                f"render produced no index.html at {index_html}; "
+                "check renderer and re-run finalize."
+            ),
         )
         return 1
 
@@ -1555,28 +1869,43 @@ def handle_finalize(args) -> int:
 
     # --- 4. Publish (optional) ---
     if not args.publish:
+        wcount, wsummary = summarize_finalize_warnings(
+            str(audit_json), str(quality_gate_json)
+        )
+        final_status = "WARN" if qg_status == "WARN" else "PASS"
         _finalize_print_summary(
-            status="WARN" if qg_status == "WARN" else "PASS",
+            status=final_status,
             run_dir=str(run_dir),
+            reading_mode=reading_mode,
+            language=f"{target_lang}/{ui_lang}",
             work_json=str(work_json),
             audit_json=str(audit_json),
+            audit_status=audit_status,
             quality_gate_json=quality_gate_json,
+            qg_status=qg_status,
+            site_path=inferred_site_path,
+            page_title=inferred_page_title,
             local_page=local_page,
             page_url="",
             published_audit_json="",
-            next_action=("Render complete. Re-run `./p3pr finalize <run-dir> --publish` to publish." if not args.publish else ""),
+            warning_count=wcount,
+            warning_summary=wsummary,
+            next_action=build_finalize_next_action(
+                status=final_status,
+                publish_requested=False,
+                published=False,
+                page_url="",
+                qg_status=qg_status,
+                audit_status=audit_status,
+                warning_count=wcount,
+                work_json=str(work_json),
+                run_dir=str(run_dir),
+            ),
         )
         return 0
 
-    site_path = args.site_path or run_dir.name
-    # Page title precedence.
-    page_title = args.page_title
-    if not page_title:
-        try:
-            pm = json.loads(work_json.read_text(encoding="utf-8")).get("paper_metadata", {}) or {}
-            page_title = pm.get("title") or run_dir.name
-        except Exception:  # noqa: BLE001
-            page_title = run_dir.name
+    site_path = inferred_site_path
+    page_title = inferred_page_title
 
     pub_argv = [
         str(PUBLISH_SH),
@@ -1595,16 +1924,30 @@ def handle_finalize(args) -> int:
             "but gh-pages push failed.",
             file=sys.stderr,
         )
+        wcount, wsummary = summarize_finalize_warnings(
+            str(audit_json), str(quality_gate_json)
+        )
         _finalize_print_summary(
             status="BLOCKED",
             run_dir=str(run_dir),
+            reading_mode=reading_mode,
+            language=f"{target_lang}/{ui_lang}",
             work_json=str(work_json),
             audit_json=str(audit_json),
+            audit_status=audit_status,
             quality_gate_json=quality_gate_json,
+            qg_status=qg_status,
+            site_path=site_path,
+            page_title=page_title,
             local_page=local_page,
             page_url="",
             published_audit_json="",
-            next_action=f"publish FAILED (rc={pub_rc}); check gh login / branch protection / network.",
+            warning_count=wcount,
+            warning_summary=wsummary,
+            next_action=(
+                f"publish FAILED (rc={pub_rc}); "
+                "check gh login / branch protection / network."
+            ),
         )
         return 1
 
@@ -1649,23 +1992,42 @@ def handle_finalize(args) -> int:
                 print(f"[warn] could not parse published-pages audit output (rc={pa_rc})")
 
     # --- Summary ---
+    wcount, wsummary = summarize_finalize_warnings(
+        str(audit_json), str(quality_gate_json)
+    )
     if qg_status == "WARN" and not args.allow_warnings:
         final_status = "WARN"
-        next_action = "Page published with WARN (quality gate). Review before sharing."
     else:
         final_status = "PASS"
-        next_action = "Done. Page published. To re-publish, re-run the same command."
 
     _finalize_print_summary(
         status=final_status,
         run_dir=str(run_dir),
+        reading_mode=reading_mode,
+        language=f"{target_lang}/{ui_lang}",
         work_json=str(work_json),
         audit_json=str(audit_json),
+        audit_status=audit_status,
         quality_gate_json=quality_gate_json,
+        qg_status=qg_status,
+        site_path=site_path,
+        page_title=page_title,
         local_page=local_page,
         page_url=page_url,
         published_audit_json=published_audit_json,
-        next_action=next_action,
+        warning_count=wcount,
+        warning_summary=wsummary,
+        next_action=build_finalize_next_action(
+            status=final_status,
+            publish_requested=True,
+            published=True,
+            page_url=page_url,
+            qg_status=qg_status,
+            audit_status=audit_status,
+            warning_count=wcount,
+            work_json=str(work_json),
+            run_dir=str(run_dir),
+        ),
     )
     return 0
 
