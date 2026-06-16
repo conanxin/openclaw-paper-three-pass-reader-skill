@@ -1875,6 +1875,105 @@ rm -rf "$URL_SMOKE_ROOT" /tmp/p3pr-url-dry
 
 rm -rf "$SELFTEST_DIR" "$SELFTEST_JSON" "$SELFTEST_MD"
 
+# ----------------------------------------------------------------------------
+# Step 21 — v0.2.17-alpha p3pr finalize subcommand
+# ----------------------------------------------------------------------------
+echo
+echo "[21] v0.2.17-alpha p3pr finalize subcommand"
+# 21a. p3pr --help lists finalize subcommand.
+if (cd "$ROOT" && ./p3pr --help 2>&1 | grep -q "finalize"); then
+  ok "p3pr --help lists finalize subcommand"
+else
+  bad "p3pr --help does not list finalize subcommand"
+fi
+# 21b. ./p3pr finalize --help runs.
+if (cd "$ROOT" && ./p3pr finalize --help >/dev/null 2>&1); then
+  ok "p3pr finalize --help runs"
+else
+  bad "p3pr finalize --help failed"
+fi
+# 21c. finalize --help shows the finalize-specific flag set
+# (--site-path, --page-title, --allow-warnings, --skip-quality-gate, etc.)
+FINALIZE_HELP="$(cd "$ROOT" && ./p3pr finalize --help 2>&1)"
+for flag in "--site-path" "--page-title" "--allow-warnings" "--skip-quality-gate" "--skip-published-audit" "--dry-run" "--allow-draft-publish"; do
+  if echo "$FINALIZE_HELP" | grep -q -- "$flag"; then
+    ok "p3pr finalize --help lists $flag"
+  else
+    bad "p3pr finalize --help missing $flag"
+  fi
+done
+# 21d. finalize on a missing/non-existent run-dir BLOCKs.
+EMPTY_DIR="/tmp/p3pr-finalize-empty-$$"
+rm -rf "$EMPTY_DIR"; mkdir -p "$EMPTY_DIR"
+FINALIZE_OUT_EMPTY="$(cd "$ROOT" && ./p3pr finalize "$EMPTY_DIR" --publish 2>&1 | tr '`' '\1' || true)"
+if echo "$FINALIZE_OUT_EMPTY" | tr -d '\1' | grep -q "P3PR_FINALIZE_STATUS: BLOCKED"; then
+  ok "p3pr finalize BLOCKs on missing work/paper_reading.json"
+else
+  bad "p3pr finalize did not BLOCK on missing work/paper_reading.json"
+fi
+# 21e. finalize on a directory without work/paper_reading.json BLOCKs.
+NO_WORK_DIR="/tmp/p3pr-finalize-no-work-$$"
+rm -rf "$NO_WORK_DIR"; mkdir -p "$NO_WORK_DIR"; touch "$NO_WORK_DIR/dummy"
+FINALIZE_OUT_NOWORK="$(cd "$ROOT" && ./p3pr finalize "$NO_WORK_DIR" --publish 2>&1 | tr '`' '\1' || true)"
+if echo "$FINALIZE_OUT_NOWORK" | tr -d '\1' | grep -q "P3PR_FINALIZE_STATUS: BLOCKED" \
+   && echo "$FINALIZE_OUT_NOWORK" | tr -d '\1' | grep -q "work/paper_reading.json missing"; then
+  ok "p3pr finalize BLOCKs with clear 'work/paper_reading.json missing' message"
+else
+  bad "p3pr finalize did not produce the expected BLOCK message on missing work/"
+fi
+# 21f. finalize dry-run prints would_audit / would_render and exits 0.
+DOGFOOD_DIR="$ROOT/runs/p3pr-url-dogfood-filled-20260616/you-and-your-research-url-dogfood-cn"
+if [[ -d "$DOGFOOD_DIR" && -f "$DOGFOOD_DIR/work/paper_reading.json" ]]; then
+  DRY_OUT="$(cd "$ROOT" && ./p3pr finalize "$DOGFOOD_DIR" --publish \
+      --site-path validate-finalize-smoke --page-title "validate finalize smoke" --dry-run 2>&1 || true)"
+  if echo "$DRY_OUT" | grep -q "P3PR_FINALIZE_DRY_RUN" \
+     && echo "$DRY_OUT" | grep -q "would_audit: True" \
+     && echo "$DRY_OUT" | grep -q "would_render: True" \
+     && echo "$DRY_OUT" | grep -q "would_publish: True"; then
+    ok "p3pr finalize dry-run emits P3PR_FINALIZE_DRY_RUN + would_audit/would_render/would_publish"
+  else
+    bad "p3pr finalize dry-run missing required output fields (P3PR_FINALIZE_DRY_RUN / would_audit / would_render / would_publish)"
+  fi
+else
+  bad "p3pr finalize dogfood run dir not found at $DOGFOOD_DIR; cannot run dry-run check"
+fi
+# 21g. finalize on the real filled dogfood run generates audit_final.json + quality_gate_zh_cn.json
+# and renders paper-reading-output/index.html. Run with --no-publish to a copy in a temp dir
+# (we do NOT want to publish during validation — that's a smoke-run concern).
+FINALIZE_SMOKE_ROOT="/tmp/p3pr-finalize-smoke-$$"
+rm -rf "$FINALIZE_SMOKE_ROOT"
+mkdir -p "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/work"
+cp "$DOGFOOD_DIR/work/paper_reading.json" "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/work/paper_reading.json" 2>/dev/null
+cp -r "$DOGFOOD_DIR/fill-pack" "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/fill-pack" 2>/dev/null
+if [[ -f "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/work/paper_reading.json" ]]; then
+  SMOKE_OUT="$(cd "$ROOT" && ./p3pr finalize "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke" --no-publish 2>&1 || true)"
+  if [[ -f "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/work/audit_final.json" ]]; then
+    ok "p3pr finalize generates work/audit_final.json"
+  else
+    bad "p3pr finalize did not generate work/audit_final.json"
+  fi
+  if [[ -f "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/work/quality_gate_zh_cn.json" ]]; then
+    ok "p3pr finalize generates work/quality_gate_zh_cn.json (zh-CN detected)"
+  else
+    bad "p3pr finalize did not generate work/quality_gate_zh_cn.json"
+  fi
+  if [[ -f "$FINALIZE_SMOKE_ROOT/validate-finalize-smoke/paper-reading-output/index.html" ]]; then
+    ok "p3pr finalize renders paper-reading-output/index.html"
+  else
+    bad "p3pr finalize did not render paper-reading-output/index.html"
+  fi
+  if echo "$SMOKE_OUT" | grep -q "P3PR_FINALIZE_STATUS:" \
+     && echo "$SMOKE_OUT" | grep -q "P3PR_LOCAL_PAGE:" \
+     && echo "$SMOKE_OUT" | grep -q "P3PR_PAGE_URL: $"; then
+    ok "p3pr finalize summary contains P3PR_FINALIZE_STATUS + P3PR_LOCAL_PAGE + empty P3PR_PAGE_URL (no-publish)"
+  else
+    bad "p3pr finalize summary missing required fields"
+  fi
+else
+  bad "could not seed finalize smoke dir from $DOGFOOD_DIR (work/paper_reading.json missing)"
+fi
+rm -rf "$FINALIZE_SMOKE_ROOT" "$EMPTY_DIR" "$NO_WORK_DIR"
+
 # Summary
 echo
 echo "================================================="

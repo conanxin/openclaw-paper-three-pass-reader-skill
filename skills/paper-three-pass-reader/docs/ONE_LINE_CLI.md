@@ -258,3 +258,33 @@ python3 skills/paper-three-pass-reader/scripts/audit_published_pages.py \
 ```
 
 The audit is read-only — it never writes to `gh-pages`, never republishes anything, and never modifies any local files outside the output paths you pass. See [`PUBLISHED_PAGES_AUDIT.md`](PUBLISHED_PAGES_AUDIT.md) for the full reference.
+
+---
+
+## v0.2.17-alpha: `p3pr finalize <run-dir>` — the second-stage CLI
+
+`p3pr` ships with a one-line CLI for the **first** stage (draft + fill-pack from
+a paper, an arXiv ID, a GitHub repo, a PDF, or a URL). v0.2.17 adds a matching
+one-line CLI for the **second** stage — finalizing a run directory that already
+has a filled `work/paper_reading.json`:
+
+```bash
+./p3pr finalize runs/2026-06-16/you-and-your-research --publish
+```
+
+`finalize` runs, in order:
+
+1. **Audit** — `audit_paper_reading.py` → `work/audit_final.json`. FAIL blocks.
+2. **zh-CN quality gate** (only if zh-CN) — `quality_gate_zh_cn.py` →
+   `work/quality_gate_zh_cn.json`. FAIL blocks unless `--allow-draft-publish`;
+   WARN is non-blocking unless `--allow-warnings` is set.
+3. **Render** — `render_page.py` → `<run-dir>/paper-reading-output/`.
+4. **Hard guard** — if `paper-reading-output/index.html` is missing, BLOCK
+   (v0.2.15 publish-gate; this is what stops 404 stubs from being pushed).
+5. **Publish** (only with `--publish`) — `publish_output_to_github.sh`.
+6. **Published-pages audit** (default on after publish) —
+   `audit_published_pages.py` → `work/published_pages_audit_after_finalize.json`.
+
+A full `P3PR_FINALIZE_STATUS` summary block is printed on every exit (PASS,
+WARN, or BLOCKED). For details, see [`USAGE.md`](USAGE.md) §"v0.2.17-alpha:
+`p3pr finalize <run-dir>` — the second-stage CLI".

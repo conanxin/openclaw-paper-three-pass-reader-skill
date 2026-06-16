@@ -166,6 +166,28 @@ python3 skills/paper-three-pass-reader/scripts/create_output_skeleton.py \
 
 The script refuses to **create** a new repo silently — if `conanxin/paper-reading-pages` does not exist it prints the exact `gh repo create` command and stops.
 
+### Two-stage workflow (URL → fill → finalize → publish)
+
+The recommended daily workflow as of v0.2.17-alpha is two stages:
+
+```bash
+# Stage 1 — draft + fill-pack (no publish, no render)
+./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+    --zh --full --no-publish \
+    --slug you-and-your-research \
+    --output-root runs/2026-06-16 \
+    --title "You and Your Research" \
+    --authors "Richard W. Hamming"
+
+# (you / an agent edits runs/2026-06-16/you-and-your-research/work/paper_reading.json
+#  per the fill-pack in runs/2026-06-16/you-and-your-research/fill-pack/)
+
+# Stage 2 — audit + zh-CN quality gate + render + publish + published-pages audit
+./p3pr finalize runs/2026-06-16/you-and-your-research --publish
+```
+
+`finalize` is a thin wrapper that runs the four standard post-fill scripts (audit, quality gate, render, publish) and prints a fixed `P3PR_FINALIZE_STATUS` summary block. It carries the v0.2.15 publish-gate: if `paper-reading-output/index.html` is missing after render, finalize BLOCKs and never reaches the publisher. See [`skills/paper-three-pass-reader/docs/USAGE.md`](skills/paper-three-pass-reader/docs/USAGE.md) §"v0.2.17-alpha" for the full flag list and dry-run output.
+
 ### Run validation
 
 ```bash
@@ -306,7 +328,9 @@ See [`skills/paper-three-pass-reader/docs/AGENT_FILL_PACK.md`](skills/paper-thre
 | `v0.2.10-alpha` | immutable | Published-pages regression audit. New `audit_published_pages.py` reads `published_pages.json`, fetches every page, and produces a JSON + Markdown report covering template leaks, raw dicts, old footers, weak zh-CN UI, missing Resolver Trail, missing Claims / Glossary, and essay-mode regressions. `--selftest-dir` mode is wired into `scripts/validate.sh` step 17. First live audit run found 1/9 pages at PASS. Validation 225/0 PASS. |
 | `v0.2.12-alpha` | immutable | Root-index audit exemption. Adds `page_type` classification (`site_index` / `paper_page` / `manifest` / `unknown`) and exempts the root index from paper-level checks (`missing_resolver_trail` / `missing_claims_section` / `missing_glossary`). Severe checks (`template_leak` / `raw_dict` / `old_footer`) still apply to the root index. New top-level `page_type_counts` and per-page `page_type`. New `## Page Type Summary` in the Markdown report. New `--include-manifest` flag. `scripts/validate.sh` step 18 verifies the exemption against 8 selftest fixtures and the live site. Validation 236/0 PASS. |
 | `v0.2.13-alpha` | immutable | Manifest link in generated root index. `publish_output_to_github.sh` now emits `<link rel="alternate" type="application/json" href="published_pages.json">` in `<head>` plus a visible `<a href="published_pages.json">` link in the About section (English + Chinese labels). `_check_site_index()` in the audit accepts both forms. The live audit's last info finding (`index_no_manifest_link`) is gone. Validation 242/0 PASS. |
-| `v0.2.14-alpha` | current | `p3pr url <url>` subcommand. Fetch an HTML page (or PDF) from a user-supplied URL, run stdlib-only `html.parser` text extraction, and feed the result to the runner as `input_kind=paper_url` with `--input-file` + `--paper-url`. New `_HTMLTextExtractor` and `_fetch_url()` in `p3pr.py`. The runner now accepts `--input` and `--input-file` together (audit-trail string + body). Reading-mode discipline: HTML ≥800 chars → `full_text`, else `partial_text`; PDFs without body stay `partial_text`. New `P3PR_SOURCE_URL:` summary line. New `--authors` and `--year` flags exposed at CLI. Validation 261/0 PASS. Live URL smoke page (`you-and-your-research-url-smoke-cn`) published; live audit `pages=11 pass=11 warn=0 fail=0`. |
+| `v0.2.14-alpha` | immutable | `p3pr url <url>` subcommand. Fetch an HTML page (or PDF) from a user-supplied URL, run stdlib-only `html.parser` text extraction, and feed the result to the runner as `input_kind=paper_url` with `--input-file` + `--paper-url`. New `_HTMLTextExtractor` and `_fetch_url()` in `p3pr.py`. The runner now accepts `--input` and `--input-file` together (audit-trail string + body). Reading-mode discipline: HTML ≥800 chars → `full_text`, else `partial_text`; PDFs without body stay `partial_text`. New `P3PR_SOURCE_URL:` summary line. New `--authors` and `--year` flags exposed at CLI. Validation 261/0 PASS. Live URL smoke page (`you-and-your-research-url-smoke-cn`) published; live audit `pages=11 pass=11 warn=0 fail=0`. |
+| `v0.2.15-alpha` | immutable | Block `p3pr --publish` on missing `paper-reading-output/index.html`. Surfaced by the v0.2.15 dogfood phase: the runner correctly skipped render (audit/qg FAILED) but `p3pr.py` invoked the publisher anyway and pushed a 404 stub. Hard BLOCK on missing index.html, even with `--allow-draft-publish`. New validation sub-checks at step 20l. The v0.2.15 dogfood stub was removed from `gh-pages` and the manifest. Validation 263/0 PASS. |
+| `v0.2.17-alpha` | current | `p3pr finalize <run-dir>` — the second-stage CLI. Reads `<run-dir>/work/paper_reading.json` and runs audit → zh-CN quality gate → render → optional publish → optional published-pages audit. Fixed `P3PR_FINALIZE_STATUS` summary block on every exit. With `--dry-run` prints a `P3PR_FINALIZE_DRY_RUN` plan. Carries over the v0.2.15 publish-gate: if `paper-reading-output/index.html` is missing, BLOCK. Flags: `--publish` / `--no-publish` / `--repo` / `--branch` / `--site-path` / `--page-title` / `--allow-warnings` / `--allow-draft-publish` / `--skip-quality-gate` / `--skip-published-audit` / `--dry-run`. New validation step 21 with 16 sub-checks. Live-published dogfood at `https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-dogfood-finalize-cn/`. Validation 279/0 PASS. |
 | `v0.2.9-alpha` | previous | Polished HTML essay / talk page rendering. Renderer no longer leaks raw `{'label': ...}` dicts, no longer leaks `{% else %}` template tags, exposes `generator_version` in the page footer, switches `Reproduction Plan` → `实践计划` for essay-mode inputs, and renders a `<details>`-based accordion. Claim IDs and glossary definitions display correctly. Re-published the Chinese *You and Your Research* page. Validation 220/0 PASS. |
 | `v0.2.8-alpha` | previous | Structured `source_resolution` consumers. New `source_resolution_utils.py` is the single shared helper. Renderer, audit, fill-pack, and zh-CN quality gate all read the structured block; legacy `intake_quality.source_resolution` list is still supported via on-the-fly upgrade. Validation 210/0 PASS. |
 

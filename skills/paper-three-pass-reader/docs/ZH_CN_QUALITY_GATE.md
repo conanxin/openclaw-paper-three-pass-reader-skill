@@ -166,3 +166,28 @@ When the CLI's quality gate is the failure, the printed `P3PR_NEXT_ACTION` is th
 - 示例:*You and Your Research* 页面里 `claims_evidence_map[0].comment` 保留了 Hamming 关于"If you do not work on an important problem, it's unlikely you'll do important work"的直接英文引用。
 - 规则:任何包含「原文短引用 / 术语原文 / 作者署名原话」的字段允许通过 `--warn-only` 跳过翻译。
 - 如果 warning 数量持续 > 1,说明正文仍残留英文 draft,需要回到 `paper_reading.json` 做翻译补全。
+
+---
+
+## v0.2.17-alpha: invoked by `p3pr finalize`
+
+`p3pr finalize <run-dir>` is the new second-stage CLI that wraps the audit
++ quality gate + render + publish pipeline. When the run directory's
+`work/paper_reading.json` reports `target_language = "zh-CN"` (or
+`ui_language = "zh-CN"`), finalize auto-invokes this quality gate and
+writes the result to `<run-dir>/work/quality_gate_zh_cn.json`.
+
+Quality-gate outcome → finalize behaviour:
+
+- `PASS` — proceed to render + (optional) publish.
+- `WARN` — proceed to render + (optional) publish, unless `--allow-warnings`
+  is also unset (in which case the summary block is marked `WARN`).
+- `FAIL` — BLOCK finalize. Re-run with `--allow-draft-publish` to bypass
+  the FAIL check. (Audit FAIL and missing `index.html` are NOT bypassed by
+  `--allow-draft-publish` — those are the v0.2.15 hard guards.)
+
+`p3pr finalize --allow-warnings` is the recommended way to publish
+zh-CN pages that have a small number of `long_en_blobs` (e.g. short
+Hamming quotations under `[Paper evidence]`). The page will be published
+and the published-pages audit will report the WARNs as info-level notes
+on the page.

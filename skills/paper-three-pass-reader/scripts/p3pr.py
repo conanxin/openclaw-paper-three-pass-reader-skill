@@ -1286,6 +1286,434 @@ def _finalise(
     return 0 if status in ("PASS", "WARN") else 1
 
 
+# --- finalize subcommand ----------------------------------------------------
+
+def _finalize_print_summary(
+    *,
+    status: str,
+    run_dir: str,
+    work_json: str,
+    audit_json: str,
+    quality_gate_json: str,
+    local_page: str,
+    page_url: str,
+    published_audit_json: str,
+    next_action: str,
+) -> None:
+    """Print the fixed P3PR_FINALIZE_STATUS summary block."""
+    print()
+    print("=" * 60)
+    print(f"P3PR_FINALIZE_STATUS: {status}")
+    print(f"P3PR_RUN_DIR: {run_dir}")
+    print(f"P3PR_JSON: {work_json}")
+    print(f"P3PR_AUDIT_JSON: {audit_json}")
+    print(f"P3PR_QUALITY_GATE_JSON: {quality_gate_json}")
+    print(f"P3PR_LOCAL_PAGE: {local_page}")
+    print(f"P3PR_PAGE_URL: {page_url}")
+    print(f"P3PR_PUBLISHED_AUDIT_JSON: {published_audit_json}")
+    print(f"P3PR_NEXT_ACTION: {next_action}")
+    print("=" * 60)
+
+
+def handle_finalize(args) -> int:
+    """Finalize an already-filled P3PR run directory.
+
+    Reads <run-dir>/work/paper_reading.json, runs audit + zh-CN quality gate +
+    render, optionally publishes to gh-pages, optionally runs the published-pages
+    audit. Does NOT auto-fill the draft — the operator must have already filled
+    work/paper_reading.json before invoking finalize.
+    """
+    run_dir = Path(args.run_dir).expanduser().resolve()
+    if not run_dir.is_dir():
+        print(f"[error] run-dir is not a directory: {run_dir}", file=sys.stderr)
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json="",
+            audit_json="",
+            quality_gate_json="",
+            local_page="",
+            page_url="",
+            published_audit_json="",
+            next_action=f"run-dir does not exist: {run_dir}",
+        )
+        return 1
+
+    work_json = run_dir / "work" / "paper_reading.json"
+    if not work_json.exists():
+        print(
+            f"[error] missing {work_json}. finalize expects a run directory "
+            "with a filled work/paper_reading.json. Run `./p3pr url <url> --no-publish` "
+            "or another p3pr subcommand first, fill the draft per the fill-pack, "
+            "then re-invoke finalize.",
+            file=sys.stderr,
+        )
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json="",
+            quality_gate_json="",
+            local_page="",
+            page_url="",
+            published_audit_json="",
+            next_action=f"work/paper_reading.json missing at {work_json}; fill the draft first.",
+        )
+        return 1
+
+    # Dry-run: print plan, do nothing else.
+    if getattr(args, "dry_run", False):
+        site_path = args.site_path or run_dir.name
+        # Page title precedence for dry-run display only.
+        page_title = args.page_title
+        if not page_title:
+            try:
+                preview = json.loads(work_json.read_text(encoding="utf-8"))
+                pm = preview.get("paper_metadata", {}) or {}
+                page_title = (
+                    pm.get("title")
+                    or preview.get("title")
+                    or run_dir.name
+                )
+            except Exception:  # noqa: BLE001
+                page_title = run_dir.name
+        # Read target/ui language to know whether to plan a quality gate.
+        try:
+            preview = json.loads(work_json.read_text(encoding="utf-8"))
+            target_lang = preview.get("target_language", "zh-CN")
+            ui_lang = preview.get("ui_language", "zh-CN")
+        except Exception:  # noqa: BLE001
+            target_lang, ui_lang = "zh-CN", "zh-CN"
+        run_qg = (not args.skip_quality_gate) and (target_lang == "zh-CN" or ui_lang == "zh-CN")
+
+        print()
+        print("=" * 60)
+        print("P3PR_FINALIZE_DRY_RUN")
+        print(f"P3PR_RUN_DIR: {run_dir}")
+        print(f"would_read_json: {work_json}")
+        print(f"would_audit: True (audit_paper_reading.py)")
+        print(f"would_quality_gate: {run_qg} (zh-CN detected: {target_lang}/{ui_lang}; "
+              f"skip_quality_gate={args.skip_quality_gate})")
+        print(f"would_render: True (render_page.py → {run_dir / 'paper-reading-output'})")
+        print(f"would_publish: {args.publish} (repo={args.repo}, branch={args.branch})")
+        if args.publish:
+            print(f"site_path: {site_path}")
+            print(f"page_title: {page_title}")
+            print(f"published_audit_after_publish: {not args.skip_published_audit}")
+        print("=" * 60)
+        return 0
+
+    # --- 1. Audit ---
+    audit_json = run_dir / "work" / "audit_final.json"
+    audit_argv = [sys.executable, str(AUDIT), "--input", str(work_json),
+                  "--json-output", str(audit_json)]
+    print(f"[info] running audit: {' '.join(audit_argv)}")
+    audit_rc = subprocess.call(audit_argv)
+    if audit_rc != 0:
+        # audit_paper_reading.py exits non-zero on FAIL
+        print(
+            f"[error] audit FAILED (rc={audit_rc}). finalize will not render or publish. "
+            "Fix work/paper_reading.json and re-run finalize.",
+            file=sys.stderr,
+        )
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json=str(audit_json),
+            quality_gate_json="",
+            local_page="",
+            page_url="",
+            published_audit_json="",
+            next_action=f"audit FAILED (rc={audit_rc}); fix {work_json} and re-run finalize.",
+        )
+        return 1
+
+    # Try to read audit result for status.
+    audit_status = "PASS"
+    try:
+        ar = json.loads(audit_json.read_text(encoding="utf-8"))
+        audit_status = ar.get("status", "PASS")
+    except Exception:  # noqa: BLE001
+        audit_status = "PASS"
+    if audit_status == "FAIL":
+        print(
+            "[error] audit result is FAIL. finalize will not render or publish.",
+            file=sys.stderr,
+        )
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json=str(audit_json),
+            quality_gate_json="",
+            local_page="",
+            page_url="",
+            published_audit_json="",
+            next_action=f"audit status FAIL; fix {work_json} and re-run finalize.",
+        )
+        return 1
+
+    # --- 2. Quality gate (zh-CN only) ---
+    quality_gate_json = ""
+    qg_status = "SKIPPED"
+    target_lang = "zh-CN"
+    ui_lang = "zh-CN"
+    try:
+        preview = json.loads(work_json.read_text(encoding="utf-8"))
+        target_lang = preview.get("target_language", "zh-CN")
+        ui_lang = preview.get("ui_language", "zh-CN")
+    except Exception:  # noqa: BLE001
+        pass
+
+    if not args.skip_quality_gate and (target_lang == "zh-CN" or ui_lang == "zh-CN"):
+        quality_gate_json = str(run_dir / "work" / "quality_gate_zh_cn.json")
+        qg_argv = [sys.executable, str(QUALITY_GATE), "--input", str(work_json),
+                   "--json-output", str(quality_gate_json)]
+        if args.allow_warnings:
+            qg_argv.append("--warn-only")
+        print(f"[info] running quality gate: {' '.join(qg_argv)}")
+        qg_rc = subprocess.call(qg_argv)
+        try:
+            qd = json.loads(Path(quality_gate_json).read_text(encoding="utf-8"))
+            qg_status = qd.get("status", "UNKNOWN")
+        except Exception:  # noqa: BLE001
+            qg_status = "UNKNOWN"
+        print(f"[info] quality gate status: {qg_status} (rc={qg_rc})")
+        if qg_status == "FAIL" and not args.allow_draft_publish:
+            print(
+                f"[error] quality gate FAIL. finalize will not render or publish. "
+                f"Re-run with --allow-warnings to ignore WARN, or fix {work_json}.",
+                file=sys.stderr,
+            )
+            _finalize_print_summary(
+                status="BLOCKED",
+                run_dir=str(run_dir),
+                work_json=str(work_json),
+                audit_json=str(audit_json),
+                quality_gate_json=str(quality_gate_json),
+                local_page="",
+                page_url="",
+                published_audit_json="",
+                next_action=f"quality gate FAIL; fix {work_json} or pass --allow-warnings/--allow-draft-publish.",
+            )
+            return 1
+    else:
+        print(f"[info] quality gate skipped (skip_quality_gate={args.skip_quality_gate}, "
+              f"target_language={target_lang}, ui_language={ui_lang})")
+
+    # --- 3. Render ---
+    output_dir = run_dir / "paper-reading-output"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    render_argv = [sys.executable, str(RENDER), "--input", str(work_json),
+                   "--output", str(output_dir)]
+    print(f"[info] running render: {' '.join(render_argv)}")
+    render_rc = subprocess.call(render_argv)
+    if render_rc != 0:
+        print(
+            f"[error] render_page.py exited {render_rc}. finalize will not publish.",
+            file=sys.stderr,
+        )
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json=str(audit_json),
+            quality_gate_json=quality_gate_json,
+            local_page="",
+            page_url="",
+            published_audit_json="",
+            next_action=f"render FAILED (rc={render_rc}); fix {work_json} and re-run finalize.",
+        )
+        return 1
+
+    # v0.2.15 core guard: index.html must exist before publish.
+    index_html = output_dir / "index.html"
+    if not index_html.exists():
+        print(
+            f"[error] {index_html} missing after render. finalize refuses to publish "
+            "an empty stub. (This is the v0.2.15 publish-gate.) Re-run the render step "
+            "or fix work/paper_reading.json.",
+            file=sys.stderr,
+        )
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json=str(audit_json),
+            quality_gate_json=quality_gate_json,
+            local_page="",
+            page_url="",
+            published_audit_json="",
+            next_action=f"render produced no index.html at {index_html}; check renderer and re-run finalize.",
+        )
+        return 1
+
+    local_page = str(index_html)
+    page_url = ""
+    published_audit_json = ""
+
+    # --- 4. Publish (optional) ---
+    if not args.publish:
+        _finalize_print_summary(
+            status="WARN" if qg_status == "WARN" else "PASS",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json=str(audit_json),
+            quality_gate_json=quality_gate_json,
+            local_page=local_page,
+            page_url="",
+            published_audit_json="",
+            next_action=("Render complete. Re-run `./p3pr finalize <run-dir> --publish` to publish." if not args.publish else ""),
+        )
+        return 0
+
+    site_path = args.site_path or run_dir.name
+    # Page title precedence.
+    page_title = args.page_title
+    if not page_title:
+        try:
+            pm = json.loads(work_json.read_text(encoding="utf-8")).get("paper_metadata", {}) or {}
+            page_title = pm.get("title") or run_dir.name
+        except Exception:  # noqa: BLE001
+            page_title = run_dir.name
+
+    pub_argv = [
+        str(PUBLISH_SH),
+        "--output", str(output_dir),
+        "--repo", args.repo,
+        "--branch", args.branch,
+        "--site-path", site_path,
+        "--page-title", page_title,
+        "--message", f"Finalize P3PR page: {site_path}",
+    ]
+    print(f"[info] running publisher: {' '.join(pub_argv)}")
+    pub_rc = subprocess.call(pub_argv)
+    if pub_rc != 0:
+        print(
+            f"[error] publisher exited {pub_rc}. The local page is at {local_page} "
+            "but gh-pages push failed.",
+            file=sys.stderr,
+        )
+        _finalize_print_summary(
+            status="BLOCKED",
+            run_dir=str(run_dir),
+            work_json=str(work_json),
+            audit_json=str(audit_json),
+            quality_gate_json=quality_gate_json,
+            local_page=local_page,
+            page_url="",
+            published_audit_json="",
+            next_action=f"publish FAILED (rc={pub_rc}); check gh login / branch protection / network.",
+        )
+        return 1
+
+    # Compute the public page URL.
+    if "/" in args.repo:
+        owner, repo_name = args.repo.split("/", 1)
+        page_url = f"https://{owner}.github.io/{repo_name}/{site_path}/"
+
+    # --- 5. Published-pages audit (optional) ---
+    if not args.skip_published_audit:
+        if args.repo != DEFAULT_REPO:
+            print(
+                f"[warn] published-pages audit uses default site root "
+                f"(https://{DEFAULT_REPO.split('/')[0]}.github.io/{DEFAULT_REPO.split('/')[1]}/); "
+                f"--repo={args.repo} is non-default. Skipping audit to avoid false negatives.",
+                file=sys.stderr,
+            )
+        else:
+            audit_dir = run_dir / "work"
+            audit_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir = run_dir / "reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            published_audit_json = str(audit_dir / "published_pages_audit_after_finalize.json")
+            pa_md = reports_dir / "published_pages_audit_after_finalize.md"
+            site_root = f"https://{DEFAULT_REPO.split('/')[0]}.github.io/{DEFAULT_REPO.split('/')[1]}"
+            pa_argv = [
+                sys.executable, str(HERE / "audit_published_pages.py"),
+                "--manifest-url", f"{site_root}/published_pages.json",
+                "--site-root", site_root,
+                "--json-output", published_audit_json,
+                "--markdown-output", str(pa_md),
+                "--include-root", "--warn-only",
+            ]
+            print(f"[info] running published-pages audit: {' '.join(pa_argv)}")
+            pa_rc = subprocess.call(pa_argv)
+            try:
+                pd = json.loads(Path(published_audit_json).read_text(encoding="utf-8"))
+                pa_overall = pd.get("overall")
+                pa_fail = pd.get("pages_fail", 0)
+                print(f"[info] published-pages audit overall={pa_overall} pages_fail={pa_fail} (rc={pa_rc})")
+            except Exception:  # noqa: BLE001
+                print(f"[warn] could not parse published-pages audit output (rc={pa_rc})")
+
+    # --- Summary ---
+    if qg_status == "WARN" and not args.allow_warnings:
+        final_status = "WARN"
+        next_action = "Page published with WARN (quality gate). Review before sharing."
+    else:
+        final_status = "PASS"
+        next_action = "Done. Page published. To re-publish, re-run the same command."
+
+    _finalize_print_summary(
+        status=final_status,
+        run_dir=str(run_dir),
+        work_json=str(work_json),
+        audit_json=str(audit_json),
+        quality_gate_json=quality_gate_json,
+        local_page=local_page,
+        page_url=page_url,
+        published_audit_json=published_audit_json,
+        next_action=next_action,
+    )
+    return 0
+
+
+def build_finalize_parser() -> argparse.ArgumentParser:
+    """Build the standalone argparse parser for `p3pr finalize <run-dir>`.
+
+    Kept separate from the main `p3pr` parser so the finalize subcommand has
+    its own clean flag set (no carry-over of url/arxiv flags, etc.). When
+    invoked as `./p3pr finalize <run-dir>` the main parser dispatches here
+    before the rest of the pipeline runs.
+    """
+    p = argparse.ArgumentParser(
+        prog="p3pr finalize",
+        description=(
+            "Finalize an already-filled P3PR run directory: audit, "
+            "zh-CN quality gate, render, optional publish, optional "
+            "published-pages audit. Does NOT auto-fill the draft."
+        ),
+    )
+    p.add_argument("run_dir", help="Path to a P3PR run directory "
+                                    "(must contain work/paper_reading.json)")
+    p.add_argument("--publish", dest="publish", action="store_true", default=False)
+    p.add_argument("--no-publish", dest="publish", action="store_false")
+    p.add_argument("--repo", default=DEFAULT_REPO)
+    p.add_argument("--branch", default=DEFAULT_BRANCH)
+    p.add_argument("--site-path", default=None,
+                   help="Override site-path for the published page "
+                        "(default: <run-dir> basename)")
+    p.add_argument("--page-title", default=None)
+    p.add_argument("--allow-warnings", action="store_true", default=False,
+                   help="Treat quality-gate WARN as non-blocking")
+    p.add_argument("--allow-draft-publish", action="store_true", default=False,
+                   help="Publish even when quality gate FAILED (still BLOCKs "
+                        "if audit FAILED or render produced no index.html)")
+    p.add_argument("--skip-quality-gate", action="store_true", default=False)
+    p.add_argument("--skip-published-audit", action="store_true", default=False)
+    p.add_argument("--published-audit", dest="published_audit",
+                   action="store_true", default=True,
+                   help="Run published-pages audit after publish (default true)")
+    p.add_argument("--no-published-audit", dest="published_audit",
+                   action="store_false")
+    p.add_argument("--dry-run", action="store_true", default=False)
+    p.add_argument("--json-output", default=None,
+                   help="Reserved for future structured summary output")
+    return p
+
+
 def _next_action_text(status, reading_mode, qg_status, work_json, fill_pack, args) -> str:
     if status == "PASS":
         return "Done. Page published (or local). To re-publish, run the same command."
@@ -1365,8 +1793,51 @@ def build_parser() -> argparse.ArgumentParser:
         ("repo", "GitHub repo URL (best-effort hint lookup)"),
         ("pdf", "Path to a local PDF file"),
         ("url", "Fetch an HTML / PDF page from a URL and run the pipeline (v0.2.14)"),
+        ("finalize", "Finalize an already-filled run directory: audit + zh-CN quality gate + render + optional publish (v0.2.17)"),
     ]:
         sp = sub.add_parser(name, help=help_text)
+        if name == "finalize":
+            # finalize has its own dedicated parser (build_finalize_parser) with
+            # a different flag set (no --language, --full, etc.). We register
+            # the same flag set on this stub subparser too, so `./p3pr finalize
+            # --help` produces the correct usage line. main() will re-parse argv
+            # with build_finalize_parser() for full validation. Skip the parent-
+            # flag loop below.
+            sp.add_argument("run_dir", nargs="?", default=None,
+                            help="Path to a P3PR run directory "
+                                 "(must contain work/paper_reading.json)")
+            sp.add_argument("--publish", dest="publish",
+                            action="store_true", default=False)
+            sp.add_argument("--no-publish", dest="publish",
+                            action="store_false")
+            sp.add_argument("--repo", default=DEFAULT_REPO)
+            sp.add_argument("--branch", default=DEFAULT_BRANCH)
+            sp.add_argument("--site-path", default=None,
+                            help="Override site-path for the published page "
+                                 "(default: <run-dir> basename)")
+            sp.add_argument("--page-title", default=None)
+            sp.add_argument("--allow-warnings", action="store_true",
+                            default=False,
+                            help="Treat quality-gate WARN as non-blocking")
+            sp.add_argument("--allow-draft-publish", action="store_true",
+                            default=False,
+                            help="Publish even when quality gate FAILED "
+                                 "(still BLOCKs if audit FAILED or render "
+                                 "produced no index.html)")
+            sp.add_argument("--skip-quality-gate", action="store_true",
+                            default=False)
+            sp.add_argument("--skip-published-audit", action="store_true",
+                            default=False)
+            sp.add_argument("--published-audit", dest="published_audit",
+                            action="store_true", default=True,
+                            help="Run published-pages audit after publish "
+                                 "(default true)")
+            sp.add_argument("--no-published-audit", dest="published_audit",
+                            action="store_false")
+            sp.add_argument("--dry-run", action="store_true", default=False)
+            sp.add_argument("--json-output", default=None,
+                            help="Reserved for future structured summary output")
+            continue
         sp.add_argument("arg", help=help_text)
         # Forwarded from parent (so users can put flags before or after subcommand).
         sp.add_argument("--language", choices=["zh-CN", "en"], default=None)
@@ -1403,7 +1874,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     parser = build_parser()
-    args = parser.parse_args(argv)
+    # Use parse_known_args so that subcommand-specific flags (especially for
+    # `finalize`, which has its own dedicated parser) are not rejected at the
+    # top level. We re-parse argv with the finalize-specific parser in
+    # main()'s dispatch below.
+    args, _unknown = parser.parse_known_args(argv)
 
     # Promote subcommand-level flag values to the top-level namespace so the
     # handlers can use a single `args.foo` regardless of where the user put
@@ -1457,6 +1932,27 @@ def main(argv=None) -> int:
         "pdf": handle_pdf,
         "url": handle_url,
     }
+    # finalize has its own dedicated parser because its flag set is intentionally
+    # different from the url/arxiv subcommands. We re-parse argv with the
+    # finalize parser and dispatch to handle_finalize.
+    if args.command == "finalize":
+        finalize_parser = build_finalize_parser()
+        # The main parser consumed `finalize` from argv; pass the remainder
+        # (after `finalize`) to the finalize parser so it sees the run_dir
+        # positional and finalize-specific flags.
+        if argv is None:
+            argv = sys.argv[1:]
+        # Skip leading flags parsed by the main parser; we want everything
+        # from `finalize` onward. Simpler: find `finalize` in argv and take
+        # the slice after it.
+        try:
+            idx = argv.index("finalize")
+            finalize_argv = argv[idx + 1:]
+        except ValueError:
+            finalize_argv = []
+        finalize_args = finalize_parser.parse_args(finalize_argv)
+        return handle_finalize(finalize_args)
+
     handler = handlers.get(args.command)
     if handler is None:
         print(f"[error] unknown subcommand: {args.command}", file=sys.stderr)

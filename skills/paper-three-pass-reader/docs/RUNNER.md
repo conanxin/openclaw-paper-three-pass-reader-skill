@@ -446,3 +446,37 @@ The CLI uses this combination together with the new
 `--input-file <extracted/page.txt>` to support the `p3pr url` workflow.
 See [`USAGE.md`](USAGE.md#v0214-alpha-p3pr-url-subcommand) for the full
 end-to-end flow.
+
+---
+
+## v0.2.17-alpha: the runner is now fronted by `p3pr finalize <run-dir>`
+
+v0.2.17 adds a second CLI entry point, `p3pr finalize`, that orchestrates the
+**second stage** of a P3PR run on an already-filled run directory. It is
+implemented in `p3pr.py` (`handle_finalize`) and uses the same underlying
+scripts that the runner uses — `audit_paper_reading.py`, `quality_gate_zh_cn.py`,
+`render_page.py`, and `publish_output_to_github.sh`.
+
+When `p3pr finalize` is invoked, it does **not** call `run_paper_reading.py`
+(because the run has already been produced and the JSON has already been
+filled); it calls the audit / quality-gate / render / publish scripts
+directly. This is by design: the runner is the right tool for the **first**
+stage, and finalize is the right tool for the **second** stage.
+
+The runner's own publish-path is unchanged. The runner is still the
+recommended entry point for new runs that do not yet have a fill-stage:
+
+```bash
+./p3pr url <url> --zh --full --no-publish   # stage 1 (runner fills draft)
+# ... agent / human fills paper_reading.json per fill-pack ...
+./p3pr finalize <run-dir> --publish         # stage 2 (finalize + publish)
+```
+
+`p3pr finalize` also enforces the v0.2.15 publish-gate: if
+`paper-reading-output/index.html` is missing after render, finalize BLOCKs
+with `P3PR_FINALIZE_STATUS: BLOCKED` and never reaches the publisher. This
+prevents 404 stubs on `gh-pages` from a fill that didn't actually produce
+rendered HTML.
+
+See [`USAGE.md`](USAGE.md) § "v0.2.17-alpha: `p3pr finalize <run-dir>` — the
+second-stage CLI" for the full flag list and summary block spec.

@@ -3,6 +3,39 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.17-alpha] — 2026-06-16
+
+### Added
+
+- **`p3pr finalize <run-dir>`** — the second-stage CLI. Reads `<run-dir>/work/paper_reading.json` and runs, in order: audit (`audit_paper_reading.py` → `work/audit_final.json`) → zh-CN quality gate (if `target_language` / `ui_language` is `zh-CN`; `quality_gate_zh_cn.py` → `work/quality_gate_zh_cn.json`) → render (`render_page.py` → `<run-dir>/paper-reading-output/`) → optional publish (`publish_output_to_github.sh`) → optional published-pages audit (`audit_published_pages.py` → `work/published_pages_audit_after_finalize.json` + `reports/published_pages_audit_after_finalize.md`). A fixed `P3PR_FINALIZE_STATUS` summary block is printed on every exit. With `--dry-run`, finalize prints a `P3PR_FINALIZE_DRY_RUN` plan block and does nothing else. finalize does **not** auto-fill the draft — the first stage (filling per the fill-pack) is the human / agent's job.
+- **Recommended two-stage workflow:**
+  ```bash
+  ./p3pr url <url> --zh --full --no-publish     # stage 1: draft + fill-pack
+  # (edit <run-dir>/work/paper_reading.json per <run-dir>/fill-pack/)
+  ./p3pr finalize <run-dir> --publish            # stage 2: audit + render + publish
+  ```
+- **Hard guards in finalize:**
+  - `work/paper_reading.json` missing → `P3PR_FINALIZE_STATUS: BLOCKED`.
+  - `audit FAILED` → `P3PR_FINALIZE_STATUS: BLOCKED` (no `--allow-*` bypass).
+  - `quality gate FAILED` → BLOCKED unless `--allow-draft-publish` is set.
+  - `paper-reading-output/index.html` missing after render → BLOCKED (the v0.2.15 publish-gate; carried over to finalize).
+  - `quality gate WARN` → page is published with `P3PR_FINALIZE_STATUS: WARN` unless `--allow-warnings` is set.
+- **Finalize flags:** `--publish` / `--no-publish` (default `--no-publish`), `--repo` (default `conanxin/paper-reading-pages`), `--branch` (default `gh-pages`), `--site-path` (default `<run-dir>` basename), `--page-title` (default `paper_metadata.title`), `--allow-warnings`, `--allow-draft-publish`, `--skip-quality-gate`, `--skip-published-audit`, `--published-audit` / `--no-published-audit`, `--dry-run`, `--json-output` (reserved).
+- **`scripts/validate.sh` step 21** — 16 new sub-checks: `p3pr --help` lists `finalize`; `p3pr finalize --help` runs and lists 7 finalize-specific flags; finalize BLOCKs on missing `work/paper_reading.json` (with clear error message); finalize dry-run prints `P3PR_FINALIZE_DRY_RUN` + `would_audit: True` / `would_render: True` / `would_publish: True`; finalize on a real filled run generates `work/audit_final.json`, `work/quality_gate_zh_cn.json`, and `paper-reading-output/index.html`, with the right `P3PR_FINALIZE_STATUS` summary. Validation is now 279/0 PASS (was 263/0 PASS at v0.2.15-alpha).
+- **Finalize dogfood smoke run** — `runs/p3pr-finalize-smoke-20260616/...` was used to drive validation step 21g; live-published dogfood at `https://conanxin.github.io/paper-reading-pages/you-and-your-research-url-dogfood-finalize-cn/` demonstrates the full stage-1 → fill → stage-2 → publish → live-audit flow.
+
+### Changed
+
+- **`p3pr.py`** — added `finalize` to the subcommands list, registered the same flag set on the stub subparser (so `p3pr finalize --help` produces the correct usage line), and switched the main parser to `parse_known_args` so that finalize-specific flags are not rejected at the top level. The `finalize` subcommand has its own dedicated parser (`build_finalize_parser`) because its flag set is intentionally different from the url/arxiv subcommands.
+- **Documentation updates** — `USAGE.md`, `ONE_LINE_CLI.md`, `RUNNER.md`, `ZH_CN_QUALITY_GATE.md` all gained a v0.2.17-alpha section explaining the new subcommand, the two-stage workflow, the flag set, and the publish-guards.
+
+### Compatibility
+
+- All existing p3pr subcommands (`arxiv / title / abstract / screenshot / repo / pdf / url`) are unchanged. `p3pr finalize <run-dir>` is purely additive.
+- Existing run directories are fully compatible: any run that already has a `work/paper_reading.json` can be finalized with `p3pr finalize <run-dir> [--publish]`.
+- No old tags moved. v0.2.10-alpha / v0.2.12-alpha / v0.2.13-alpha / v0.2.14-alpha / v0.2.15-alpha stay at their original commits.
+- No migration steps. Existing fill-packs, drafts, and rendered pages are untouched.
+
 ## [v0.2.15-alpha] — 2026-06-16
 
 ### Fixed

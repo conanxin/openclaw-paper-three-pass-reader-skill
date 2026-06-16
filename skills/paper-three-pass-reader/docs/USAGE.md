@@ -364,6 +364,148 @@ The CLI chains everything in this doc:
 Every run ends with a fixed-format `P3PR_*` summary. See [`ONE_LINE_CLI.md`](ONE_LINE_CLI.md).
 
 
+## v0.2.17-alpha: `p3pr finalize <run-dir>` — the second-stage CLI
+
+`p3pr finalize` is the missing half of the daily workflow. It takes a run
+directory that already has a filled `work/paper_reading.json` and runs the
+second stage for you:
+
+```bash
+# Stage 1: draft + fill-pack (no publish, no render)
+./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+    --zh --full --no-publish \
+    --slug you-and-your-research \
+    --output-root runs/2026-06-16 \
+    --title "You and Your Research" \
+    --authors "Richard W. Hamming"
+
+# (you / an agent edits runs/2026-06-16/you-and-your-research/work/paper_reading.json
+#  per the fill-pack in runs/2026-06-16/you-and-your-research/fill-pack/)
+
+# Stage 2: audit + zh-CN quality gate + render + publish + published-pages audit
+./p3pr finalize runs/2026-06-16/you-and-your-research --publish
+```
+
+### What finalize does
+
+1. **Reads** `<run-dir>/work/paper_reading.json` (refuses to run if missing).
+2. **Audit** via `audit_paper_reading.py` → `work/audit_final.json`.
+   - On `FAIL`, finalize BLOCKs — fix the JSON and re-run.
+3. **zh-CN quality gate** (only if `target_language` / `ui_language` is `zh-CN`) → `work/quality_gate_zh_cn.json`.
+   - On `WARN` and `--allow-warnings` set: continue.
+   - On `FAIL`: BLOCK unless `--allow-draft-publish` is set.
+4. **Render** via `render_page.py` → `<run-dir>/paper-reading-output/`.
+5. **Hard guard:** if `paper-reading-output/index.html` does not exist after
+   render, finalize BLOCKs (the v0.2.15 publish-gate). This prevents empty
+   404 stubs from being pushed to `gh-pages`.
+6. **Publish** (only if `--publish`): `publish_output_to_github.sh` →
+   `gh-pages` of the configured repo.
+7. **Published-pages audit** (default on after publish; skip with
+   `--skip-published-audit`) → `<run-dir>/work/published_pages_audit_after_finalize.json`
+   and `<run-dir>/reports/published_pages_audit_after_finalize.md`.
+
+### What finalize does NOT do
+
+- **It does not auto-fill the draft.** finalize is for the second stage; the
+  first stage (filling `paper_reading.json` per the fill-pack) is the human
+  / agent's responsibility. If you want LLM-driven fill, run it separately
+  and then call finalize.
+- **It does not re-fetch the URL.** finalize only reads what's on disk.
+  If the run was created by `p3pr url`, the body is in `<run-dir>/extracted/`
+  — but finalize does not consult it.
+- **It does not push to a non-default repo's published-pages audit.** If
+  `--repo` is not `conanxin/paper-reading-pages`, the published-pages audit
+  is skipped (with a warning) to avoid false negatives.
+
+### Flags
+
+```text
+./p3pr finalize <run-dir>
+  --publish / --no-publish        (default: --no-publish)
+  --repo <owner>/<name>           (default: conanxin/paper-reading-pages)
+  --branch <branch>               (default: gh-pages)
+  --site-path <slug>              (default: <run-dir> basename)
+  --page-title <title>            (default: paper_metadata.title)
+  --allow-warnings                (default: off — WARN blocks publish)
+  --allow-draft-publish           (default: off — quality-gate FAIL blocks publish;
+                                   audit FAIL or missing index.html still block)
+  --skip-quality-gate             (default: off — auto-on for zh-CN)
+  --skip-published-audit          (default: off — runs after publish)
+  --dry-run                       (print plan, do nothing)
+```
+
+### Dry-run
+
+```bash
+./p3pr finalize runs/2026-06-16/you-and-your-research --publish --dry-run
+```
+
+emits a fixed `P3PR_FINALIZE_DRY_RUN` block showing what would happen, with
+no side effects:
+
+```
+P3PR_FINALIZE_DRY_RUN
+P3PR_RUN_DIR: .../runs/2026-06-16/you-and-your-research
+would_read_json: .../work/paper_reading.json
+would_audit: True (audit_paper_reading.py)
+would_quality_gate: True (zh-CN detected: zh-CN/zh-CN; skip_quality_gate=False)
+would_render: True (render_page.py → .../paper-reading-output)
+would_publish: True (repo=conanxin/paper-reading-pages, branch=gh-pages)
+site_path: you-and-your-research
+page_title: You and Your Research
+published_audit_after_publish: True
+```
+
+### Summary block on every exit
+
+```text
+P3PR_FINALIZE_STATUS: PASS | WARN | BLOCKED
+P3PR_RUN_DIR: <run-dir>
+P3PR_JSON: <run-dir>/work/paper_reading.json
+P3PR_AUDIT_JSON: <run-dir>/work/audit_final.json
+P3PR_QUALITY_GATE_JSON: <run-dir>/work/quality_gate_zh_cn.json (or empty)
+P3PR_LOCAL_PAGE: <run-dir>/paper-reading-output/index.html
+P3PR_PAGE_URL: <public URL> (or empty)
+P3PR_PUBLISHED_AUDIT_JSON: <run-dir>/work/published_pages_audit_after_finalize.json (or empty)
+P3PR_NEXT_ACTION: <text>
+```
+
+`P3PR_FINALIZE_STATUS` is one of `PASS` (audit PASS, qg PASS/WARN, render OK,
+publish OK), `WARN` (publish OK with quality-gate WARN and no
+`--allow-warnings`), or `BLOCKED` (audit FAIL, qg FAIL without override,
+render FAIL, missing index.html, missing work/paper_reading.json, or publish
+FAIL).
+
+### Examples
+
+Local render only (no publish, no network):
+
+```bash
+./p3pr finalize runs/2026-06-16/you-and-your-research --no-publish
+# → P3PR_FINALIZE_STATUS: PASS or WARN
+# → P3PR_PAGE_URL: (empty)
+# → P3PR_LOCAL_PAGE: .../paper-reading-output/index.html
+```
+
+Publish to a custom slug:
+
+```bash
+./p3pr finalize runs/2026-06-16/you-and-your-research \
+    --publish \
+    --site-path you-and-your-research-2026-06-16 \
+    --page-title "You and Your Research (Jun 2026 re-render)"
+```
+
+Publish even when quality-gate reports FAIL (only if you know what you're
+doing — `audit FAILED` and missing `index.html` will still BLOCK):
+
+```bash
+./p3pr finalize runs/2026-06-16/you-and-your-research \
+    --publish --allow-warnings --allow-draft-publish
+```
+
+---
+
 ## Cross-links
 
 - Source resolution: see [`SOURCE_RESOLUTION.md`](SOURCE_RESOLUTION.md) for the canonical top-level `source_resolution` object and the legacy `intake_quality.source_resolution` list.
