@@ -2117,6 +2117,153 @@ if [[ -d "$NO_JSON_DIR" ]]; then
 fi
 rm -rf "$UX_REAL_ROOT" "$NO_JSON_DIR"
 
+# [23] v0.2.19-alpha p3pr status + doctor subcommands
+step 23 "v0.2.19-alpha p3pr status + doctor subcommands"
+
+# 23a. --help runs.
+if (cd "$ROOT" && ./p3pr status --help >/dev/null 2>&1); then
+  ok "p3pr status --help runs"
+else
+  bad "p3pr status --help did not run"
+fi
+if (cd "$ROOT" && ./p3pr doctor --help >/dev/null 2>&1); then
+  ok "p3pr doctor --help runs"
+else
+  bad "p3pr doctor --help did not run"
+fi
+# 23b. ./p3pr --help mentions both subcommands.
+if (cd "$ROOT" && ./p3pr --help 2>&1 | grep -q "status") \
+   && (cd "$ROOT" && ./p3pr --help 2>&1 | grep -q "doctor"); then
+  ok "p3pr --help lists status and doctor subcommands"
+else
+  bad "p3pr --help does not list status and doctor"
+fi
+
+# 23c. status --runs --offline produces JSON with runs + summary.
+STATUS_SMOKE_ROOT="/tmp/p3pr-status-smoke-$$"
+rm -rf "$STATUS_SMOKE_ROOT"
+mkdir -p "$STATUS_SMOKE_ROOT"
+STATUS_JSON="$STATUS_SMOKE_ROOT/status_runs.json"
+if (cd "$ROOT" && ./p3pr status --runs --offline --json-output "$STATUS_JSON" >/dev/null 2>&1) \
+   && [[ -f "$STATUS_JSON" ]]; then
+  ok "p3pr status --runs --offline --json-output wrote JSON"
+  if python3 -c "
+import json, sys
+try:
+    d = json.load(open('$STATUS_JSON'))
+    assert 'runs' in d and 'summary' in d
+    s = d['summary']
+    for k in ('draft', 'rendered', 'published', 'blocked'):
+        if k not in s:
+            print(f'missing summary key: {k}'); sys.exit(1)
+    print('ok')
+except Exception as e:
+    print(f'FAIL: {e}'); sys.exit(1)
+" >/dev/null 2>&1; then
+    ok "p3pr status JSON has runs + summary with draft/rendered/published/blocked counters"
+  else
+    bad "p3pr status JSON missing runs/summary/draft/rendered/published/blocked"
+  fi
+else
+  bad "p3pr status --runs --offline --json-output did not write JSON"
+fi
+
+# 23d. status can read a fake local manifest file (no network needed).
+FAKE_MANIFEST="$STATUS_SMOKE_ROOT/fake_manifest.json"
+python3 - <<PY >"$FAKE_MANIFEST"
+import json
+print(json.dumps({
+    "pages": [
+        {"slug": "fake-page-1", "title": "Fake Page 1", "url": "https://example.com/fake-page-1/"},
+        {"slug": "fake-page-2", "title": "Fake Page 2", "url": "https://example.com/fake-page-2/"},
+    ],
+    "root_index": True,
+}))
+PY
+STATUS_SITE_JSON="$STATUS_SMOKE_ROOT/status_site.json"
+if (cd "$ROOT" && ./p3pr status --site --manifest-file "$FAKE_MANIFEST" --json-output "$STATUS_SITE_JSON" >/dev/null 2>&1) \
+   && [[ -f "$STATUS_SITE_JSON" ]] \
+   && python3 -c "
+import json
+d = json.load(open('$STATUS_SITE_JSON'))
+assert d['site']['manifest_source'] == 'file'
+assert d['site']['pages_total'] == 2
+print('ok')
+" >/dev/null 2>&1; then
+  ok "p3pr status reads fake manifest file via --manifest-file"
+else
+  bad "p3pr status did not read fake manifest file"
+fi
+
+# 23e. status does NOT crash on malformed run dirs (regression guard).
+MAL_ROOT="/tmp/p3pr-malformed-$$"
+rm -rf "$MAL_ROOT"
+mkdir -p "$MAL_ROOT/malformed-run/work"
+echo "{not valid json" >"$MAL_ROOT/malformed-run/work/paper_reading.json"
+MAL_JSON="/tmp/p3pr-malformed-status-$$.json"
+if (cd "$ROOT" && ./p3pr status --runs --runs-root "$MAL_ROOT" --offline --json-output "$MAL_JSON" >/dev/null 2>&1); then
+  ok "p3pr status does NOT crash on malformed work/paper_reading.json"
+else
+  bad "p3pr status crashed on malformed work/paper_reading.json"
+fi
+rm -rf "$MAL_ROOT" "$MAL_JSON"
+
+# 23f. doctor --offline produces JSON with checks + summary.
+DOCTOR_OFF_JSON="$STATUS_SMOKE_ROOT/doctor_offline.json"
+if (cd "$ROOT" && ./p3pr doctor --offline --json-output "$DOCTOR_OFF_JSON" >/dev/null 2>&1) \
+   && [[ -f "$DOCTOR_OFF_JSON" ]]; then
+  ok "p3pr doctor --offline --json-output wrote JSON"
+  if python3 -c "
+import json, sys
+d = json.load(open('$DOCTOR_OFF_JSON'))
+assert 'checks' in d and 'summary' in d
+s = d['summary']
+for k in ('pass', 'warn', 'fail'):
+    if k not in s:
+        print(f'missing summary key: {k}'); sys.exit(1)
+# offline mode must not FAIL the overall status because of network.
+assert d['status'] in ('PASS', 'WARN'), f'unexpected status: {d[\"status\"]}'
+print('ok')
+" >/dev/null 2>&1; then
+    ok "p3pr doctor offline JSON has checks + summary; status is PASS or WARN"
+  else
+    bad "p3pr doctor offline JSON missing checks/summary or wrong status"
+  fi
+else
+  bad "p3pr doctor --offline --json-output did not write JSON"
+fi
+
+# 23g. doctor --quick (default) produces JSON; --quick is not a failure.
+DOCTOR_QUICK_JSON="$STATUS_SMOKE_ROOT/doctor_quick.json"
+if (cd "$ROOT" && ./p3pr doctor --quick --json-output "$DOCTOR_QUICK_JSON" >/dev/null 2>&1) \
+   && [[ -f "$DOCTOR_QUICK_JSON" ]]; then
+  ok "p3pr doctor --quick --json-output wrote JSON"
+else
+  bad "p3pr doctor --quick --json-output did not write JSON"
+fi
+
+# 23h. dirty working tree check is helper-level, not destructive.
+if (cd "$ROOT" && ./p3pr doctor --offline 2>&1 | grep -q "git_working_tree"); then
+  ok "p3pr doctor reports git_working_tree check"
+else
+  bad "p3pr doctor does not report git_working_tree check"
+fi
+# And the check must WARN, not FAIL, on a real dirty tree (we are dirty).
+if (cd "$ROOT" && ./p3pr doctor --offline --json-output "$STATUS_SMOKE_ROOT/doctor_check_status.json" >/dev/null 2>&1) \
+   && python3 -c "
+import json
+d = json.load(open('$STATUS_SMOKE_ROOT/doctor_check_status.json'))
+gwt = next((c for c in d['checks'] if c['name'] == 'git_working_tree'), None)
+assert gwt is not None and gwt['status'] in ('PASS', 'WARN'), 'git_working_tree must be PASS or WARN, not FAIL'
+print('ok')
+" >/dev/null 2>&1; then
+  ok "p3pr doctor git_working_tree is PASS or WARN, never FAIL"
+else
+  bad "p3pr doctor git_working_tree was FAIL (regression: dirty tree must not be FAIL)"
+fi
+
+rm -rf "$STATUS_SMOKE_ROOT"
+
 # Summary
 echo
 echo "================================================="

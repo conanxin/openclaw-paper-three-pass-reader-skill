@@ -515,3 +515,36 @@ All v0.2.15 / v0.2.17 publish guards are preserved (verified by validation
 step 22). Validation 293/0 PASS. See
 [`USAGE.md`](USAGE.md) § "v0.2.18-alpha: `p3pr finalize <run-dir>` UX
 polish" for the full flag list and dry-run output.
+
+## v0.2.19-alpha: `p3pr status` + `p3pr doctor` — read-only observability
+
+The runner side of the project is unchanged in v0.2.19. The CLI gained two
+read-only observability subcommands: `p3pr status` and `p3pr doctor`.
+
+### `p3pr status`
+
+Scans `runs/` and reads `published_pages.json` (default URL, or `--manifest-file`
+for a local copy, or `--offline` to skip the fetch). Each run is classified
+into one of: `draft` / `filled` / `audited` / `rendered` /
+`rendered_with_warnings` / `published` / `blocked` / `unknown`. The
+classification comes from the runner's own artifacts (`work/paper_reading.json`,
+`work/audit_*.json`, `work/quality_gate_zh_cn.json`,
+`paper-reading-output/index.html`) plus a cross-reference to the manifest
+slugs. `status` never writes to runs.
+
+### `p3pr doctor`
+
+Runs 7 read-only health-check groups: local env, required scripts, required
+data/docs, git state, gh CLI / auth, optional `scripts/validate.sh`, light
+HEAD probe of the site. Default is `--quick` (no validation); `--full` runs
+`scripts/validate.sh`. Dirty working tree and missing gh surface as WARN
+(with a recommendation line), never FAIL. doctor never auto-fixes.
+
+### Compatibility
+
+All v0.2.15 / v0.2.17 / v0.2.18 publish guards and finalize UX are
+preserved. Validation 305/0 PASS (was 293 at v0.2.18; +12 new sub-checks
+in step 23). See
+[`USAGE.md`](USAGE.md) § "v0.2.19-alpha: `p3pr status` + `p3pr doctor`" and
+[`STATUS_AND_DOCTOR.md`](STATUS_AND_DOCTOR.md) for the full flag list,
+JSON shapes, and run-status taxonomy.

@@ -2032,6 +2032,895 @@ def handle_finalize(args) -> int:
     return 0
 
 
+# --- v0.2.19-alpha: status + doctor subcommands -------------------------------
+
+DEFAULT_MANIFEST_URL = "https://conanxin.github.io/paper-reading-pages/published_pages.json"
+DEFAULT_SITE_ROOT = "https://conanxin.github.io/paper-reading-pages"
+DEFAULT_RUNS_ROOT = "runs"
+
+# Run status taxonomy (status subcommand).
+_RUN_STATUS_RANK = {
+    "unknown": 0,
+    "draft": 1,
+    "filled": 2,
+    "audited": 3,
+    "rendered_with_warnings": 4,
+    "rendered": 5,
+    "published": 6,
+    "blocked": 7,
+}
+
+
+def _classify_run_status(
+    *,
+    has_json: bool,
+    has_fill_pack: bool,
+    audit_status: str,
+    qg_status: str,
+    has_rendered: bool,
+    in_manifest: bool,
+) -> str:
+    """Map raw run signals to a single human-readable run status."""
+    if not has_json:
+        return "unknown"
+    if audit_status == "FAIL" or qg_status == "FAIL":
+        return "blocked"
+    if in_manifest:
+        return "published"
+    if has_rendered and qg_status == "WARN":
+        return "rendered_with_warnings"
+    if has_rendered:
+        return "rendered"
+    if audit_status == "PASS" and qg_status in ("PASS", "SKIPPED", "unknown", ""):
+        return "audited"
+    if has_fill_pack:
+        return "filled"
+    return "draft"
+
+
+def _read_json_safely(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _scan_runs(
+    runs_root: Path,
+    *,
+    limit: int | None = None,
+    text_filter: str | None = None,
+    show_drafts: bool = True,
+    show_warnings: bool = True,
+    show_published: bool = True,
+    manifest_paths: set[str] | None = None,
+) -> tuple[list[dict], dict]:
+    """Scan <runs_root>/ for P3PR run directories.
+
+    A run is any directory that contains work/paper_reading.json (the runner
+    contract) OR a fill-pack/ with a draft_status.json (a fill that has
+    started but not yet produced paper_reading.json). The latter is rare
+    in current usage but the scanner is permissive.
+    """
+    runs: list[dict] = []
+    summary = {
+        "runs_total": 0,
+        "draft": 0,
+        "filled": 0,
+        "audited": 0,
+        "rendered": 0,
+        "rendered_with_warnings": 0,
+        "published": 0,
+        "blocked": 0,
+        "unknown": 0,
+    }
+    if not runs_root.is_dir():
+        return runs, summary
+
+    for child in sorted(runs_root.iterdir(), key=lambda p: p.name):
+        if not child.is_dir():
+            continue
+        work_json = child / "work" / "paper_reading.json"
+        fill_pack_dir = child / "fill-pack"
+        work_json_alt = child / "fill-pack" / "paper_reading.json"
+        actual_work_json: Path | None = None
+        if work_json.exists():
+            actual_work_json = work_json
+        elif work_json_alt.exists():
+            actual_work_json = work_json_alt
+        has_fill_pack = fill_pack_dir.is_dir() or work_json_alt.exists()
+        if actual_work_json is None and not has_fill_pack:
+            # Not a P3PR run.
+            continue
+        pr = _read_json_safely(actual_work_json) if actual_work_json else {}
+        pm = pr.get("paper_metadata", {}) or {}
+        slug = (
+            pm.get("default_slug")
+            or pm.get("slug")
+            or pm.get("page_slug")
+            or pr.get("slug")
+            or child.name
+        )
+        title = pm.get("title") or pr.get("title") or child.name
+        input_kind = (
+            pr.get("input_kind")
+            or pm.get("input_kind")
+            or "unknown"
+        )
+        reading_mode = _get_reading_mode(actual_work_json) if actual_work_json else ""
+        target_lang, ui_lang = (
+            _get_target_languages(actual_work_json) if actual_work_json else ("zh-CN", "zh-CN")
+        )
+        # Audit + quality gate: try work/audit_final.json, work/audit_result.json,
+        # then work/quality_gate_zh_cn.json.
+        audit_path = child / "work" / "audit_final.json"
+        if not audit_path.exists():
+            audit_path = child / "work" / "audit_result.json"
+        audit_data = _read_json_safely(audit_path) if audit_path.exists() else {}
+        audit_status = (audit_data.get("status") or "").upper() or (
+            "unknown" if not audit_path.exists() else "unknown"
+        )
+        qg_path = child / "work" / "quality_gate_zh_cn.json"
+        qg_data = _read_json_safely(qg_path) if qg_path.exists() else {}
+        qg_status = (qg_data.get("status") or "").upper() or (
+            "unknown" if not qg_path.exists() else "unknown"
+        )
+        # Rendered page presence.
+        index_html = child / "paper-reading-output" / "index.html"
+        has_rendered = index_html.exists()
+        # Published hint: did the manifest mention this slug / site-path?
+        site_path_guess = infer_site_path(child, actual_work_json) if actual_work_json else child.name
+        in_manifest = bool(manifest_paths and site_path_guess in manifest_paths)
+        # Classify.
+        run_status = _classify_run_status(
+            has_json=actual_work_json is not None,
+            has_fill_pack=has_fill_pack,
+            audit_status=audit_status,
+            qg_status=qg_status,
+            has_rendered=has_rendered,
+            in_manifest=in_manifest,
+        )
+        # Next-action suggestion.
+        if run_status == "published":
+            next_action = "Already published; re-run only if you want to republish."
+        elif run_status == "rendered_with_warnings":
+            next_action = (
+                f"Rendered with quality-gate WARN. Re-run with --allow-warnings to publish, "
+                f"or edit {actual_work_json} to address the warnings."
+            ) if actual_work_json else "Rendered with WARN; inspect run dir for fill-pack."
+        elif run_status == "rendered":
+            next_action = (
+                f"Rendered. Re-run `./p3pr finalize {child} --publish` to publish."
+            )
+        elif run_status == "audited":
+            next_action = (
+                f"Audited but not rendered. Re-run `./p3pr finalize {child}` to render, "
+                f"or `./p3pr finalize {child} --publish` to render + publish."
+            )
+        elif run_status == "filled":
+            next_action = (
+                f"Filled but not audited. Run `./p3pr finalize {child}` to audit + render."
+            )
+        elif run_status == "blocked":
+            next_action = (
+                f"audit or quality gate FAILED. Edit {actual_work_json} and re-run finalize."
+            ) if actual_work_json else "Audit/quality gate FAILED; inspect run dir."
+        elif run_status == "draft":
+            next_action = "Draft only (no JSON yet). Run a p3pr subcommand to bootstrap."
+        else:
+            next_action = "Unknown state; inspect run directory."
+
+        record = {
+            "run_dir": str(child),
+            "slug": slug,
+            "title": title,
+            "input_kind": input_kind,
+            "reading_mode": reading_mode,
+            "target_language": target_lang,
+            "ui_language": ui_lang,
+            "has_fill_pack": has_fill_pack,
+            "has_audit": audit_path.exists(),
+            "audit_status": audit_status if audit_path.exists() else "unknown",
+            "has_quality_gate": qg_path.exists(),
+            "quality_gate_status": qg_status if qg_path.exists() else "unknown",
+            "has_rendered_page": has_rendered,
+            "local_page_path": str(index_html) if has_rendered else "",
+            "has_published_hint": in_manifest,
+            "site_path_guess": site_path_guess,
+            "status": run_status,
+            "next_action": next_action,
+        }
+
+        # Filter.
+        if text_filter:
+            needle = text_filter.lower()
+            blob = " ".join(
+                str(record.get(k, "")) for k in (
+                    "slug", "title", "status", "site_path_guess", "input_kind",
+                    "reading_mode", "next_action",
+                )
+            ).lower()
+            if needle not in blob:
+                continue
+        if not show_drafts and run_status in ("draft", "filled", "unknown"):
+            continue
+        if not show_warnings and run_status in ("rendered_with_warnings",):
+            continue
+        if not show_published and run_status == "published":
+            continue
+
+        runs.append(record)
+        if limit is not None and len(runs) >= limit:
+            break
+
+    summary["runs_total"] = len(runs)
+    for r in runs:
+        s = r["status"]
+        if s in summary:
+            summary[s] += 1
+    return runs, summary
+
+
+def _fetch_manifest(
+    *,
+    manifest_url: str | None,
+    manifest_file: str | None,
+    offline: bool,
+) -> tuple[dict, str]:
+    """Return (manifest_data, source) where source describes where it came from.
+
+    ``source`` is one of 'url', 'file', 'offline', or 'unavailable'. manifest_data
+    is always a dict (empty when unavailable).
+    """
+    if manifest_file:
+        p = Path(manifest_file)
+        if not p.exists():
+            return {}, "unavailable"
+        return _read_json_safely(p), "file"
+    if manifest_url and not offline:
+        try:
+            with urllib.request.urlopen(manifest_url, timeout=10) as resp:
+                body = resp.read().decode("utf-8", errors="replace")
+            return json.loads(body), "url"
+        except Exception:  # noqa: BLE001
+            return {}, "unavailable"
+    return {}, "offline" if offline else "unavailable"
+
+
+def _summarize_manifest(manifest: dict, source: str, site_root: str | None) -> dict:
+    """Normalize a published_pages.json manifest into a summary block."""
+    if not manifest:
+        return {
+            "status": "WARN" if source in ("unavailable", "offline") else "FAIL",
+            "manifest_source": source,
+            "site_root": site_root or "",
+            "pages_total": 0,
+            "pages": [],
+            "root_index_present": False,
+            "manifest_valid": source in ("url", "file"),
+            "next_action": (
+                "Manifest not available. Run `p3pr doctor --full` to diagnose, or "
+                "use --manifest-file <local-path> / --offline to read a local copy."
+                if source in ("unavailable", "offline")
+                else "Manifest is empty."
+            ),
+        }
+    pages = manifest.get("pages") or []
+    page_records = []
+    for p in pages:
+        if not isinstance(p, dict):
+            continue
+        page_records.append({
+            "title": p.get("title") or "",
+            "slug": p.get("slug") or p.get("path") or "",
+            "url": p.get("url") or "",
+            "published_at": p.get("published_at") or p.get("updated_at") or "",
+        })
+    return {
+        "status": "PASS",
+        "manifest_source": source,
+        "site_root": site_root or "",
+        "pages_total": len(page_records),
+        "pages": page_records,
+        "root_index_present": bool(manifest.get("root_index")),
+        "manifest_valid": True,
+        "next_action": f"{len(page_records)} page(s) tracked in manifest.",
+    }
+
+
+def _status_print_summary(*, payload: dict, json_output: str | None) -> int:
+    """Print the human-readable P3PR_STATUS_* summary and optionally JSON."""
+    site = payload.get("site") or {}
+    summary = payload.get("summary") or {}
+    runs = payload.get("runs") or []
+    status = payload.get("status", "PASS")
+    print()
+    print("=" * 60)
+    print(f"P3PR_STATUS_STATUS: {status}")
+    print(f"P3PR_RUNS_ROOT: {payload.get('runs_root', '')}")
+    print(f"P3PR_RUNS_TOTAL: {summary.get('runs_total', len(runs))}")
+    print(f"P3PR_RUNS_DRAFT: {summary.get('draft', 0)}")
+    print(f"P3PR_RUNS_FILLED: {summary.get('filled', 0)}")
+    print(f"P3PR_RUNS_AUDITED: {summary.get('audited', 0)}")
+    print(f"P3PR_RUNS_RENDERED: {summary.get('rendered', 0)}")
+    print(f"P3PR_RUNS_RENDERED_WITH_WARNINGS: {summary.get('rendered_with_warnings', 0)}")
+    print(f"P3PR_RUNS_PUBLISHED: {summary.get('published', 0)}")
+    print(f"P3PR_RUNS_BLOCKED: {summary.get('blocked', 0)}")
+    print(f"P3PR_SITE_PAGES: {site.get('pages_total', 'unknown')}")
+    print(f"P3PR_SITE_STATUS: {site.get('status', 'unknown')}")
+    print(f"P3PR_SITE_MANIFEST_SOURCE: {site.get('manifest_source', 'unknown')}")
+    print(f"P3PR_NEXT_ACTION: {payload.get('next_action', '')}")
+    print("=" * 60)
+    # Human-readable per-run lines.
+    if runs:
+        print()
+        print("Local runs:")
+        for r in runs:
+            rstat = r.get("status", "unknown")
+            slug = r.get("slug") or ""
+            title = r.get("title") or ""
+            site_path = r.get("site_path_guess") or ""
+            published = " (published)" if r.get("has_published_hint") else ""
+            print(f"  - [{rstat:>22}] {slug}  {title}{published}")
+            if site_path and site_path != slug:
+                print(f"      site-path: {site_path}")
+            print(f"      next: {r.get('next_action', '')}")
+    if site.get("pages"):
+        print()
+        print("Published pages:")
+        for p in site["pages"][:30]:
+            title = p.get("title") or ""
+            url = p.get("url") or ""
+            slug = p.get("slug") or ""
+            print(f"  - {slug:35s}  {title}  {url}")
+    if json_output:
+        try:
+            Path(json_output).write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            print(f"[info] wrote status JSON to {json_output}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[warn] could not write status JSON: {exc}", file=sys.stderr)
+    return 0 if status in ("PASS", "WARN") else 1
+
+
+def handle_status(args) -> int:
+    """`p3pr status` — local runs + published pages manifest summary.
+
+    Default scope: both runs and site (network-allowed). With --offline the
+    site summary degrades to WARN / unavailable but the runs scan still runs.
+    """
+    show_runs = bool(getattr(args, "runs", False)) or bool(getattr(args, "all", False))
+    show_site = bool(getattr(args, "site", False)) or bool(getattr(args, "all", False))
+    if not show_runs and not show_site:
+        # Default behaviour: both.
+        show_runs = True
+        show_site = True
+    runs_root = Path(getattr(args, "runs_root", DEFAULT_RUNS_ROOT) or DEFAULT_RUNS_ROOT)
+    if not runs_root.is_absolute():
+        runs_root = (Path.cwd() / runs_root).resolve()
+    offline = bool(getattr(args, "offline", False))
+    manifest_url = getattr(args, "manifest_url", None) or DEFAULT_MANIFEST_URL
+    manifest_file = getattr(args, "manifest_file", None)
+    site_root = getattr(args, "site_root", None) or DEFAULT_SITE_ROOT
+    json_output = getattr(args, "json_output", None)
+    limit = getattr(args, "limit", None)
+    text_filter = getattr(args, "filter", None)
+    show_drafts = bool(getattr(args, "show_drafts", True))
+    show_warnings = bool(getattr(args, "show_warnings", True))
+    show_published = bool(getattr(args, "show_published", True))
+
+    # Manifest: do the fetch first so we can use the manifest to flag published runs.
+    manifest, source = _fetch_manifest(
+        manifest_url=manifest_url if show_site else None,
+        manifest_file=manifest_file,
+        offline=offline,
+    )
+    site_summary = _summarize_manifest(manifest, source, site_root) if show_site else {
+        "status": "skipped",
+        "manifest_source": "skipped",
+        "site_root": "",
+        "pages_total": 0,
+        "pages": [],
+        "root_index_present": False,
+        "manifest_valid": False,
+        "next_action": "site check skipped (--site not set)",
+    }
+    # Collect site-path slugs from the manifest for cross-referencing.
+    manifest_paths: set[str] = set()
+    for p in site_summary.get("pages") or []:
+        slug = p.get("slug") or ""
+        if slug:
+            manifest_paths.add(slug)
+        url = p.get("url") or ""
+        # Last URL path component is a fallback site-path.
+        if url and not slug:
+            tail = url.rstrip("/").rsplit("/", 1)[-1]
+            if tail:
+                manifest_paths.add(tail)
+
+    # Runs scan.
+    if show_runs:
+        runs, runs_summary = _scan_runs(
+            runs_root,
+            limit=limit,
+            text_filter=text_filter,
+            show_drafts=show_drafts,
+            show_warnings=show_warnings,
+            show_published=show_published,
+            manifest_paths=manifest_paths,
+        )
+    else:
+        runs, runs_summary = [], {
+            "runs_total": 0, "draft": 0, "filled": 0, "audited": 0,
+            "rendered": 0, "rendered_with_warnings": 0,
+            "published": 0, "blocked": 0, "unknown": 0,
+        }
+
+    # Overall status.
+    overall = "PASS"
+    if runs_summary.get("blocked", 0) > 0:
+        overall = "FAIL"
+    elif site_summary.get("status") == "FAIL":
+        overall = "FAIL"
+    elif site_summary.get("status") in ("WARN", "unavailable", "offline", "skipped") \
+            or runs_summary.get("rendered_with_warnings", 0) > 0:
+        overall = "WARN"
+
+    # Next action.
+    if overall == "FAIL":
+        next_action = (
+            f"{runs_summary.get('blocked', 0)} run(s) blocked by audit / quality-gate FAILED. "
+            f"Inspect the run dirs above and re-run `./p3pr finalize <run-dir>` after editing."
+        )
+    elif overall == "WARN":
+        if site_summary.get("status") in ("WARN", "unavailable", "offline"):
+            next_action = (
+                "Site manifest unavailable (offline or no network). "
+                "Re-run with network access, or use --manifest-file <local-path>."
+            )
+        else:
+            next_action = (
+                f"{runs_summary.get('rendered_with_warnings', 0)} run(s) rendered with quality-gate WARN. "
+                f"Re-run `./p3pr finalize <run-dir> --publish --allow-warnings` to publish, "
+                f"or edit work/paper_reading.json to address the warnings."
+            )
+    else:
+        next_action = "All clear. Use `./p3pr finalize <run-dir> --publish` to publish more pages."
+
+    payload = {
+        "status": overall,
+        "runs_root": str(runs_root),
+        "runs": runs,
+        "site": site_summary,
+        "summary": runs_summary,
+        "recommendations": _status_recommendations(runs_summary, site_summary),
+        "next_action": next_action,
+    }
+    return _status_print_summary(payload=payload, json_output=json_output)
+
+
+def _status_recommendations(runs_summary: dict, site_summary: dict) -> list[str]:
+    recs: list[str] = []
+    if runs_summary.get("draft", 0) > 0:
+        recs.append(
+            f"{runs_summary['draft']} draft run(s) without work/paper_reading.json — fill or skip."
+        )
+    if runs_summary.get("filled", 0) > 0:
+        recs.append(
+            f"{runs_summary['filled']} filled run(s) ready to be finalized. "
+            f"Run `./p3pr finalize <run-dir>`."
+        )
+    if runs_summary.get("audited", 0) > 0:
+        recs.append(
+            f"{runs_summary['audited']} audited run(s) not yet rendered. "
+            f"Run `./p3pr finalize <run-dir>` to render."
+        )
+    if runs_summary.get("rendered", 0) > 0:
+        recs.append(
+            f"{runs_summary['rendered']} rendered run(s) not yet published. "
+            f"Run `./p3pr finalize <run-dir> --publish`."
+        )
+    if runs_summary.get("rendered_with_warnings", 0) > 0:
+        recs.append(
+            f"{runs_summary['rendered_with_warnings']} run(s) rendered with quality-gate WARN. "
+            f"Re-run with --allow-warnings to publish, or address the warnings."
+        )
+    if runs_summary.get("blocked", 0) > 0:
+        recs.append(
+            f"{runs_summary['blocked']} blocked run(s). Edit work/paper_reading.json and re-run finalize."
+        )
+    if site_summary.get("status") in ("WARN", "unavailable", "offline"):
+        recs.append(
+            "Site manifest unavailable. Re-run with network access or use --manifest-file."
+        )
+    return recs
+
+
+# --- doctor subcommand -------------------------------------------------------
+
+def _doctor_check_exists(name: str, path: Path) -> dict:
+    if path.exists():
+        return {
+            "name": name, "status": "PASS", "message": f"exists: {path}",
+            "recommendation": "",
+        }
+    return {
+        "name": name, "status": "FAIL", "message": f"missing: {path}",
+        "recommendation": f"Restore {path.name} from git or the v0.2.x release tarball.",
+    }
+
+
+def _doctor_check_executable(name: str, path: Path) -> dict:
+    if not path.exists():
+        return {
+            "name": name, "status": "FAIL", "message": f"missing: {path}",
+            "recommendation": "Pull the latest main, or restore from the release tarball.",
+        }
+    if not os.access(path, os.X_OK):
+        return {
+            "name": name, "status": "WARN", "message": f"exists but not executable: {path}",
+            "recommendation": f"chmod +x {path}",
+        }
+    return {
+        "name": name, "status": "PASS", "message": f"exists + executable: {path}",
+        "recommendation": "",
+    }
+
+
+def _doctor_check_command(name: str, command: str) -> dict:
+    """Check if a CLI command is on PATH (shutil.which)."""
+    import shutil as _shutil
+    found = _shutil.which(command)
+    if found:
+        return {
+            "name": name, "status": "PASS", "message": f"{command} on PATH ({found})",
+            "recommendation": "",
+        }
+    return {
+        "name": name, "status": "WARN", "message": f"{command} not on PATH",
+        "recommendation": f"Install {command} or add it to PATH.",
+    }
+
+
+def _doctor_check_git_state(root: Path) -> list[dict]:
+    checks: list[dict] = []
+    if not (root / ".git").exists():
+        checks.append({
+            "name": "git_repo", "status": "FAIL", "message": f"{root} is not a git repo",
+            "recommendation": "Run this command from inside the paper-three-pass-reader-skill repo.",
+        })
+        return checks
+    checks.append({
+        "name": "git_repo", "status": "PASS",
+        "message": f"git repo at {root}", "recommendation": "",
+    })
+    # Current branch.
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--abbrev-ref", "HEAD"],
+            capture_output=True, text=True, check=True, timeout=5,
+        ).stdout.strip()
+        checks.append({
+            "name": "git_branch", "status": "PASS",
+            "message": f"on branch {out}", "recommendation": "",
+        })
+    except Exception as exc:  # noqa: BLE001
+        checks.append({
+            "name": "git_branch", "status": "WARN",
+            "message": f"could not read branch: {exc}", "recommendation": "",
+        })
+    # Working tree dirty.
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(root), "status", "--short"],
+            capture_output=True, text=True, check=True, timeout=5,
+        ).stdout.strip()
+        if out:
+            checks.append({
+                "name": "git_working_tree", "status": "WARN",
+                "message": f"working tree has uncommitted changes ({len(out.splitlines())} file(s))",
+                "recommendation": "Review `git status` and commit / stash as appropriate.",
+            })
+        else:
+            checks.append({
+                "name": "git_working_tree", "status": "PASS",
+                "message": "working tree clean", "recommendation": "",
+            })
+    except Exception as exc:  # noqa: BLE001
+        checks.append({
+            "name": "git_working_tree", "status": "WARN",
+            "message": f"could not read git status: {exc}", "recommendation": "",
+        })
+    # Latest tag.
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(root), "describe", "--tags", "--abbrev=0"],
+            capture_output=True, text=True, check=True, timeout=5,
+        ).stdout.strip()
+        checks.append({
+            "name": "git_latest_tag", "status": "PASS",
+            "message": f"latest tag: {out}", "recommendation": "",
+        })
+    except Exception:  # noqa: BLE001
+        checks.append({
+            "name": "git_latest_tag", "status": "WARN",
+            "message": "no annotated tag reachable from HEAD", "recommendation": "",
+        })
+    return checks
+
+
+def _doctor_check_gh_status() -> list[dict]:
+    """`gh auth status` — if gh is missing / not logged in, WARN (not FAIL)."""
+    checks: list[dict] = []
+    import shutil as _shutil
+    if not _shutil.which("gh"):
+        checks.append({
+            "name": "gh_cli", "status": "WARN",
+            "message": "gh CLI not on PATH; publish flows that need gh will not work",
+            "recommendation": "Install GitHub CLI (https://cli.github.com/) and run `gh auth login`.",
+        })
+        return checks
+    checks.append({
+        "name": "gh_cli", "status": "PASS",
+        "message": "gh CLI on PATH", "recommendation": "",
+    })
+    try:
+        proc = subprocess.run(
+            ["gh", "auth", "status"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if proc.returncode == 0:
+            checks.append({
+                "name": "gh_auth", "status": "PASS",
+                "message": "gh auth status OK", "recommendation": "",
+            })
+        else:
+            checks.append({
+                "name": "gh_auth", "status": "WARN",
+                "message": "gh auth status non-zero (not logged in or token expired)",
+                "recommendation": "Run `gh auth login` to re-authenticate.",
+            })
+    except Exception as exc:  # noqa: BLE001
+        checks.append({
+            "name": "gh_auth", "status": "WARN",
+            "message": f"could not run `gh auth status`: {exc}", "recommendation": "",
+        })
+    return checks
+
+
+def _doctor_check_validation(root: Path, *, full: bool) -> list[dict]:
+    """Run scripts/validate.sh. With full=False (default) we only run a quick
+    pass; the actual full check is opt-in via --full.
+    """
+    validate_sh = root / "scripts" / "validate.sh"
+    if not validate_sh.exists():
+        return [{
+            "name": "validation_script", "status": "FAIL",
+            "message": f"missing: {validate_sh}", "recommendation": "",
+        }]
+    if not full:
+        return [{
+            "name": "validation_script", "status": "PASS",
+            "message": f"validate.sh present (full check skipped; pass --full to run)",
+            "recommendation": "Use `./p3pr doctor --full` to run validation.",
+        }]
+    try:
+        proc = subprocess.run(
+            ["bash", str(validate_sh)],
+            capture_output=True, text=True, timeout=300,
+            cwd=str(root),
+        )
+    except Exception as exc:  # noqa: BLE001
+        return [{
+            "name": "validation_script", "status": "FAIL",
+            "message": f"validate.sh failed to run: {exc}", "recommendation": "",
+        }]
+    if proc.returncode == 0:
+        return [{
+            "name": "validation_script", "status": "PASS",
+            "message": "validate.sh exited 0 (PASS)", "recommendation": "",
+        }]
+    tail = "\n".join(proc.stdout.splitlines()[-6:])
+    return [{
+        "name": "validation_script", "status": "FAIL",
+        "message": f"validate.sh exited {proc.returncode}: {tail}",
+        "recommendation": "Re-run `bash scripts/validate.sh` and fix any failing check.",
+    }]
+
+
+def _doctor_check_site_health(
+    *,
+    site_root: str,
+    manifest_url: str,
+    skip_network: bool,
+) -> list[dict]:
+    """Light HTTP HEAD probe of site root and manifest. WARN (not FAIL) on network errors."""
+    checks: list[dict] = []
+    if skip_network:
+        checks.append({
+            "name": "site_root_http", "status": "PASS",
+            "message": "skipped (--skip-network)", "recommendation": "",
+        })
+        checks.append({
+            "name": "site_manifest_http", "status": "PASS",
+            "message": "skipped (--skip-network)", "recommendation": "",
+        })
+        return checks
+    for label, url in (("site_root_http", site_root.rstrip("/") + "/"),
+                       ("site_manifest_http", manifest_url)):
+        try:
+            req = urllib.request.Request(url, method="HEAD")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                code = resp.getcode()
+            if 200 <= code < 400:
+                checks.append({
+                    "name": label, "status": "PASS",
+                    "message": f"{url} -> HTTP {code}", "recommendation": "",
+                })
+            else:
+                checks.append({
+                    "name": label, "status": "WARN",
+                    "message": f"{url} -> HTTP {code}", "recommendation": "",
+                })
+        except Exception as exc:  # noqa: BLE001
+            checks.append({
+                "name": label, "status": "WARN",
+                "message": f"{url} unreachable: {exc}", "recommendation": "",
+            })
+    return checks
+
+
+def _doctor_collect(root: Path, *, full: bool, offline: bool, skip_validation: bool) -> list[dict]:
+    checks: list[dict] = []
+    skill_scripts = root / "skills" / "paper-three-pass-reader" / "scripts"
+    skill_root = root / "skills" / "paper-three-pass-reader"
+
+    # A. Local environment.
+    checks.append(_doctor_check_command("python3", "python3"))
+    checks.append(_doctor_check_command("git", "git"))
+    checks.append(_doctor_check_executable("p3pr_shim", root / "p3pr"))
+
+    # B. Required scripts.
+    for name, path in [
+        ("run_paper_reading", skill_scripts / "run_paper_reading.py"),
+        ("render_page", skill_scripts / "render_page.py"),
+        ("audit_paper_reading", skill_scripts / "audit_paper_reading.py"),
+        ("quality_gate_zh_cn", skill_scripts / "quality_gate_zh_cn.py"),
+        ("audit_published_pages", skill_scripts / "audit_published_pages.py"),
+        ("publish_output_to_github", skill_scripts / "publish_output_to_github.sh"),
+        ("source_resolution_utils", skill_scripts / "source_resolution_utils.py"),
+        ("resolver_hints", skill_scripts / "resolver_hints.py"),
+    ]:
+        checks.append(_doctor_check_exists(name, path))
+
+    # C. Required data / docs.
+    for name, path in [
+        ("resolver_hints_json", skill_root / "data" / "resolver_hints.json"),
+        ("skill_md", skill_root / "SKILL.md"),
+        ("readme_md", root / "README.md"),
+        ("readme_zh_cn_md", root / "README.zh-CN.md"),
+        ("changelog_md", root / "CHANGELOG.md"),
+    ]:
+        checks.append(_doctor_check_exists(name, path))
+
+    # D. Git state.
+    checks.extend(_doctor_check_git_state(root))
+
+    # E. gh status.
+    checks.extend(_doctor_check_gh_status())
+
+    # F. Validation (full or quick).
+    if not skip_validation:
+        checks.extend(_doctor_check_validation(root, full=full))
+
+    # G. Site health.
+    checks.extend(_doctor_check_site_health(
+        site_root=DEFAULT_SITE_ROOT,
+        manifest_url=DEFAULT_MANIFEST_URL,
+        skip_network=offline,
+    ))
+
+    return checks
+
+
+def _doctor_print_summary(*, checks: list[dict], json_output: str | None) -> int:
+    summary = {"pass": 0, "warn": 0, "fail": 0}
+    for c in checks:
+        s = c.get("status", "PASS")
+        if s in summary:
+            summary[s] += 1
+    overall = "PASS"
+    if summary["fail"] > 0:
+        overall = "FAIL"
+    elif summary["warn"] > 0:
+        overall = "WARN"
+    if overall == "FAIL":
+        next_action = (
+            f"{summary['fail']} doctor check(s) FAILED. Address them before publishing."
+        )
+    elif overall == "WARN":
+        next_action = (
+            f"{summary['warn']} doctor check(s) WARN. Review them; publishing will still work."
+        )
+    else:
+        next_action = "All clear. Safe to publish more pages."
+    print()
+    print("=" * 60)
+    print(f"P3PR_DOCTOR_STATUS: {overall}")
+    print(f"P3PR_DOCTOR_PASS: {summary['pass']}")
+    print(f"P3PR_DOCTOR_WARN: {summary['warn']}")
+    print(f"P3PR_DOCTOR_FAIL: {summary['fail']}")
+    print(f"P3PR_NEXT_ACTION: {next_action}")
+    print("=" * 60)
+    if checks:
+        print()
+        print("Checks:")
+        for c in checks:
+            mark = {
+                "PASS": "[ OK ]", "WARN": "[WARN]", "FAIL": "[FAIL]",
+            }.get(c.get("status", ""), "[????]")
+            print(f"  {mark} {c.get('name', ''):25s}  {c.get('message', '')}")
+            if c.get("recommendation"):
+                print(f"           → {c['recommendation']}")
+    if json_output:
+        try:
+            payload = {
+                "status": overall,
+                "checks": checks,
+                "summary": summary,
+                "next_action": next_action,
+            }
+            Path(json_output).write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            print(f"[info] wrote doctor JSON to {json_output}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[warn] could not write doctor JSON: {exc}", file=sys.stderr)
+    return 0 if overall in ("PASS", "WARN") else 1
+
+
+def handle_doctor(args) -> int:
+    """`p3pr doctor` — environment and toolchain health check.
+
+    Default scope: quick (no validation, no full audit). --full runs
+    scripts/validate.sh. --offline / --skip-network skip HTTP probes.
+    """
+    root = Path(__file__).resolve().parent.parent.parent  # scripts/ -> skill/ -> repo root
+    # Sanity: the root we derived should contain scripts/validate.sh.
+    if not (root / "scripts" / "validate.sh").exists():
+        # Fallback: walk up looking for scripts/validate.sh.
+        cur = Path(__file__).resolve().parent
+        while cur != cur.parent:
+            if (cur / "scripts" / "validate.sh").exists():
+                root = cur
+                break
+            cur = cur.parent
+    full = bool(getattr(args, "full", False))
+    offline = bool(getattr(args, "offline", False))
+    skip_validation = bool(getattr(args, "skip_validation", False))
+    skip_network = bool(getattr(args, "skip_network", False)) or offline
+    json_output = getattr(args, "json_output", None)
+
+    checks = _doctor_collect(
+        root,
+        full=full,
+        offline=offline,
+        skip_validation=skip_validation,
+    )
+    if skip_network:
+        # Replace the site_root_http / site_manifest_http checks with PASS / skipped
+        # entries so offline doctor does not show WARN for an offline check.
+        for c in checks:
+            if c.get("name") in ("site_root_http", "site_manifest_http"):
+                c["status"] = "PASS"
+                c["message"] = f"skipped ({c['name']} set to PASS in --offline mode)"
+                c["recommendation"] = ""
+    return _doctor_print_summary(checks=checks, json_output=json_output)
+
+
 def build_finalize_parser() -> argparse.ArgumentParser:
     """Build the standalone argparse parser for `p3pr finalize <run-dir>`.
 
@@ -2073,6 +2962,93 @@ def build_finalize_parser() -> argparse.ArgumentParser:
     p.add_argument("--dry-run", action="store_true", default=False)
     p.add_argument("--json-output", default=None,
                    help="Reserved for future structured summary output")
+    return p
+
+
+def build_status_parser() -> argparse.ArgumentParser:
+    """Build the standalone argparse parser for `p3pr status`.
+
+    Mirrors the flag set on the stub subparser inside `build_parser` so
+    `./p3pr status --help` and the final parsed `args` agree on shape.
+    """
+    p = argparse.ArgumentParser(
+        prog="p3pr status",
+        description=(
+            "Scan local runs/ + read the published-pages manifest, print a "
+            "fixed P3PR_STATUS_* summary block. Default scope is both runs "
+            "and site; --runs / --site narrow it. Network can be disabled "
+            "with --offline (the site block then falls back to WARN)."
+        ),
+    )
+    p.add_argument("--runs", action="store_true", default=False,
+                   help="Show only local-runs scan")
+    p.add_argument("--site", action="store_true", default=False,
+                   help="Show only published-pages manifest summary")
+    p.add_argument("--all", action="store_true", default=False,
+                   help="Alias for --runs --site")
+    p.add_argument("--runs-root", default=DEFAULT_RUNS_ROOT,
+                   help=f"Runs root (default: {DEFAULT_RUNS_ROOT})")
+    p.add_argument("--manifest-url", default=None,
+                   help="URL of the published-pages manifest")
+    p.add_argument("--manifest-file", default=None,
+                   help="Local path to a published-pages manifest")
+    p.add_argument("--site-root", default=None,
+                   help="GitHub Pages site root URL")
+    p.add_argument("--json-output", default=None,
+                   help="Write the status payload to a JSON file")
+    p.add_argument("--limit", type=int, default=None,
+                   help="Cap the number of runs in the output")
+    p.add_argument("--filter", default=None,
+                   help="Substring filter applied to run records")
+    p.add_argument("--show-warnings", dest="show_warnings",
+                   action="store_true", default=True)
+    p.add_argument("--hide-warnings", dest="show_warnings",
+                   action="store_false")
+    p.add_argument("--show-drafts", dest="show_drafts",
+                   action="store_true", default=True)
+    p.add_argument("--hide-drafts", dest="show_drafts",
+                   action="store_false")
+    p.add_argument("--show-published", dest="show_published",
+                   action="store_true", default=True)
+    p.add_argument("--hide-published", dest="show_published",
+                   action="store_false")
+    p.add_argument("--offline", action="store_true", default=False,
+                   help="Skip HTTP fetches; site summary falls back to WARN")
+    return p
+
+
+def build_doctor_parser() -> argparse.ArgumentParser:
+    """Build the standalone argparse parser for `p3pr doctor`."""
+    p = argparse.ArgumentParser(
+        prog="p3pr doctor",
+        description=(
+            "Run quick / full health checks on the local toolchain: scripts, "
+            "git state, gh CLI / auth, optional validation, and a HEAD probe "
+            "of the GitHub Pages site. By default doctor is quick (no "
+            "validation, no full audit). --full runs scripts/validate.sh. "
+            "doctor never modifies runs and never auto-fixes anything."
+        ),
+    )
+    p.add_argument("--quick", dest="quick", action="store_true", default=True,
+                   help="Default: skip validation, only run quick checks")
+    p.add_argument("--full", dest="full", action="store_true", default=False,
+                   help="Run scripts/validate.sh as part of doctor")
+    p.add_argument("--offline", dest="offline", action="store_true", default=False,
+                   help="Skip HTTP probes (--skip-network)")
+    p.add_argument("--skip-validation", dest="skip_validation",
+                   action="store_true", default=False,
+                   help="Skip the validation script entirely")
+    p.add_argument("--skip-network", dest="skip_network",
+                   action="store_true", default=False,
+                   help="Skip the HTTP probes of the site")
+    p.add_argument("--manifest-url", dest="manifest_url",
+                   default=DEFAULT_MANIFEST_URL,
+                   help="URL of the published-pages manifest")
+    p.add_argument("--site-root", dest="site_root",
+                   default=DEFAULT_SITE_ROOT,
+                   help="GitHub Pages site root URL")
+    p.add_argument("--json-output", dest="json_output", default=None,
+                   help="Write the doctor payload to a JSON file")
     return p
 
 
@@ -2156,6 +3132,8 @@ def build_parser() -> argparse.ArgumentParser:
         ("pdf", "Path to a local PDF file"),
         ("url", "Fetch an HTML / PDF page from a URL and run the pipeline (v0.2.14)"),
         ("finalize", "Finalize an already-filled run directory: audit + zh-CN quality gate + render + optional publish (v0.2.17)"),
+        ("status", "Scan local runs + read the published-pages manifest, print a P3PR_STATUS_* summary (v0.2.19)"),
+        ("doctor", "Run quick / full health checks on the local toolchain (v0.2.19)"),
     ]:
         sp = sub.add_parser(name, help=help_text)
         if name == "finalize":
@@ -2199,6 +3177,75 @@ def build_parser() -> argparse.ArgumentParser:
             sp.add_argument("--dry-run", action="store_true", default=False)
             sp.add_argument("--json-output", default=None,
                             help="Reserved for future structured summary output")
+            continue
+        if name == "status":
+            # status has its own dedicated parser (build_status_parser). Register
+            # the same flag set on this stub subparser so `./p3pr status --help`
+            # produces the correct usage line. main() re-parses argv with
+            # build_status_parser() and dispatches to handle_status.
+            sp.add_argument("--runs", dest="runs",
+                            action="store_true", default=False,
+                            help="Show only local-runs scan")
+            sp.add_argument("--site", dest="site",
+                            action="store_true", default=False,
+                            help="Show only published-pages manifest summary")
+            sp.add_argument("--all", dest="all",
+                            action="store_true", default=False,
+                            help="Alias for --runs --site")
+            sp.add_argument("--runs-root", default=DEFAULT_RUNS_ROOT,
+                            help=f"Runs root (default: {DEFAULT_RUNS_ROOT})")
+            sp.add_argument("--manifest-url", default=None,
+                            help="URL of the published-pages manifest")
+            sp.add_argument("--manifest-file", default=None,
+                            help="Local path to a published-pages manifest")
+            sp.add_argument("--site-root", default=None,
+                            help="GitHub Pages site root URL")
+            sp.add_argument("--json-output", default=None,
+                            help="Write the status payload to a JSON file")
+            sp.add_argument("--limit", type=int, default=None,
+                            help="Cap the number of runs in the output")
+            sp.add_argument("--filter", default=None,
+                            help="Substring filter applied to run records")
+            sp.add_argument("--show-warnings", dest="show_warnings",
+                            action="store_true", default=True)
+            sp.add_argument("--hide-warnings", dest="show_warnings",
+                            action="store_false")
+            sp.add_argument("--show-drafts", dest="show_drafts",
+                            action="store_true", default=True)
+            sp.add_argument("--hide-drafts", dest="show_drafts",
+                            action="store_false")
+            sp.add_argument("--show-published", dest="show_published",
+                            action="store_true", default=True)
+            sp.add_argument("--hide-published", dest="show_published",
+                            action="store_false")
+            sp.add_argument("--offline", action="store_true", default=False,
+                            help="Skip HTTP fetches; site summary falls back to WARN")
+            continue
+        if name == "doctor":
+            sp.add_argument("--quick", dest="quick",
+                            action="store_true", default=True,
+                            help="Default: skip validation, only run quick checks")
+            sp.add_argument("--full", dest="full",
+                            action="store_true", default=False,
+                            help="Run scripts/validate.sh as part of doctor")
+            sp.add_argument("--offline", dest="offline",
+                            action="store_true", default=False,
+                            help="Skip HTTP probes (--skip-network)")
+            sp.add_argument("--skip-validation", dest="skip_validation",
+                            action="store_true", default=False,
+                            help="Skip the validation script entirely")
+            sp.add_argument("--skip-network", dest="skip_network",
+                            action="store_true", default=False,
+                            help="Skip the HTTP probes of the site")
+            sp.add_argument("--manifest-url", dest="manifest_url",
+                            default=DEFAULT_MANIFEST_URL,
+                            help="URL of the published-pages manifest")
+            sp.add_argument("--site-root", dest="site_root",
+                            default=DEFAULT_SITE_ROOT,
+                            help="GitHub Pages site root URL")
+            sp.add_argument("--json-output", dest="json_output",
+                            default=None,
+                            help="Write the doctor payload to a JSON file")
             continue
         sp.add_argument("arg", help=help_text)
         # Forwarded from parent (so users can put flags before or after subcommand).
@@ -2314,6 +3361,32 @@ def main(argv=None) -> int:
             finalize_argv = []
         finalize_args = finalize_parser.parse_args(finalize_argv)
         return handle_finalize(finalize_args)
+
+    # status / doctor: same pattern as finalize (own dedicated parsers, own
+    # handlers, own flag set).
+    if args.command == "status":
+        if argv is None:
+            argv = sys.argv[1:]
+        try:
+            idx = argv.index("status")
+            sub_argv = argv[idx + 1:]
+        except ValueError:
+            sub_argv = []
+        status_parser = build_status_parser()
+        status_args = status_parser.parse_args(sub_argv)
+        return handle_status(status_args)
+
+    if args.command == "doctor":
+        if argv is None:
+            argv = sys.argv[1:]
+        try:
+            idx = argv.index("doctor")
+            sub_argv = argv[idx + 1:]
+        except ValueError:
+            sub_argv = []
+        doctor_parser = build_doctor_parser()
+        doctor_args = doctor_parser.parse_args(sub_argv)
+        return handle_doctor(doctor_args)
 
     handler = handlers.get(args.command)
     if handler is None:

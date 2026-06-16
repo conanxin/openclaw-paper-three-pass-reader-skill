@@ -336,3 +336,57 @@ Every finalize exit now prints:
 
 All v0.2.15 / v0.2.17 publish guards are preserved (verified by validation
 step 22). Validation 293/0 PASS.
+
+## v0.2.19-alpha: `p3pr status` + `p3pr doctor` — read-only observability
+
+The CLI now has 10 subcommands. `p3pr status` and `p3pr doctor` are the two
+read-only observability subcommands; everything else either produces or
+finalizes a paper reading.
+
+### `./p3pr status`
+
+Scans `runs/` and reads `published_pages.json`. Default scope is both. Each
+run is classified as `draft` / `filled` / `audited` / `rendered` /
+`rendered_with_warnings` / `published` / `blocked` / `unknown`. Cross-
+references the manifest to flag `published` runs.
+
+```bash
+./p3pr status                                # both runs + site, network-allowed
+./p3pr status --runs --offline               # local runs only, no HTTP
+./p3pr status --site --manifest-file ./local_manifest.json
+./p3pr status --runs --json-output status_runs.json
+```
+
+The fixed summary block (`P3PR_STATUS_STATUS` / `P3PR_RUNS_*` /
+`P3PR_SITE_PAGES` / `P3PR_NEXT_ACTION`) is documented in
+[`STATUS_AND_DOCTOR.md`](STATUS_AND_DOCTOR.md).
+
+### `./p3pr doctor`
+
+Runs read-only health checks on the local toolchain. Default is `--quick`
+(no validation); `--full` runs `scripts/validate.sh`. `--offline` /
+`--skip-network` skip HTTP probes. `--json-output` writes the full check
+list as JSON.
+
+```bash
+./p3pr doctor                                # quick
+./p3pr doctor --offline                      # quick, no HTTP
+./p3pr doctor --full                         # runs scripts/validate.sh
+./p3pr doctor --offline --json-output doctor.json
+```
+
+The 7 check groups: local env (python3, git, p3pr shim), required scripts,
+required data/docs, git state, gh CLI / auth, optional validation, light
+HEAD probe of the site. Dirty working tree and missing gh are WARN, never
+FAIL. doctor never auto-fixes anything.
+
+### Recommended daily checks
+
+```bash
+./p3pr status                       # where are my runs / pages
+./p3pr doctor --offline             # is the toolchain healthy
+./p3pr doctor --full                # pre-release, also runs validation
+```
+
+All v0.2.15 / v0.2.17 / v0.2.18 publish guards and finalize UX are unchanged.
+Validation 305/0 PASS.

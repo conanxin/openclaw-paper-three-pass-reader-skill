@@ -1,0 +1,71 @@
+{
+  "status": "WARN",
+  "runs_root": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs",
+  "runs": [
+    {
+      "run_dir": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/attention-is-all-you-need-20260615",
+      "slug": "attention-is-all-you-need-20260615",
+      "title": "Attention Is All You Need",
+      "input_kind": "unknown",
+      "reading_mode": "full_text",
+      "target_language": "zh-CN",
+      "ui_language": "zh-CN",
+      "has_fill_pack": false,
+      "has_audit": false,
+      "audit_status": "unknown",
+      "has_quality_gate": false,
+      "quality_gate_status": "unknown",
+      "has_rendered_page": true,
+      "local_page_path": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/attention-is-all-you-need-20260615/paper-reading-output/index.html",
+      "has_published_hint": false,
+      "site_path_guess": "attention-is-all-you-need",
+      "status": "rendered",
+      "next_action": "Rendered. Re-run `./p3pr finalize /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/attention-is-all-you-need-20260615 --publish` to publish."
+    },
+    {
+      "run_dir": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/you-and-your-research-20260615",
+      "slug": "you-and-your-research-20260615",
+      "title": "You and Your Research",
+      "input_kind": "html",
+      "reading_mode": "full_text",
+      "target_language": "zh-CN",
+      "ui_language": "zh-CN",
+      "has_fill_pack": true,
+      "has_audit": false,
+      "audit_status": "unknown",
+      "has_quality_gate": true,
+      "quality_gate_status": "PASS",
+      "has_rendered_page": true,
+      "local_page_path": "/home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/you-and-your-research-20260615/paper-reading-output/index.html",
+      "has_published_hint": false,
+      "site_path_guess": "you-and-your-research",
+      "status": "rendered",
+      "next_action": "Rendered. Re-run `./p3pr finalize /home/conanxin/.openclaw/workspace/projects/paper-three-pass-reader-skill/runs/you-and-your-research-20260615 --publish` to publish."
+    }
+  ],
+  "site": {
+    "status": "skipped",
+    "manifest_source": "skipped",
+    "site_root": "",
+    "pages_total": 0,
+    "pages": [],
+    "root_index_present": false,
+    "manifest_valid": false,
+    "next_action": "site check skipped (--site not set)"
+  },
+  "summary": {
+    "runs_total": 2,
+    "draft": 0,
+    "filled": 0,
+    "audited": 0,
+    "rendered": 2,
+    "rendered_with_warnings": 0,
+    "published": 0,
+    "blocked": 0,
+    "unknown": 0
+  },
+  "recommendations": [
+    "2 rendered run(s) not yet published. Run `./p3pr finalize <run-dir> --publish`."
+  ],
+  "next_action": "0 run(s) rendered with quality-gate WARN. Re-run `./p3pr finalize <run-dir> --publish --allow-warnings` to publish, or edit work/paper_reading.json to address the warnings."
+}

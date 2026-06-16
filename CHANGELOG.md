@@ -3,6 +3,25 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.19-alpha] — 2026-06-16
+
+### Added
+
+- **`p3pr status`** — read-only observability for the `runs/` directory and the live `published_pages.json` manifest. Default scope is both runs and site. Per-run classification: `draft` / `filled` / `audited` / `rendered` / `rendered_with_warnings` / `published` / `blocked` / `unknown`. Cross-references the manifest to flag `published` runs. Flags: `--runs` / `--site` / `--all`, `--runs-root`, `--manifest-url` / `--manifest-file`, `--site-root`, `--json-output`, `--limit`, `--filter`, `--show-{warnings,drafts,published}` / `--hide-{warnings,drafts,published}`, `--offline`. Fixed `P3PR_STATUS_*` summary block on every exit. `status` is read-only and never modifies runs.
+- **`p3pr doctor`** — read-only toolchain health check. 7 check groups: local env (python3, git, p3pr shim), required scripts (run_paper_reading, render_page, audit_paper_reading, quality_gate_zh_cn, audit_published_pages, publish_output_to_github, source_resolution_utils, resolver_hints), required data/docs (resolver_hints.json, SKILL.md, README.md, README.zh-CN.md, CHANGELOG.md), git state (repo, branch, working tree, latest tag), gh CLI + auth, optional `validate.sh`, light HEAD probe of site root + manifest. Default is `--quick` (no validation); `--full` runs `scripts/validate.sh`. Dirty working tree and missing gh are WARN, never FAIL. `--json-output` for machine consumption. Fixed `P3PR_DOCTOR_*` summary block + per-check `[ OK ] / [WARN] / [FAIL]` lines. `doctor` never auto-fixes.
+- **`scripts/validate.sh` step 23** — 12 new sub-checks: `p3pr status --help` runs, `p3pr doctor --help` runs, `p3pr --help` lists both subcommands, `p3pr status --runs --offline --json-output` produces JSON with the right shape, `p3pr status` reads a fake manifest file via `--manifest-file`, `p3pr status` does not crash on malformed `work/paper_reading.json`, `p3pr doctor --offline --json-output` produces JSON, `p3pr doctor --quick --json-output` produces JSON, `p3pr doctor` reports `git_working_tree`, `p3pr doctor git_working_tree` is PASS or WARN (never FAIL). Validation 305/0 PASS (was 293/0 at v0.2.18).
+
+### Changed
+
+- **`p3pr.py`** — added `DEFAULT_MANIFEST_URL` / `DEFAULT_SITE_ROOT` / `DEFAULT_RUNS_ROOT`, `_classify_run_status`, `_read_json_safely`, `_scan_runs`, `_fetch_manifest`, `_summarize_manifest`, `_status_print_summary`, `handle_status`, `_status_recommendations`, `_doctor_check_exists`, `_doctor_check_executable`, `_doctor_check_command`, `_doctor_check_git_state`, `_doctor_check_gh_status`, `_doctor_check_validation`, `_doctor_check_site_health`, `_doctor_collect`, `_doctor_print_summary`, `handle_doctor`, `build_status_parser`, `build_doctor_parser`. Registered `status` / `doctor` on the main `build_parser` stub-subparsers and wired them into `main()`.
+- **Documentation** — `USAGE.md`, `ONE_LINE_CLI.md`, `RUNNER.md`, `README.md`, `README.zh-CN.md` updated. New `STATUS_AND_DOCTOR.md` explains the read-only observability subcommands, the run-status taxonomy, the doctor check groups, and the JSON shapes.
+
+### Dogfood
+
+- `./p3pr status` on this repo: 2 local runs (1 published, 1 rendered with WARN), 13 live manifest pages, overall status PASS.
+- `./p3pr doctor --offline`: 25 checks; 24 PASS, 1 WARN (the dirty tree at smoke time); 0 FAIL.
+- `./p3pr doctor --quick`: 25 checks; live HTTP probes both return HTTP 200; same WARN/Fail counts as `--offline`.
+
 ## [v0.2.18-alpha] — 2026-06-16
 
 ### Added

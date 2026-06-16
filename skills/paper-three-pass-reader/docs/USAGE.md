@@ -622,6 +622,66 @@ it to silence structural errors.
 
 ---
 
+## v0.2.19-alpha: `p3pr status` + `p3pr doctor` — read-only observability
+
+As the project grows, two questions keep coming up: "where are my runs and
+pages" and "is the toolchain healthy". v0.2.19 adds two read-only
+observability subcommands to answer them.
+
+### `./p3pr status`
+
+```bash
+./p3pr status                                # default: both runs + site
+./p3pr status --runs                         # local runs only
+./p3pr status --site                         # site manifest only
+./p3pr status --offline                      # runs scan + site summary in WARN mode
+./p3pr status --runs --json-output status_runs.json
+./p3pr status --site --manifest-file ./local_manifest.json
+```
+
+The full flag list, run-status taxonomy, and JSON shape are documented in
+[`STATUS_AND_DOCTOR.md`](STATUS_AND_DOCTOR.md).
+
+### `./p3pr doctor`
+
+```bash
+./p3pr doctor                                # quick (no validation)
+./p3pr doctor --offline                      # quick + no HTTP probes
+./p3pr doctor --full                         # runs scripts/validate.sh
+./p3pr doctor --skip-validation              # skip validation, still probe
+./p3pr doctor --offline --json-output doctor.json
+```
+
+The 7 check groups: local env (python3, git, p3pr shim), required scripts,
+required data/docs, git state, gh CLI / auth, optional `validate.sh`, light
+HEAD probe of the site. Doctor never modifies runs, never runs `git clean`,
+never `chmod`s anything, never re-authenticates `gh`. It just reports.
+
+### Why dirty tree / missing gh are WARN, not FAIL
+
+Doctor is meant to be safe to run any time, including mid-edit. A dirty
+working tree is normal during development; `gh` not being logged in is only
+a problem for publish flows. Both surface as WARN with a `→` recommendation
+line; the operator decides what to do.
+
+### Recommended daily checks
+
+```bash
+./p3pr status                       # what's local, what's online
+./p3pr doctor --offline             # is the toolchain healthy
+./p3pr doctor --full                # pre-release, also runs validation
+```
+
+### Compatibility
+
+- All v0.2.15 / v0.2.17 / v0.2.18 publish guards and finalize UX are
+  preserved (verified by validation step 23).
+- All existing finalize flags are unchanged.
+- Existing run directories and existing published pages are unchanged.
+- No old tags moved.
+
+---
+
 ## v0.2.9-alpha: HTML essay / talk page rendering
 
 As of v0.2.9, the renderer classifies inputs as `essay / talk` when the paper category is one of `essay / talk / keynote / lecture / opinion / blog-distillation` and switches the page layout accordingly.
