@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-p3pr.py — paper-three-pass-reader (v0.2.5-alpha)
+p3pr.py — paper-three-pass-reader (v0.2.5-alpha, v0.2.14-alpha adds `url` subcommand)
 
 One-line CLI wrapper for the paper-reading skill.
 
@@ -14,6 +14,7 @@ publisher into a single command:
     ./p3pr screenshot path/to/screenshot-transcript.md --zh --publish
     ./p3pr repo https://github.com/google-research/bert --zh --full --publish
     ./p3pr pdf path/to/paper.pdf --zh --full --publish
+    ./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html --zh --full --publish  # v0.2.14
 
 All reading-time work is delegated to:
     - run_paper_reading.py       (draft + fill-pack + audit + render)
@@ -43,6 +44,8 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import html
+import html.parser
 import json
 import os
 import re
@@ -169,6 +172,183 @@ def _extract_pdf(pdf_path: Path, out_txt: Path) -> tuple[bool, str]:
         return False, f"pdftotext exception: {e}"
 
 
+# --- v0.2.14-alpha: HTML fetch + stdlib-only text extraction -----------------
+
+class _HTMLTextExtractor(html.parser.HTMLParser):
+    """Minimal stdlib-only HTML → plain text extractor.
+
+    Drops <script> and <style> content. Emits block-level separators for
+    headings, paragraphs, list items, and <br>. Captures <title>.
+    """
+
+    BLOCK_TAGS = {
+        "p", "div", "section", "article", "header", "footer", "main",
+        "nav", "aside", "ul", "ol", "li", "table", "tr", "pre", "blockquote",
+        "h1", "h2", "h3", "h4", "h5", "h6",
+    }
+    SKIP_TAGS = {"script", "style", "noscript", "template", "svg", "iframe"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._buf: list[str] = []
+        self._title: str = ""
+        self._in_title: bool = False
+        self._skip_depth: int = 0
+
+    def handle_starttag(self, tag: str, attrs) -> None:  # type: ignore[override]
+        if tag in self.SKIP_TAGS:
+            self._skip_depth += 1
+            return
+        if tag == "title":
+            self._in_title = True
+            return
+        if tag in self.BLOCK_TAGS:
+            self._buf.append("\n")
+        if tag == "br":
+            self._buf.append("\n")
+        if tag == "li":
+            self._buf.append("\n- ")
+
+    def handle_endtag(self, tag: str) -> None:  # type: ignore[override]
+        if tag in self.SKIP_TAGS:
+            if self._skip_depth > 0:
+                self._skip_depth -= 1
+            return
+        if tag == "title":
+            self._in_title = False
+            return
+        if tag in self.BLOCK_TAGS:
+            self._buf.append("\n")
+
+    def handle_data(self, data: str) -> None:
+        if self._skip_depth > 0:
+            return
+        if self._in_title:
+            self._title += data
+            return
+        self._buf.append(data)
+
+    def get_text(self) -> str:
+        raw = "".join(self._buf)
+        # Collapse runs of blank lines.
+        lines = [ln.strip() for ln in raw.split("\n")]
+        out: list[str] = []
+        prev_blank = False
+        for ln in lines:
+            if not ln:
+                if not prev_blank and out:
+                    out.append("")
+                prev_blank = True
+            else:
+                out.append(ln)
+                prev_blank = False
+        # Drop trailing blank lines.
+        while out and not out[-1]:
+            out.pop()
+        return "\n".join(out)
+
+    def get_title(self) -> str:
+        return re.sub(r"\s+", " ", self._title).strip()
+
+
+def _extract_html_text(html_bytes: bytes) -> tuple[str, str, int]:
+    """Extract plain text from raw HTML bytes. Returns (text, title, raw_byte_count).
+
+    Falls back to a permissive UTF-8 decode; non-decodable bytes are replaced.
+    """
+    raw = html_bytes.decode("utf-8", errors="replace")
+    parser = _HTMLTextExtractor()
+    try:
+        parser.feed(raw)
+        parser.close()
+    except Exception as e:  # noqa: BLE001
+        # On any HTML parse error, still return whatever we have.
+        print(f"[warn] html parser error: {e!r}; returning partial text", file=sys.stderr)
+    return parser.get_text(), parser.get_title(), len(html_bytes)
+
+
+def _looks_like_pdf(url: str, content_type: str, body: bytes) -> bool:
+    """Heuristic: URL ends in .pdf OR Content-Type starts with application/pdf OR magic bytes."""
+    if url.lower().split("?", 1)[0].endswith(".pdf"):
+        return True
+    if content_type and "application/pdf" in content_type.lower():
+        return True
+    if body and body[:5] == b"%PDF-":
+        return True
+    return False
+
+
+def _fetch_url(url: str, dest_dir: Path) -> tuple[dict, str]:
+    """Fetch a URL and save it under dest_dir. Returns (metadata_dict, error_message).
+
+    metadata_dict keys:
+      - http_status (int)
+      - final_url (str)
+      - content_type (str)
+      - raw_path (Path) — always written when fetch succeeded
+      - is_pdf (bool)
+      - title (str) — best-effort HTML <title>
+      - text_path (Path | None) — written for HTML when extraction succeeded
+      - text_chars (int) — number of characters in extracted text
+      - bytes (int) — raw byte count
+      - error (str | None) — set on hard failure
+    """
+    headers = {
+        "User-Agent": "paper-three-pass-reader-cli/0.2.14 (+https://conanxin.github.io/paper-reading-pages/)",
+        "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
+    }
+    meta: dict = {
+        "http_status": 0,
+        "final_url": url,
+        "content_type": "",
+        "raw_path": None,
+        "is_pdf": False,
+        "title": "",
+        "text_path": None,
+        "text_chars": 0,
+        "bytes": 0,
+        "error": None,
+    }
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            meta["http_status"] = int(getattr(resp, "status", None) or resp.getcode())
+            meta["final_url"] = resp.geturl() or url
+            meta["content_type"] = resp.headers.get("Content-Type", "") or ""
+            body = resp.read()
+    except Exception as e:  # noqa: BLE001
+        meta["error"] = f"fetch failed: {e!r}"
+        return meta, meta["error"]
+
+    meta["bytes"] = len(body)
+    is_pdf = _looks_like_pdf(url, meta["content_type"], body)
+    meta["is_pdf"] = is_pdf
+
+    if is_pdf:
+        raw_path = dest_dir / "source.pdf"
+        raw_path.write_bytes(body)
+        meta["raw_path"] = raw_path
+        return meta, "saved as PDF"
+
+    # HTML: save raw bytes as source.html, then extract.
+    raw_path = dest_dir / "source.html"
+    raw_path.write_bytes(body)
+    meta["raw_path"] = raw_path
+
+    text, title, _ = _extract_html_text(body)
+    meta["title"] = title
+    meta["text_chars"] = len(text)
+    if text:
+        # v0.2.14-alpha: extract to <run>/extracted/page.txt (per spec),
+        # not into source/. source/ keeps the raw fetched bytes only.
+        extracted_dir = dest_dir.parent / "extracted"
+        extracted_dir.mkdir(parents=True, exist_ok=True)
+        text_path = extracted_dir / "page.txt"
+        text_path.write_text(text, encoding="utf-8")
+        meta["text_path"] = text_path
+    return meta, "ok"
+
+
 def _extract_id(text: str) -> str | None:
     """Pull a 4-digit arXiv id out of any input string."""
     m = _ARXIV_ID_RE.search(text or "")
@@ -246,6 +426,7 @@ def _print_summary(
     canonical_title: str = "",
     arxiv_id: str = "",
     default_slug: str = "",
+    source_url: str = "",
 ) -> None:
     print()
     print("=" * 60)
@@ -257,6 +438,8 @@ def _print_summary(
     print(f"P3PR_FILL_PACK: {fill_pack}")
     print(f"P3PR_LOCAL_PAGE: {local_page}")
     print(f"P3PR_PAGE_URL: {page_url}")
+    if source_url:
+        print(f"P3PR_SOURCE_URL: {source_url}")
     if resolver_status:
         print(f"P3PR_RESOLVER_STATUS: {resolver_status}")
     if resolver_match_type:
@@ -290,6 +473,9 @@ def _build_runner_argv(
     render: bool,
     audit_warn_only: bool,
     resolver_source: str | None = None,
+    input_file: str | None = None,
+    authors: str | None = None,
+    year: str | None = None,
 ) -> list[str]:
     argv = [
         sys.executable, str(RUNNER),
@@ -299,10 +485,20 @@ def _build_runner_argv(
         "--output-root", output_root,
         "--language", language,
     ]
+    if input_file:
+        # v0.2.14-alpha: when the CLI has prepared an extracted body on disk
+        # (e.g. via the new `url` subcommand), pass --input-file to the runner
+        # so the run layout and intake trail point at the local extracted text
+        # rather than re-pasting the URL string.
+        argv += ["--input-file", input_file]
     if reading_mode:
         argv += ["--reading-mode", reading_mode]
     if title:
         argv += ["--title", title]
+    if authors:
+        argv += ["--authors", authors]
+    if year:
+        argv += ["--year", year]
     if arxiv_id:
         argv += ["--arxiv-id", arxiv_id]
     if paper_url:
@@ -657,6 +853,198 @@ def handle_pdf(args) -> int:
     )
 
 
+# --- v0.2.14-alpha: url subcommand -------------------------------------------
+
+def handle_url(args) -> int:
+    """Fetch an HTML page (or PDF) from a URL, extract text, run the pipeline.
+
+    Substeps:
+      1. Save the URL pointer to <run_dir>/input/source_pointer.txt.
+      2. Fetch the URL → <run_dir>/source/source.html (or source.pdf).
+      3. Extract plain text via stdlib html.parser → <run_dir>/extracted/page.txt.
+      4. Hand the extracted text to the runner via --input-file +
+         --input-kind paper_url + --paper-url <url>.
+    """
+    url = args.arg.strip()
+    if not (url.startswith("http://") or url.startswith("https://")):
+        print(f"[error] url must start with http:// or https:// (got: {url!r})", file=sys.stderr)
+        return 2
+
+    # Best-effort resolver hint (URLs may match by alias / repo fragment).
+    hint = _resolve_hint(url)
+    resolver_status = (hint or {}).get("_resolver_status", "not_found")
+    resolver_match_type = (hint or {}).get("_resolver_match_type", "none")
+
+    if args.slug:
+        slug = args.slug
+    elif hint and hint.get("arxiv_id"):
+        slug = _slugify(f"arxiv-{hint['arxiv_id']}", prefix="arxiv-")
+    elif hint and (hint or {}).get("_resolver_paper_id"):
+        slug = hint["_resolver_paper_id"]
+    else:
+        slug = _slugify(f"url-{url.rsplit('/', 1)[-1] or 'page'}", prefix="url-")
+
+    root = _make_run_dir(output_root=args.output_root, slug=slug)
+    # Record the URL pointer.
+    (root / "input" / "source_pointer.txt").write_text(
+        f"{url}\n",
+        encoding="utf-8",
+    )
+
+    # Fetch + extract (skipped only in --dry-run).
+    fetch_note = "skipped (--dry-run)"
+    text_chars = 0
+    extracted_text: str = ""
+    is_pdf = False
+    text_path: Path | None = None
+    body_path: Path | None = None
+    http_status = 0
+    final_url = url
+    content_type = ""
+    if not args.dry_run:
+        meta, status_msg = _fetch_url(url, root / "source")
+        fetch_note = status_msg
+        http_status = meta["http_status"]
+        final_url = meta["final_url"]
+        content_type = meta["content_type"]
+        is_pdf = meta["is_pdf"]
+        text_chars = meta["text_chars"]
+        body_path = meta["raw_path"]
+        text_path = meta["text_path"]
+        if meta["error"]:
+            print(f"[error] {meta['error']}", file=sys.stderr)
+            _print_summary(
+                "BLOCKED",
+                input_kind="paper_url",
+                reading_mode="BLOCKED_FETCH_FAILED",
+                run_dir=str(root),
+                json_path="",
+                fill_pack="",
+                local_page="",
+                page_url="",
+                next_action="check the URL / network / DNS, then re-run",
+                resolver_status=resolver_status,
+                resolver_match_type=resolver_match_type,
+                canonical_title=(hint or {}).get("title") or "",
+                default_slug=slug,
+                source_url=url,
+            )
+            return 2
+        if text_path and text_path.exists():
+            extracted_text = text_path.read_text(encoding="utf-8", errors="replace")
+
+    # Reading-mode decision.
+    # Heuristic threshold: >= 800 chars of extracted text → full_text;
+    # otherwise partial_text (still has a body but thin). --full / --partial
+    # / --abstract-only / --screenshot-only explicitly override.
+    threshold = 800
+    if args.full:
+        reading_mode = "full_text"
+    elif args.partial:
+        reading_mode = "partial_text"
+    elif args.abstract_only:
+        reading_mode = "abstract_only"
+    elif args.screenshot_only:
+        reading_mode = "screenshot_only"
+    elif not args.dry_run and is_pdf and text_chars == 0:
+        # PDF detected but no text extracted (pdftotext missing / failed).
+        # Refuse to claim full_text; we explicitly do NOT pretend a PDF
+        # without body is a full_text reading.
+        reading_mode = "partial_text"
+    elif not args.dry_run:
+        reading_mode = "full_text" if text_chars >= threshold else "partial_text"
+    else:
+        # Dry-run: respect explicit --full / --partial if given, else default
+        # to full_text (matches the spec's "expected" P3PR_READING_MODE for
+        # `--zh --full`).
+        reading_mode = "full_text" if args.full else "partial_text"
+
+    # Title: prefer user --title, then HTML <title>, then hint, then URL.
+    if args.title:
+        title = args.title
+    elif not args.dry_run and (text_path and text_path.exists()) and not is_pdf:
+        # The fetch helper already wrote the page.txt; re-read title via parser
+        # by re-running (cheap). To avoid re-fetching, the title was set in
+        # meta — but only when we know it. We re-parse the source.html
+        # if present so we have a fresh, non-cached value.
+        try:
+            if body_path and body_path.exists() and not is_pdf:
+                with open(body_path, "rb") as f:
+                    raw_bytes = f.read()
+                _, html_title, _ = _extract_html_text(raw_bytes)
+                title = html_title or ""
+            else:
+                title = ""
+        except Exception:  # noqa: BLE001
+            title = ""
+        if not title:
+            title = (hint or {}).get("title") or url
+    else:
+        title = (hint or {}).get("title") or url
+
+    # Ambiguity check: HTML <title> vs user --title
+    if args.title and not args.dry_run and body_path and not is_pdf:
+        try:
+            with open(body_path, "rb") as f:
+                raw_bytes = f.read()
+            _, html_title, _ = _extract_html_text(raw_bytes)
+            if html_title and html_title.strip() and args.title.strip() and html_title.strip() != args.title.strip():
+                # Surface the discrepancy as a non-fatal info line; do not
+                # auto-replace. The draft's intake_quality.warnings will pick
+                # this up via the title being recorded as the user's choice.
+                print(
+                    f"[info] HTML <title> ({html_title!r}) differs from "
+                    f"--title ({args.title!r}); using --title as canonical",
+                    file=sys.stderr,
+                )
+        except Exception:  # noqa: BLE001
+            pass
+
+    # Build extra_note with full fetch + extract telemetry.
+    extra_note = (
+        f"url={url}; http_status={http_status}; final_url={final_url}; "
+        f"content_type={content_type!r}; is_pdf={is_pdf}; "
+        f"text_chars={text_chars}; body_path={body_path}"
+    )
+    if not args.dry_run and is_pdf and text_chars == 0:
+        extra_note += (
+            " — PDF detected but no text extracted; recommend using `./p3pr pdf` "
+            "or installing pdftotext (poppler-utils) and re-running with --full."
+        )
+
+    # Build the input_file the runner will read (extracted body) and the
+    # additional --resolver-source overlay so the draft records a clean
+    # source_resolution trail pointing at the user-supplied URL.
+    runner_input_file: str | None = None
+    if not args.dry_run and text_path and text_path.exists() and not is_pdf:
+        runner_input_file = str(text_path)
+    elif not args.dry_run and is_pdf and body_path and body_path.exists():
+        # Point the runner at the PDF itself; the runner will record
+        # input_kind=paper_url but reading_mode is partial_text so it will
+        # NOT claim full_text on a PDF without body extraction.
+        runner_input_file = str(body_path)
+
+    return _finalise(
+        args,
+        input_text=url,
+        input_kind="paper_url",
+        reading_mode=reading_mode,
+        slug=slug,
+        run_dir=root,
+        title=title,
+        arxiv_id=(hint or {}).get("arxiv_id") if hint else None,
+        paper_url=url,
+        extra_note=extra_note,
+        resolver_status=resolver_status,
+        resolver_match_type=resolver_match_type,
+        canonical_title=(hint or {}).get("title") or "",
+        default_slug=slug,
+        hint=hint,
+        source_url=url,
+        input_file=runner_input_file,
+    )
+
+
 # --- Finaliser ---------------------------------------------------------------
 
 def _finalise(
@@ -676,6 +1064,8 @@ def _finalise(
     canonical_title: str = "",
     default_slug: str = "",
     hint: dict | None = None,
+    source_url: str = "",
+    input_file: str | None = None,
 ) -> int:
     print(f"[info] {extra_note}")
     print(f"[info] run dir: {run_dir}")
@@ -697,6 +1087,7 @@ def _finalise(
             canonical_title=canonical_title or (title or ""),
             arxiv_id=arxiv_id or "",
             default_slug=default_slug or slug,
+            source_url=source_url,
         )
         return 0
 
@@ -726,6 +1117,8 @@ def _finalise(
         language=args.language,
         reading_mode=reading_mode if reading_mode != "BLOCKED_EXTRACTION_UNAVAILABLE" else None,
         title=title,
+        authors=getattr(args, "authors", None),
+        year=getattr(args, "year", None),
         arxiv_id=arxiv_id,
         paper_url=paper_url,
         fill_pack=args.fill_pack,
@@ -734,6 +1127,7 @@ def _finalise(
         render=args.render,
         audit_warn_only=args.audit_warn_only,
         resolver_source=str(resolver_source_path) if resolver_source_path else None,
+        input_file=input_file,
     )
     print(f"[info] running runner: {' '.join(runner_argv)}")
     rc = subprocess.call(runner_argv)
@@ -903,6 +1297,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--abstract-only", action="store_true")
     p.add_argument("--screenshot-only", action="store_true")
     p.add_argument("--title", help="Override paper title")
+    p.add_argument("--authors", help="Override paper authors (comma-separated, e.g. 'Hamming, R. W., Preview, A.')")
+    p.add_argument("--year", help="Override paper year (integer)")
     p.add_argument("--fill-pack", dest="fill_pack", action="store_true", default=True)
     p.add_argument("--no-fill-pack", dest="fill_pack", action="store_false")
     p.add_argument("--audit", dest="audit", action="store_true", default=True)
@@ -938,6 +1334,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("screenshot", "Path to a text file containing a screenshot / poster / page OCR transcript"),
         ("repo", "GitHub repo URL (best-effort hint lookup)"),
         ("pdf", "Path to a local PDF file"),
+        ("url", "Fetch an HTML / PDF page from a URL and run the pipeline (v0.2.14)"),
     ]:
         sp = sub.add_parser(name, help=help_text)
         sp.add_argument("arg", help=help_text)
@@ -950,6 +1347,8 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--abstract-only", action="store_true", default=None)
         sp.add_argument("--screenshot-only", action="store_true", default=None)
         sp.add_argument("--title", default=None)
+        sp.add_argument("--authors", default=None)
+        sp.add_argument("--year", default=None)
         sp.add_argument("--fill-pack", dest="fill_pack", action="store_true", default=None)
         sp.add_argument("--no-fill-pack", dest="fill_pack", action="store_false", default=None)
         sp.add_argument("--audit", dest="audit", action="store_true", default=None)
@@ -982,9 +1381,9 @@ def main(argv=None) -> int:
     # fall back to the parser-level default.
     _PROMOTE = (
         "language", "slug", "output_root", "full", "partial", "abstract_only",
-        "screenshot_only", "title", "fill_pack", "audit", "quality_gate",
-        "render", "publish", "repo", "branch", "page_title", "audit_warn_only",
-        "allow_draft_publish", "dry_run", "zh", "en",
+        "screenshot_only", "title", "authors", "year", "fill_pack", "audit",
+        "quality_gate", "render", "publish", "repo", "branch", "page_title",
+        "audit_warn_only", "allow_draft_publish", "dry_run", "zh", "en",
     )
     # Defaults the user would have got at parser level.
     _DEFAULTS = {
@@ -1026,6 +1425,7 @@ def main(argv=None) -> int:
         "screenshot": handle_screenshot,
         "repo": handle_repo,
         "pdf": handle_pdf,
+        "url": handle_url,
     }
     handler = handlers.get(args.command)
     if handler is None:

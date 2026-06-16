@@ -609,3 +609,121 @@ v0.2.12-alpha (no more `index_no_manifest_link` on the live site).
   republished in this cycle (as the trigger to refresh the root index).
 - Old root indexes (no manifest link) still pass — they just emit
   `index_no_manifest_link` as advisory info.
+
+---
+
+## v0.2.14-alpha: `p3pr url <url>` subcommand
+
+The `url` subcommand lets you point P3PR at any HTML academic article, talk
+slides, or method essay on the public web and run the full
+runner / fill-pack / audit / quality-gate / render / publish pipeline.
+No more hand-wired `curl + html.parser + runner`.
+
+### What it does
+
+```bash
+./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+  --zh --full --publish
+```
+
+Sub-steps:
+
+1. Save the URL to `<run>/input/source_pointer.txt`.
+2. Fetch the URL to `<run>/source/source.html` (or `<run>/source/source.pdf`
+   for PDF responses, auto-detected by URL suffix / `Content-Type` / `%PDF-`
+   magic bytes).
+3. Run a stdlib `html.parser` extraction to plain text
+   (`<run>/extracted/page.txt`). Drops `<script>` / `<style>`. Preserves
+   block-level separators (`p`, headings, lists, `br`, `pre`). Captures
+   `<title>`. No external dependency.
+4. Hand the extracted text to the runner via
+   `--input-file <extracted/page.txt> --input-kind paper_url --paper-url <url>`.
+5. Optional: fill-pack, audit, quality gate, render, publish — same as the
+   other subcommands.
+
+### Reading-mode discipline
+
+- HTML extraction produces **≥ 800 chars** → `reading_mode = full_text`.
+- HTML extraction produces **< 800 chars** → `reading_mode = partial_text`.
+- **PDF without extracted body** (no `pdftotext`) → stays at `partial_text`;
+  we do **not** pretend a PDF without text is `full_text`. Recommendation
+  in the summary will suggest `./p3pr pdf <downloaded.pdf>`.
+- User `--full / --partial / --abstract-only / --screenshot-only` always
+  override.
+
+### What it is and is not
+
+- ✅ Suitable for: HTML academic articles, talk transcripts, lecture notes,
+  long-form essays, research-method posts, plain HTML paper web pages.
+- ❌ **Not** suitable for: JavaScript-heavy SPA pages (the stdlib parser
+  does not execute JS). For those, manually pre-extract with a JS-capable
+  tool and use `./p3pr abstract path/to/text.md` instead.
+- ❌ **Not** suitable for: a PDF-only URL. The CLI saves the PDF to
+  `source/source.pdf` but cannot extract text without `pdftotext`. Use
+  `./p3pr pdf path/to/local.pdf` for that.
+
+### Full example
+
+```bash
+# Real URL, zh-CN, full reading, fill-pack + audit + render
+./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+  --zh --full --no-publish \
+  --slug you-and-your-research-cn-url-smoke \
+  --output-root runs/p3pr-url-smoke-20260616 \
+  --title "You and Your Research" \
+  --authors "Richard W. Hamming"
+```
+
+Output ends with the standard P3PR summary plus a new `P3PR_SOURCE_URL:` line:
+
+```
+P3PR_STATUS: PASS
+P3PR_INPUT_KIND: paper_url
+P3PR_READING_MODE: full_text
+P3PR_RUN_DIR: runs/p3pr-url-smoke-20260616/you-and-your-research-cn-url-smoke
+P3PR_JSON: runs/p3pr-url-smoke-20260616/you-and-your-research-cn-url-smoke/work/paper_reading.json
+P3PR_FILL_PACK: runs/p3pr-url-smoke-20260616/you-and-your-research-cn-url-smoke/fill-pack
+P3PR_LOCAL_PAGE: runs/p3pr-url-smoke-20260616/you-and-your-research-cn-url-smoke/paper-reading-output/index.html
+P3PR_SOURCE_URL: https://www.cs.virginia.edu/~robins/YouAndYourResearch.html
+P3PR_NEXT_ACTION: Done. Page published (or local). To re-publish, run the same command.
+```
+
+### Run layout
+
+The standard run layout is produced, with two extra files for URL inputs:
+
+```
+runs/<output-root>/<slug>/
+├── input/
+│   ├── input.md              # audit trail: URL + extracted body
+│   └── source_pointer.txt    # just the URL, one-liner
+├── source/
+│   └── source.html           # raw HTML bytes
+│                             # (or source.pdf for PDF responses)
+├── extracted/
+│   └── page.txt              # stdlib HTML→text output
+├── work/
+│   ├── paper_reading.json    # input_kind=paper_url, identifiers.url=<url>
+│   ├── resolver_source.json  # CLI overlay
+│   ├── audit_result.json
+│   └── quality_gate_zh_cn.json
+├── fill-pack/                # agent fill instructions
+├── paper-reading-output/
+│   └── index.html
+└── reports/                  # audit + quality gate summaries
+```
+
+### Compatibility
+
+- **Runner relaxes its old "only one of --input / --input-file" check.** When
+  both are present, `--input` is the audit-trail / hint-lookup string and
+  `--input-file` is the body. Callers that passed exactly one continue to
+  work; only callers that want to pass both benefit.
+- **No external dependencies.** `p3pr url` does not call out to any LLM API,
+  does not need `requests` / `beautifulsoup4` / `playwright`, and does not
+  require `pdftotext` for HTML input.
+- **Reading mode is honest.** HTML pages with no body (error pages,
+  paywalled redirects, JS-only SPAs) get `partial_text`, not `full_text`.
+  PDFs without `pdftotext` stay `partial_text`.
+- **Existing subcommands unchanged.** `arxiv / title / abstract / screenshot /
+  repo / pdf` continue to work as before.

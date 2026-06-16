@@ -3,6 +3,26 @@
 All notable changes to `paper-three-pass-reader` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v0.2.14-alpha] — 2026-06-16
+
+### Added
+
+- **`p3pr url <url>` subcommand.** New one-line CLI handler that fetches an HTML page (or PDF) from a user-supplied URL, runs a stdlib-only `html.parser` extraction to plain text, and feeds the result to the existing runner / fill-pack / audit / quality-gate / render / publish pipeline as `input_kind=paper_url`. The CLI does NOT call external LLM APIs; it just orchestrates the existing scripts. Supports `--zh / --en / --language`, `--full / --partial / --abstract-only / --screenshot-only`, `--slug`, `--output-root`, `--title`, `--authors`, `--year`, `--fill-pack / --no-fill-pack`, `--audit / --no-audit`, `--quality-gate / --no-quality-gate`, `--render / --no-render`, `--publish / --no-publish`, `--repo`, `--branch`, `--page-title`, `--audit-warn-only`, `--allow-draft-publish`, `--dry-run`. New `P3PR_SOURCE_URL:` line in the standard summary.
+- **HTML fetch + stdlib extraction.** New `_HTMLTextExtractor` and `_fetch_url()` helpers in `p3pr.py` (stdlib-only — no `requests`, no `BeautifulSoup`). Drops `<script>` and `<style>`. Preserves block-level separators (`p`, `div`, `section`, headings, lists, `br`, `pre`). Captures `<title>`. Auto-detects PDFs by URL suffix / `Content-Type` / `%PDF-` magic bytes. The runner receives the extracted text via `--input-file` plus the URL via `--paper-url`; the draft's `paper_metadata.identifiers.url` records the user-supplied URL and `source_kind` is set to `paper_url`.
+- **Runner accepts `--input` and `--input-file` together.** v0.2.14-alpha relaxes the runner's old "only one of --input / --input-file" check. `--input` is the audit-trail / hint-lookup string; `--input-file` is the body that gets captured into `input/input.md`. This makes the `url` subcommand's workflow idiomatic and supports other "I have a URL and a pre-extracted body" callers.
+- **Reading-mode discipline for URL input.** If HTML extraction produces >= 800 chars of text, the CLI sets `reading_mode = full_text`; otherwise `partial_text`. PDFs without extracted body stay at `partial_text` (we do NOT pretend a PDF without text is `full_text`). User `--full / --partial / --abstract-only / --screenshot-only` always override.
+- **`scripts/validate.sh` step 20.** 17 new sub-checks: `p3pr url --help` runs; `p3pr --help` lists the url subcommand; URL dry-run emits `P3PR_INPUT_KIND: paper_url` / `P3PR_READING_MODE: full_text` / `P3PR_SOURCE_URL: ...`; URL smoke run produces `input/source_pointer.txt`, `source/source.html`, `extracted/page.txt` (>800 chars), `work/paper_reading.json` with `paper_url` + `source_resolution`, and a rendered `paper-reading-output/index.html` with Chinese UI; all 6 existing subcommands (`arxiv / title / abstract / screenshot / repo / pdf`) still answer `--help`. Validation is now 261/0 PASS (was 242/0 PASS at v0.2.13-alpha).
+- **Real-URL smoke run.** `runs/p3pr-url-smoke-20260616/you-and-your-research-cn-url-smoke/` — fetched Hamming's *You and Your Research* (https://www.cs.virginia.edu/~robins/YouAndYourResearch.html), extracted 78,593 chars of text via stdlib HTML parser, ran the full pipeline.
+- **Live URL smoke page published.** A separate slug `you-and-your-research-url-smoke-cn` was published to `conanxin.github.io/paper-reading-pages/you-and-your-research-url-smoke-cn/` (does NOT overwrite the formal `you-and-your-research-cn` page). Live audit after the publish reports `overall=PASS pages=11 pass=11 warn=0 fail=0` with `page_type_counts: {site_index: 1, paper_page: 10, manifest: 0, unknown: 0}`. Audit artifacts at `runs/published-pages-audit-20260615-url-smoke/audit.{json,md}`.
+- **`docs/RELEASE_NOTES_v0.2.14-alpha.md`** and **`docs/PHASE_P3PR_V0_2_14_URL_SUBCOMMAND_REPORT.md`** — release notes + final phase report.
+
+### Compatibility
+
+- Existing pages remain readable. The only consumer page newly published is the URL smoke page (`you-and-your-research-url-smoke-cn`).
+- Existing subcommands (`arxiv / title / abstract / screenshot / repo / pdf`) are unchanged.
+- The runner's old "only one of --input / --input-file" check is removed in favour of allowing both; downstream callers that passed exactly one continue to work.
+- No old tags moved. v0.2.10-alpha / v0.2.12-alpha / v0.2.13-alpha stay at their original commits.
+
 ## [v0.2.13-alpha] — 2026-06-16
 
 ### Added

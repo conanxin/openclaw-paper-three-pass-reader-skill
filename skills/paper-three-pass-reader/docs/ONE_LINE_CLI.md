@@ -1,4 +1,4 @@
-# P3PR One-Line CLI — paper-three-pass-reader (v0.2.5-alpha)
+# P3PR One-Line CLI — paper-three-pass-reader (v0.2.14-alpha)
 
 ## What it is
 
@@ -10,7 +10,7 @@ single command, so you do not have to remember the long argv.
 It does **not** do any deep reading. It does **not** call external LLM APIs. It
 chains existing scripts.
 
-## The 6 subcommands
+## The 7 subcommands
 
 ```bash
 # arXiv ID
@@ -33,7 +33,16 @@ chains existing scripts.
 
 # Local PDF
 ./p3pr pdf path/to/paper.pdf --zh --full --publish
+
+# HTML / PDF URL (v0.2.14)
+./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html --zh --full --publish
 ```
+
+`p3pr url <url>` is the v0.2.14-alpha addition. It fetches the URL, runs a
+stdlib-only `html.parser` text extraction (no LLM, no BeautifulSoup, no JS), and
+feeds the result to the runner as `input_kind=paper_url` with `--input-file`
++ `--paper-url`. PDFs without `pdftotext` extraction stay at `partial_text`.
+See [USAGE.md](USAGE.md#v0214-alpha-p3pr-url-subcommand) for full details.
 
 ## All flags
 

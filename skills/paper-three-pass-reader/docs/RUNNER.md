@@ -395,3 +395,54 @@ The runner is still the underlying engine, but v0.2.5 added a thin shell shim th
 See [`ONE_LINE_CLI.md`](ONE_LINE_CLI.md) for the full flag list. The CLI does NOT do any deep reading itself — the fill-pack is the task description for the agent / human.
 
 The CLI is implemented in `skills/paper-three-pass-reader/scripts/p3pr.py` and shells out to `run_paper_reading.py` (this file) internally. So everything in this document applies to the CLI's runner step too.
+
+## v0.2.14 — `--input` and `--input-file` together + `paper_url`
+
+The runner now accepts **both** `--input` and `--input-file` at the same time:
+
+- `--input` is the audit-trail / hint-lookup string (e.g. a URL or a paper
+  title).
+- `--input-file` is the body that gets captured into `input/input.md` and
+  shown to the agent / human as the captured raw input.
+
+This was added to support the new `p3pr url` subcommand: the CLI fetches
+the URL itself, extracts the body via stdlib `html.parser`, and passes the
+URL as `--input` and the extracted text path as `--input-file`. The runner
+then records both in `input/input.md`:
+
+```markdown
+# Captured input for run <slug>
+
+- input_kind: `paper_url`
+- input: `https://example.com/article.html`
+- input_file: `runs/.../<slug>/extracted/page.txt`
+- runner: paper-three-pass-reader v0.2.0-alpha
+- captured_at: 2026-06-16T...
+
+## Raw input (from --input-file)
+
+```
+<extracted plain text body>
+```
+```
+
+Callers that only pass `--input` (most existing callers) continue to
+work unchanged; only callers that want to pass both benefit.
+
+### `input_kind=paper_url`
+
+The runner accepts `paper_url` as an `input_kind` (alongside `complete_paper`,
+`paper_identifier`, `paper_title`, `paper_excerpt`, `paper_screenshot`,
+`project_or_repo`). When `input_kind=paper_url` and `--paper-url` is given:
+
+- `paper_metadata.identifiers.url` is set to the user-supplied URL.
+- `paper_metadata.source_kind` is `"paper_url"`.
+- `intake_quality.source_resolution` records the URL as `hint_input` and
+  `resolver_source = "user_supplied_url"` (via the CLI overlay).
+- `intake_quality.ambiguities` and `warnings` note that no resolver hint
+  was matched (the URL did not hit any built-in paper).
+
+The CLI uses this combination together with the new
+`--input-file <extracted/page.txt>` to support the `p3pr url` workflow.
+See [`USAGE.md`](USAGE.md#v0214-alpha-p3pr-url-subcommand) for the full
+end-to-end flow.

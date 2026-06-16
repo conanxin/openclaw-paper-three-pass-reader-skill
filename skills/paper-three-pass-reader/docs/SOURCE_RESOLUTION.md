@@ -219,6 +219,37 @@ prompt for the agent / user.
 `render_page.py` 通过 `source_resolution_utils.get_source_resolution` 读取结构化 block,完全沿用 v0.2.8 的消费约定。v0.2.9 主要是把渲染质量打磨:
 
 - 渲染页面的 footer 不再错误显示 v0.1.0-alpha,改为 `{{ generator_version }}` → `paper-three-pass-reader v0.2.9-alpha`。
-- essay / talk 模式识别后会切换到 `实践计划 / 结构说明 / 相关脉络` 等中文标题,而不是默认的 `复现计划 / 图表 / Tables`。
+- essay / talk 模式识别后会切换为 `实践计划 / 结构说明 / 相关脉络` 等中文标题,而不是默认的 `复现计划 / 图表 / Tables`。
 - Claims-Evidence 表的 `C01` / `C02` ID 来自 `normalize_claim`,与 source_resolution 无关;但源解析失败时,fallback "Degraded fallback" 徽标会保留。
 - 验证 220/0 PASS (v0.2.8 baseline 210 + 10 new step-16 essay / talk checks)。
+
+---
+
+## v0.2.14-alpha: URL input source resolution
+
+The new `p3pr url <url>` subcommand produces drafts where the
+`source_resolution` block is filled in even when no built-in paper
+hint matched. The CLI's overlay passes these fields through:
+
+| Field | Value (v0.2.14 url subcommand) |
+|---|---|
+| `hint_input` | The user-supplied URL |
+| `resolver_source` | `user_supplied_url` (CLI overlay) |
+| `resolver_status` | `not_found` (URL did not hit a built-in paper) — unless a known alias did match, in which case `matched` |
+| `resolver_match_type` | `none` (or `legacy` / `arxiv` / `repo` if the URL happened to match) |
+| `confidence` | `low` (or `high` if matched) |
+| `matched_paper_id` | `None` (or the matched id) |
+| `source_resolution_step` | `cli overlay via p3pr paper_url subcommand; input='<url>'` |
+
+The `paper_metadata.identifiers.url` is the same URL. The
+`intake_quality.warnings` array includes:
+
+> "Input did not match any built-in resolver hint. Canonical identification is NOT confirmed; needs human confirmation."
+
+so the agent / human filling the draft knows to confirm the paper identity
+before treating the page as a real reading.
+
+When `--input-file` is also supplied (the new v0.2.14 behaviour for
+`p3pr url`), the runner records the local extracted body in
+`input/input.md` alongside the URL, so the audit trail shows both the
+"what the user pointed at" and the "what we actually have on disk".

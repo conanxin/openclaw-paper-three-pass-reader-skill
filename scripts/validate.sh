@@ -1734,6 +1734,116 @@ else
 fi
 rm -f "$LIVE_AUDIT2_JSON" "$LIVE_AUDIT2_MD"
 
+# ----------------------------------------------------------------
+# Step 20 — v0.2.14-alpha p3pr url subcommand
+# ----------------------------------------------------------------
+step 20 "v0.2.14-alpha p3pr url subcommand"
+
+# 20a. ./p3pr url --help runs.
+if (cd "$ROOT" && ./p3pr url --help >/dev/null 2>&1); then
+  ok "p3pr url --help runs"
+else
+  bad "p3pr url --help failed"
+fi
+
+# 20b. p3pr --help lists the url subcommand.
+if (cd "$ROOT" && ./p3pr --help 2>&1 | grep -E "^[[:space:]]*url " >/dev/null); then
+  ok "p3pr --help lists url subcommand"
+else
+  bad "p3pr --help does not list url subcommand"
+fi
+
+# 20c. URL dry-run emits P3PR_INPUT_KIND: paper_url.
+URL_DRY="$(cd "$ROOT" && ./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+  --zh --full --publish --slug you-and-your-research-cn-url-smoke-dry \
+  --output-root /tmp/p3pr-url-dry --dry-run 2>&1 || true)"
+if echo "$URL_DRY" | grep -q "^P3PR_INPUT_KIND: paper_url$"; then
+  ok "URL dry-run emits P3PR_INPUT_KIND: paper_url"
+else
+  bad "URL dry-run did not emit P3PR_INPUT_KIND: paper_url"
+fi
+
+# 20d. URL dry-run with --full emits P3PR_READING_MODE: full_text.
+if echo "$URL_DRY" | grep -q "^P3PR_READING_MODE: full_text$"; then
+  ok "URL dry-run with --full emits P3PR_READING_MODE: full_text"
+else
+  bad "URL dry-run with --full did not emit P3PR_READING_MODE: full_text"
+fi
+
+# 20e. URL dry-run emits P3PR_SOURCE_URL: <url>.
+if echo "$URL_DRY" | grep -q "^P3PR_SOURCE_URL: https://www.cs.virginia.edu/~robins/YouAndYourResearch.html$"; then
+  ok "URL dry-run emits P3PR_SOURCE_URL with the user-supplied URL"
+else
+  bad "URL dry-run did not emit P3PR_SOURCE_URL"
+fi
+
+# 20f-j. URL smoke run (no publish) produces the expected run layout.
+URL_SMOKE_ROOT="/tmp/p3pr-url-smoke-validate-$$"
+rm -rf "$URL_SMOKE_ROOT"
+if (cd "$ROOT" && ./p3pr url https://www.cs.virginia.edu/~robins/YouAndYourResearch.html \
+  --zh --full --no-publish \
+  --slug you-and-your-research-cn-url-smoke \
+  --output-root "$URL_SMOKE_ROOT" \
+  --title "You and Your Research" \
+  --authors "Richard W. Hamming" \
+  --allow-draft-publish \
+  --no-quality-gate \
+  --audit-warn-only >/dev/null 2>&1); then
+  SLUG_DIR="$URL_SMOKE_ROOT/you-and-your-research-cn-url-smoke"
+  if [[ -f "$SLUG_DIR/input/source_pointer.txt" ]]; then
+    ok "URL smoke run saves input/source_pointer.txt"
+  else
+    bad "URL smoke run missing input/source_pointer.txt"
+  fi
+  if [[ -f "$SLUG_DIR/source/source.html" ]]; then
+    ok "URL smoke run saves source/source.html"
+  else
+    bad "URL smoke run missing source/source.html"
+  fi
+  if [[ -f "$SLUG_DIR/extracted/page.txt" ]] && \
+     [[ $(wc -c < "$SLUG_DIR/extracted/page.txt") -gt 800 ]]; then
+    ok "URL smoke run saves extracted/page.txt with substantial content"
+  else
+    bad "URL smoke run missing or too-small extracted/page.txt"
+  fi
+  if [[ -f "$SLUG_DIR/work/paper_reading.json" ]]; then
+    ok "URL smoke draft JSON exists"
+  else
+    bad "URL smoke draft JSON missing"
+  fi
+  if grep -q '"input_kind".*"paper_url"' "$SLUG_DIR/work/paper_reading.json" 2>/dev/null; then
+    ok "URL smoke draft JSON contains paper_url"
+  else
+    bad "URL smoke draft JSON missing paper_url"
+  fi
+  if grep -q '"source_resolution"' "$SLUG_DIR/work/paper_reading.json" 2>/dev/null; then
+    ok "URL smoke draft JSON contains source_resolution"
+  else
+    bad "URL smoke draft JSON missing source_resolution"
+  fi
+  if [[ -f "$SLUG_DIR/paper-reading-output/index.html" ]]; then
+    ok "URL smoke rendered page exists"
+  else
+    bad "URL smoke rendered page missing"
+  fi
+  if grep -q "输入解析状态" "$SLUG_DIR/paper-reading-output/index.html" 2>/dev/null; then
+    ok "URL smoke rendered page contains Chinese UI (输入解析状态)"
+  else
+    bad "URL smoke rendered page missing Chinese UI"
+  fi
+  # 20k. Existing arxiv / title / abstract / screenshot / repo / pdf help checks still pass.
+  for sub in arxiv title abstract screenshot repo pdf; do
+    if (cd "$ROOT" && ./p3pr "$sub" --help >/dev/null 2>&1); then
+      ok "p3pr $sub --help still runs"
+    else
+      bad "p3pr $sub --help regressed"
+    fi
+  done
+else
+  bad "URL smoke run failed; layout checks skipped"
+fi
+rm -rf "$URL_SMOKE_ROOT" /tmp/p3pr-url-dry
+
 rm -rf "$SELFTEST_DIR" "$SELFTEST_JSON" "$SELFTEST_MD"
 
 # Summary

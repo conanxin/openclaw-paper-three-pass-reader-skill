@@ -596,7 +596,7 @@ def make_draft(args, hint, resolver_result=None) -> dict:
     return draft
 
 
-def write_run_layout(out_root: Path, slug: str, args) -> tuple[Path, Path, Path, Path, Path, Path]:
+def write_run_layout(out_root: Path, slug: str, args, body_text: str = "") -> tuple[Path, Path, Path, Path, Path, Path]:
     """Create the standard run directory layout. Returns paths."""
     run_dir = out_root / slug
     input_dir = run_dir / "input"
@@ -611,20 +611,44 @@ def write_run_layout(out_root: Path, slug: str, args) -> tuple[Path, Path, Path,
     # Capture the input to input/input.md (audit trail).
     input_md = input_dir / "input.md"
     if args.input_file:
-        try:
-            content = Path(args.input_file).read_text(encoding="utf-8")
-        except Exception as e:
-            print(f"[warn] could not read input file: {e}", file=sys.stderr)
-            content = f"(could not read input file: {args.input_file})\n"
+        # v0.2.14-alpha: when --input-file is supplied, use the file body as
+        # the captured "raw input". If --input is also supplied, include it
+        # as a separate metadata block at the top of input.md.
+        if body_text:
+            content = body_text
+        else:
+            try:
+                content = Path(args.input_file).read_text(encoding="utf-8", errors="replace")
+            except Exception as e:  # noqa: BLE001
+                print(f"[warn] could not read input file: {e}", file=sys.stderr)
+                content = f"(could not read input file: {args.input_file})\n"
+        if args.input:
+            header = (
+                f"# Captured input for run {slug}\n\n"
+                f"- input_kind: `{args.input_kind}`\n"
+                f"- input: `{args.input}`\n"
+                f"- input_file: `{args.input_file}`\n"
+                f"- runner: paper-three-pass-reader v0.2.0-alpha\n"
+                f"- captured_at: {_now_iso()}\n\n"
+                f"## Raw input (from --input-file)\n\n```\n{content}\n```\n"
+            )
+        else:
+            header = (
+                f"# Captured input for run {slug}\n\n"
+                f"- input_kind: `{args.input_kind}`\n"
+                f"- runner: paper-three-pass-reader v0.2.0-alpha\n"
+                f"- captured_at: {_now_iso()}\n\n"
+                f"## Raw input\n\n```\n{content}\n```\n"
+            )
     else:
         content = args.input or ""
-    header = (
-        f"# Captured input for run {slug}\n\n"
-        f"- input_kind: `{args.input_kind}`\n"
-        f"- runner: paper-three-pass-reader v0.2.0-alpha\n"
-        f"- captured_at: {_now_iso()}\n\n"
-        f"## Raw input\n\n```\n{content}\n```\n"
-    )
+        header = (
+            f"# Captured input for run {slug}\n\n"
+            f"- input_kind: `{args.input_kind}`\n"
+            f"- runner: paper-three-pass-reader v0.2.0-alpha\n"
+            f"- captured_at: {_now_iso()}\n\n"
+            f"## Raw input\n\n```\n{content}\n```\n"
+        )
     input_md.write_text(header, encoding="utf-8")
 
     return run_dir, input_dir, source_dir, extracted_dir, work_dir, output_dir
@@ -689,9 +713,9 @@ def main(argv=None):
     if not args.input and not args.input_file:
         print("[error] either --input or --input-file is required", file=sys.stderr)
         return 2
-    if args.input and args.input_file:
-        print("[error] pass only one of --input or --input-file", file=sys.stderr)
-        return 2
+    # v0.2.14-alpha: allow BOTH --input and --input-file together. --input is
+    # used as the audit-trail / hint-lookup string; --input-file is read as
+    # the body content for the run layout's input.md capture.
     if not _SLUG_SAFE_RE.match(args.slug):
         print("[error] --slug must match [A-Za-z0-9._-]+", file=sys.stderr)
         return 2
@@ -711,13 +735,19 @@ def main(argv=None):
         args.authors = [a.strip() for a in args.authors.split(",") if a.strip()]
 
     # Resolve input string.
-    input_text = args.input
+    # v0.2.14-alpha: when BOTH --input and --input-file are supplied, --input
+    # is the audit-trail / hint-lookup string, and --input-file is the body
+    # that gets captured into input/input.md (alongside the --input string).
+    input_text = args.input or ""
+    body_text = ""
     if args.input_file:
         try:
-            input_text = Path(args.input_file).read_text(encoding="utf-8").strip()
-        except Exception as e:
+            body_text = Path(args.input_file).read_text(encoding="utf-8", errors="replace")
+        except Exception as e:  # noqa: BLE001
             print(f"[error] could not read --input-file: {e}", file=sys.stderr)
             return 2
+        if not input_text:
+            input_text = body_text.strip()
 
     # Look up hint. (v0.2.6: also capture the shared-resolver result for the
     # resolution trail. The third tuple element is the resolver's full
@@ -744,7 +774,7 @@ def main(argv=None):
     # Create run layout.
     out_root = Path(args.output_root).resolve()
     run_dir, input_dir, source_dir, extracted_dir, work_dir, output_dir = write_run_layout(
-        out_root, args.slug, args)
+        out_root, args.slug, args, body_text=body_text)
 
     # Write draft JSON.
     draft = make_draft(args, hint, resolver_result=resolver_result)
